@@ -1,0 +1,73 @@
+name: Deploy React Frontend to GCP VM
+
+# 1. 워크플로우 실행 조건 정의
+on:
+  push:
+    # 해당 브랜치에 코드가 푸시(Push)될 때 이 워크플로우를 실행합니다.
+    branches:
+      - main
+      - proto
+    # paths에 나열된 파일 중 하나라도 변경될 때만 실행합니다. (불필요한 배포 방지)
+    paths:
+      - 'src/**' # React 소스 코드가 변경될 때
+      - 'public/**'
+      - 'package.json'
+      - 'frontend.Dockerfile' # Dockerfile이 변경될 때
+      - 'nginx/**' # Nginx 설정 파일이 변경될 때
+      
+# 2. 실행될 작업(Job) 정의
+jobs:
+  deploy:
+    # 이 작업이 실행될 가상 환경을 정의합니다 (GitHub Runner)
+    runs-on: ubuntu-latest
+
+    # 3. 작업의 단계(Steps) 정의
+    steps:
+      # Git 레포지토리의 코드를 Runner 환경으로 복제합니다.
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      # 1단계: SSH 키 설정
+      # GitHub Secret에 저장된 비공개 키를 사용하여 VM 접속 준비를 합니다.
+      - name: Setup SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          # SSH_PRIVATE_KEY Secret (개인 키 파일 내용) 사용
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # 2단계: SSH를 통해 VM으로 파일 전송 (rsync 사용)
+      - name: Transfer Files to VM
+        run: |
+          # SSH 접속 시 보안 경고를 무시하도록 VM_HOST_IP를 known_hosts에 등록
+          ssh-keyscan -H ${{ secrets.VM_HOST_IP }} >> ~/.ssh/known_hosts
+          
+          # rsync 명령으로 Runner의 코드를 VM의 목표 디렉토리로 동기화합니다.
+          # -a: 아카이브 모드 (권한, 시간 정보 보존)
+          # -v: 자세한 출력
+          # -z: 압축 전송
+          # --delete: Runner에는 있지만 VM에는 없는 파일은 VM에서 삭제
+          # --exclude: 제외할 폴더 (VM에서 다시 생성할 파일)
+          rsync -avz --delete --exclude 'node_modules' --exclude 'dist' ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST_IP }}:${{ secrets.VM_TARGET_DIR }}
+        
+      # 3단계: SSH를 통해 Docker Compose 명령 실행
+      # appleboy/ssh-action 액션을 사용하여 VM에서 명령어를 실행합니다.
+      - name: Deploy and Restart Frontend Container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST_IP }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "--- Navigating to deployment directory ---"
+            cd ${{ secrets.VM_TARGET_DIR }}
+            
+            echo "--- Starting Frontend Build and Deployment ---"
+            
+            # Docker Compose를 사용하여 frontend-app 서비스만 재배포합니다.
+            # /usr/local/bin/docker-compose 경로를 사용하는 것이 안전합니다.
+            # -d: 백그라운드 실행
+            # --no-deps: 의존성(nestjs-app)을 다시 시작하지 않음
+            # --build: Dockerfile을 사용하여 React 앱을 새로 빌드함
+            /usr/local/bin/docker-compose up -d --no-deps --build frontend-app
+            
+            echo "--- React Frontend Deployment complete on ${{ secrets.VM_HOST_IP }} ---"
