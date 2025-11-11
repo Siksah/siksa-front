@@ -14,6 +14,10 @@ on:
       - 'package.json'
       - 'frontend.Dockerfile' # Dockerfile이 변경될 때
       - 'nginx/**' # Nginx 설정 파일이 변경될 때
+
+  # 💡 수동 실행(Manual Trigger) 옵션 추가 
+  # 이제 GitHub 웹 UI에서 'Run workflow' 버튼을 눌러 실행할 수 있습니다.
+  workflow_dispatch: {}
       
 # 2. 실행될 작업(Job) 정의
 jobs:
