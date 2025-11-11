@@ -26,9 +26,9 @@ FROM nginx:alpine
 # VM의 'siksa-front/nginx/default.conf' 파일이 컨테이너 내부의 설정 파일로 복사됩니다.
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# 빌드 스테이지(builder)에서 생성된 정적 파일(build 폴더 내용)을 
+# 빌드 스테이지(builder)에서 생성된 정적 파일(dist 폴더 내용)을 
 # Nginx의 기본 웹 루트(/usr/share/nginx/html)로 복사합니다.
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # 컨테이너 시작 시 Nginx 서버를 실행합니다.
 CMD ["nginx", "-g", "daemon off;"]
