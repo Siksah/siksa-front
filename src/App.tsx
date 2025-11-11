@@ -9,6 +9,8 @@ import q6Image from './assets/q6.png';
 import a1Image from './assets/a1.png';
 import a2Image from './assets/a2.png';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://fallback.api'; 
+
 // ====================================================================
 // 💡 TypeScript 인터페이스 정의
 // ====================================================================
@@ -109,7 +111,7 @@ const saveToDatabase = async (dataToSave: Record<string, string>, setCurrentPage
     setCurrentPage('SAVING'); // 저장 중 상태로 전환
 
     // 💡 실제 백엔드 API 엔드포인트 URL로 변경해야 합니다.
-    const API_URL = 'http://localhost:3001/answer'; 
+    const API_URL = `${API_BASE_URL}/answer`;
     
     // 최종적으로 서버에 보낼 데이터 (필요하다면 userId도 추가)
     const finalData = {
