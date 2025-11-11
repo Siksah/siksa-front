@@ -2,6 +2,12 @@
 # Node.js LTS 버전의 Alpine 리눅스 이미지를 사용하여 가볍게 빌드합니다.
 FROM node:lts-alpine as builder
 
+# 💡 수정: Docker Compose로부터 API_BASE_URL 값을 받기 위한 ARG 정의
+ARG VITE_API_BASE_URL=/api 
+
+# 💡 수정: ARG 값을 빌드 단계의 환경 변수로 설정
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
 # 컨테이너 내부의 작업 디렉토리를 /app으로 설정합니다.
 WORKDIR /app
 
