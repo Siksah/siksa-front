@@ -5,9 +5,6 @@ FROM node:lts-alpine as builder
 # 💡 수정: Docker Compose로부터 API_BASE_URL 값을 받기 위한 ARG 정의
 ARG VITE_API_BASE_URL
 
-# 💡 수정: ARG 값을 빌드 단계의 환경 변수로 설정
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-
 # 컨테이너 내부의 작업 디렉토리를 /app으로 설정합니다.
 WORKDIR /app
 
@@ -22,7 +19,7 @@ COPY . .
 # React 앱을 프로덕션용으로 빌드합니다.
 # 빌드 결과물은 보통 'build' 또는 'dist' 폴더에 생성됩니다.
 # 🚨 만약 Vite를 사용한다면 'npm run build' 후 생성되는 폴더가 'dist'일 수 있으니 확인이 필요합니다.
-RUN npm run build
+RUN VITE_API_BASE_URL=${VITE_API_BASE_URL} npm run build
 
 # 2. 호스팅 스테이지: 빌드된 결과물을 Nginx 서버에 담아 서비스합니다.
 # 가볍고 보안에 강한 Nginx Alpine 이미지를 사용합니다.
