@@ -65,7 +65,7 @@ jobs:
           script: |
             echo "--- Navigating to deployment directory ---"
             cd ${{ secrets.VM_TARGET_DIR }}
-            
+            pwd
             echo "--- Starting Frontend Build and Deployment ---"
             
             # Docker Compose를 사용하여 frontend-app 서비스만 재배포합니다.
