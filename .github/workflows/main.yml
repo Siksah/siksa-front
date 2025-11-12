@@ -73,8 +73,5 @@ jobs:
             # --no-deps: 의존성(nestjs-app)을 다시 시작하지 않음
             # --build: Dockerfile을 사용하여 React 앱을 새로 빌드함
             /usr/local/bin/docker-compose up -d --no-deps --build frontend-app
-            # /usr/local/bin/docker-compose up -d --no-deps --build --build-arg VITE_API_BASE_URL="${{ secrets.VITE_FRONTEND_API_BASE_URL }}" frontend-app
-            # /usr/local/bin/docker-compose build --build-arg VITE_API_BASE_URL="${{ secrets.VITE_FRONTEND_API_BASE_URL }}" frontend-app
-            # /usr/local/bin/docker-compose up -d --no-deps frontend-app
-
+            
             echo "--- React Frontend Deployment complete on ${{ secrets.VM_HOST_IP }} ---"
