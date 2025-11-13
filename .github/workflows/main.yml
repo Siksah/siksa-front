@@ -3,27 +3,19 @@ name: Deploy React Frontend to GCP VM
 # 1. 워크플로우 실행 조건 정의
 on:
   push:
-    # 해당 브랜치에 코드가 푸시(Push)될 때 이 워크플로우를 실행합니다.
     branches:
       - main
       - proto
-    # paths에 나열된 파일 중 하나라도 변경될 때만 실행합니다. (불필요한 배포 방지)
     paths:
       - '**'
-      # - 'src/**' # React 소스 코드가 변경될 때
-      # - 'public/**'
-      # - 'package.json'
-      # - 'frontend.Dockerfile' # Dockerfile이 변경될 때
-      # - 'nginx/**' # Nginx 설정 파일이 변경될 때
 
   # 💡 수동 실행(Manual Trigger) 옵션 추가 
-  # 이제 GitHub 웹 UI에서 'Run workflow' 버튼을 눌러 실행할 수 있습니다.
   workflow_dispatch: {}
       
 # 2. 실행될 작업(Job) 정의
 jobs:
   deploy:
-    # 이 작업이 실행될 가상 환경을 정의합니다 (GitHub Runner)
+    # 이 작업이 실행될 가상 환경 정의 (GitHub Runner)
     runs-on: ubuntu-latest
 
     # 3. 작업의 단계(Steps) 정의
@@ -47,11 +39,6 @@ jobs:
           ssh-keyscan -H ${{ secrets.VM_HOST_IP }} >> ~/.ssh/known_hosts
           
           # rsync 명령으로 Runner의 코드를 VM의 목표 디렉토리로 동기화합니다.
-          # -a: 아카이브 모드 (권한, 시간 정보 보존)
-          # -v: 자세한 출력
-          # -z: 압축 전송
-          # --delete: Runner에는 있지만 VM에는 없는 파일은 VM에서 삭제
-          # --exclude: 제외할 폴더 (VM에서 다시 생성할 파일)
           rsync -avz --delete --exclude 'node_modules' --exclude 'dist' ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST_IP }}:${{ secrets.VM_TARGET_DIR }}
         
       # 3단계: SSH를 통해 Docker Compose 명령 실행
@@ -65,7 +52,7 @@ jobs:
           script: |
             echo "--- Navigating to deployment directory ---"
             cd ${{ secrets.VM_TARGET_DIR }}
-            cd ../siksa-back
+            cd ..
             echo "--- Starting Frontend Build and Deployment ---"
             
             # Docker Compose를 사용하여 frontend-app 서비스만 재배포합니다.
@@ -73,10 +60,12 @@ jobs:
             # -d: 백그라운드 실행
             # --no-deps: 의존성(nestjs-app)을 다시 시작하지 않음
             # --build: Dockerfile을 사용하여 React 앱을 새로 빌드함
+            
             # /usr/local/bin/docker-compose up -d --no-deps --build frontend-app
             # /usr/local/bin/docker-compose build --build-arg VITE_API_BASE_URL="${{ secrets.VITE_FRONTEND_API_BASE_URL }}" frontend-app
             # /usr/local/bin/docker-compose up -d --no-deps frontend-app
             # /usr/local/bin/docker-compose up -d --no-deps --build --no-cache --build-arg VITE_API_BASE_URL="${{ secrets.VITE_FRONTEND_API_BASE_URL }}" --force-recreate frontend-app
+
             echo "--- Building new image ---"
             /usr/local/bin/docker-compose build --no-cache \
               --build-arg VITE_API_BASE_URL="${{ secrets.VITE_FRONTEND_API_BASE_URL }}" frontend-app
