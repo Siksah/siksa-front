@@ -5,22 +5,21 @@ FROM node:lts-alpine as builder
 # compose 파일에서 전달받는 빌드 아규먼트 (API URL)
 ARG VITE_API_BASE_URL
 
-# Dockerfile 내에서 환경 변수를 설정하여 React 빌드 시 사용되게 합니다.
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-
 WORKDIR /app
+
 # 프로젝트 루트 디렉토리에서 siksa-front 폴더의 내용을 복사합니다.
 # Docker Compose의 context가 "."(루트)이므로, siksa-front 폴더 내부 내용만 복사해야 합니다.
 COPY ./siksa-front/package.json ./siksa-front/package-lock.json ./
 
+RUN --mount=type=cache,target=/root/.npm \ 
+    npm ci
+
 # 나머지 React 소스 코드 복사
 COPY ./siksa-front/ .
 
-RUN npm install
-
 # React 빌드 명령어를 실행합니다.
 # 빌드 결과물(정적 파일)은 보통 /app/dist 또는 /app/build 폴더에 생성됩니다.
-RUN npm run build 
+RUN VITE_API_BASE_URL=${VITE_API_BASE_URL} npm run build 
 
 # ----------------------------------------------------
 

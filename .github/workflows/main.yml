@@ -17,6 +17,7 @@ jobs:
   deploy:
     # 이 작업이 실행될 가상 환경 정의 (GitHub Runner)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     # 3. 작업의 단계(Steps) 정의
     steps:
