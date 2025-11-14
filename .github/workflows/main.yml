@@ -42,7 +42,7 @@ jobs:
 
     # 1) 이벤트가 'push' 이거나 (push 이벤트는 레이블과 무관하게 실행)
     # 2) 이벤트가 'pull_request'이고, 'check_pr_label' Job이 성공했을 때만 실행
-    # if: github.event_name == 'push' || (github.event_name == 'pull_request' && success())
+    # if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && success())
     
     steps:
       # Git 레포지토리의 코드를 Runner 환경으로 복제
@@ -77,7 +77,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST_IP }}
-          username: ${{ secrets.VM_USERNAME }}
+          username: ${{ secrets.VM_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "--- Navigating to deployment directory ---"
