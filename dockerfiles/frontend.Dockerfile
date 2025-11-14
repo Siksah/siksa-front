@@ -19,7 +19,9 @@ COPY . .
 
 # React 빌드 명령어를 실행합니다.
 # 빌드 결과물(정적 파일)은 보통 /app/dist 또는 /app/build 폴더에 생성됩니다.
-RUN VITE_API_BASE_URL=${VITE_API_BASE_URL} npm run build 
+RUN VITE_API_BASE_URL=${VITE_API_BASE_URL} npm run build
+
+RUN echo "--- /app 디렉토리 내용 확인 ---" && ls -l /app
 
 # ----------------------------------------------------
 
