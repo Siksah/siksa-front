@@ -24,8 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     
     # pull_request 이벤트이고, 특정 레이블만 실행
-    if: github.event_name == 'pull_request' 
-        && (github.event.label.name == 'documentation' || github.event.label.name == 'dep')
+    # if: github.event_name == 'pull_request' 
+    #    && (github.event.label.name == 'documentation' || github.event.label.name == 'dep')
     
     steps:
       - name: Label Check Passed
