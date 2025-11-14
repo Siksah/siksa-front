@@ -21,9 +21,6 @@ COPY . .
 # 빌드 결과물(정적 파일)은 보통 /app/dist 또는 /app/build 폴더에 생성됩니다.
 RUN VITE_API_BASE_URL=${VITE_API_BASE_URL} npm run build
 
-RUN echo "--- /app 디렉토리 내용 확인 ---" && ls -l /app
-RUN echo "--- /app 디렉토리 내용 확인 ---" && ls -l /app/dist
-
 # ----------------------------------------------------
 
 # 2. 프로덕션 단계 (Production Stage)
@@ -40,9 +37,6 @@ COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 # 이 단계가 호스트의 파일 권한 문제를 근본적으로 해결해줍니다.
 # 'builder' 스테이지가 존재하고, 빌드 결과물이 /app/dist 에 있다고 가정합니다.
 COPY --from=builder /app/dist/ /usr/share/nginx/html 
-
-# 디버깅: 복사된 파일 목록 확인
-RUN echo "--- NGINX ROOT FILES (Expected React files) ---" && ls -l /usr/share/nginx/html/
 
 # 🚨 Nginx Worker Process가 복사된 파일을 읽을 수 있도록 권한을 설정합니다.
 RUN chown -R nginx:nginx /usr/share/nginx/html
