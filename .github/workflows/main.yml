@@ -1,6 +1,5 @@
-name: Deploy React Frontend to GCP VM
+name: Deploy GCP VM
 
-# 1. 워크플로우 실행 조건 정의
 on:
   push:
     branches:
@@ -8,61 +7,96 @@ on:
       - proto
     paths:
       - '**'
-
   # 💡 수동 실행(Manual Trigger) 옵션 추가 
   workflow_dispatch: {}
       
-# 2. 실행될 작업(Job) 정의
 jobs:
   deploy:
     # 이 작업이 실행될 가상 환경 정의 (GitHub Runner)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    # 3. 작업의 단계(Steps) 정의
     steps:
-      # Git 레포지토리의 코드를 Runner 환경으로 복제합니다.
+      # Git 레포지토리의 코드를 Runner 환경으로 복제
       - name: Checkout Code
         uses: actions/checkout@v4
-        
-      # 1단계: SSH 키 설정
-      # GitHub Secret에 저장된 비공개 키를 사용하여 VM 접속 준비를 합니다.
-      - name: Setup SSH Key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          # SSH_PRIVATE_KEY Secret (개인 키 파일 내용) 사용
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      # 2단계: SSH를 통해 VM으로 파일 전송 (rsync 사용)
-      - name: Transfer Files to VM
+      
+      # 0. 파일 변경 감지 단계
+      - name: Detect Changes
+        id: changes
         run: |
-          # SSH 접속 시 보안 경고를 무시하도록 VM_HOST_IP를 known_hosts에 등록
-          ssh-keyscan -H ${{ secrets.VM_HOST_IP }} >> ~/.ssh/known_hosts
+          # 현재 커밋과 이전 커밋 사이에 siksa-back 폴더에 변경 사항이 있는지 확인
+          if git diff --name-only HEAD^ HEAD | grep -q 'siksa-back/'; then
+            echo "BACKEND_CHANGED=true" >> $GITHUB_OUTPUT
+          else
+            echo "BACKEND_CHANGED=false" >> $GITHUB_OUTPUT
+          fi
           
-          # rsync 명령으로 Runner의 코드를 VM의 목표 디렉토리로 동기화합니다.
-          rsync -avz --delete --exclude 'node_modules' --exclude 'dist' ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST_IP }}:${{ secrets.VM_TARGET_DIR }}
-        
-      # 3단계: SSH를 통해 Docker Compose 명령 실행
-      # appleboy/ssh-action 액션을 사용하여 VM에서 명령어를 실행합니다.
-      - name: Deploy and Restart Frontend Container
+          # 현재 커밋과 이전 커밋 사이에 siksa-front 폴더에 변경 사항이 있는지 확인
+          if git diff --name-only HEAD^ HEAD | grep -q 'siksa-front/'; then
+            echo "FRONTEND_CHANGED=true" >> $GITHUB_OUTPUT
+          else
+            echo "FRONTEND_CHANGED=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 1. Docker Hub 로그인
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      # 2. Docker 빌드 환경 설정
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. 백엔드 이미지 빌드 및 푸시 (siksa-backend-app)
+      - name: Build and Push Backend Image
+        # siksa-back 폴더에 변경이 있을 때만 실행
+        if: steps.changes.outputs.BACKEND_CHANGED == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./siksa-back/dockerfiles/backend.Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/siksa-backend-app:latest 
+          cache-from: type=gha 
+          cache-to: type=gha,mode=max 
+          
+      # 4. 프론트엔드 이미지 빌드 및 푸시 (frontend-app)
+      - name: Build and Push Frontend Image
+        # siksa-front 폴더에 변경이 있을 때만 실행
+        if: steps.changes.outputs.FRONTEND_CHANGED == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./siksa-front/dockerfiles/frontend.Dockerfile 
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/siksa-frontend-app:latest
+          build-args: VITE_API_BASE_URL=${{ secrets.VITE_FRONTEND_API_BASE_URL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # 5. SSH를 통해 VM 접속 및 이미지 pull/실행
+      - name: Deploy Containers on VM via SSH
+        # 백엔드나 프론트엔드 중 하나라도 변경되었을 때만 실행
+        if: steps.changes.outputs.BACKEND_CHANGED == 'true' || steps.changes.outputs.FRONTEND_CHANGED == 'true'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST_IP }}
-          username: ${{ secrets.VM_USER }}
+          username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "--- Navigating to deployment directory ---"
             cd ${{ secrets.VM_TARGET_DIR }}
-            cd ..
-            echo "--- Starting Frontend Build and Deployment ---"
             
-            # Docker Compose를 사용하여 frontend-app 서비스만 재배포합니다.
-            # /usr/local/bin/docker-compose up -d --no-deps --build frontend-app
-
-            echo "--- Building new image ---"
-            /usr/local/bin/docker-compose build \
-              --build-arg VITE_API_BASE_URL="${{ secrets.VITE_FRONTEND_API_BASE_URL }}" frontend-app
-            echo "--- Restarting container ---"
-            /usr/local/bin/docker-compose up -d --no-deps --force-recreate frontend-app
+            # 6. VM에서 Docker Hub 로그인
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             
-            echo "--- React Frontend Deployment complete on ${{ secrets.VM_HOST_IP }} ---"
+            # 7. 이미지 다운로드 (pull)
+            echo "--- Pulling latest images from Docker Hub ---"
+            /usr/local/bin/docker-compose pull
+            
+            # 8. 컨테이너 실행 (--no-build 옵션으로 빌드를 건너뜁니다)
+            echo "--- Starting containers with latest images ---"
+            /usr/local/bin/docker-compose up -d --force-recreate --no-build
+            
+            echo "--- Deployment complete ---"
