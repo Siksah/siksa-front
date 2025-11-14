@@ -25,15 +25,19 @@ RUN VITE_API_BASE_URL=${VITE_API_BASE_URL} npm run build
 
 # 2. 프로덕션 단계 (Production Stage)
 # 가볍고 안전한 Nginx 이미지를 사용하여 정적 파일을 호스팅합니다.
-FROM nginx:alpine
+FROM nginx:stable-alpine
 
-# 🌟 Nginx 설정 파일을 이미지 내부로 복사합니다.
-# 이 경로는 Docker Compose 실행 시 VM의 루트에서 ./siksa-front/nginx/default.conf를 찾습니다.
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+# Nginx 설정 파일을 이미지 내부로 복사합니다.
+# 빌드 컨텍스트의 경로에 맞춰 정확히 지정합니다.
+COPY ./siksa-front/dockerfiles/default.conf /etc/nginx/conf.d/default.conf
 
-# 빌드 단계에서 생성된 React 정적 파일(build 폴더 가정)을 Nginx의 루트 디렉토리로 복사합니다.
-# 실제 빌드 결과 폴더명(dist 또는 build)에 따라 수정해야 합니다. 여기서는 build를 가정합니다.
+# 🌟 핵심: 빌더 스테이지에서 생성된 React 정적 파일을 Nginx의 루트 디렉토리로 복사합니다.
+# 이 단계가 호스트의 파일 권한 문제를 근본적으로 해결해줍니다.
+# 'builder' 스테이지가 존재하고, 빌드 결과물이 /app/dist 에 있다고 가정합니다.
 COPY --from=builder /app/dist /usr/share/nginx/html 
+
+# 🚨 Nginx Worker Process가 복사된 파일을 읽을 수 있도록 권한을 설정합니다.
+RUN chown -R nginx:nginx /usr/share/nginx/html
 
 # Nginx가 기본 포트 80으로 실행됩니다.
 EXPOSE 80
