@@ -19,24 +19,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
       
-      # 0. 파일 변경 감지 단계
-      - name: Detect Changes
-        id: changes
-        run: |
-          # 현재 커밋과 이전 커밋 사이에 siksa-back 폴더에 변경 사항이 있는지 확인
-          if git diff --name-only HEAD^ HEAD | grep -q 'siksa-back/'; then
-            echo "BACKEND_CHANGED=true" >> $GITHUB_OUTPUT
-          else
-            echo "BACKEND_CHANGED=false" >> $GITHUB_OUTPUT
-          fi
-          
-          # 현재 커밋과 이전 커밋 사이에 siksa-front 폴더에 변경 사항이 있는지 확인
-          if git diff --name-only HEAD^ HEAD | grep -q 'siksa-front/'; then
-            echo "FRONTEND_CHANGED=true" >> $GITHUB_OUTPUT
-          else
-            echo "FRONTEND_CHANGED=false" >> $GITHUB_OUTPUT
-          fi
-
       # 1. Docker Hub 로그인
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -47,20 +29,8 @@ jobs:
       # 2. Docker 빌드 환경 설정
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      # 3. 백엔드 이미지 빌드 및 푸시 (siksa-backend-app)
-      - name: Build and Push Backend Image
-        # siksa-back 폴더에 변경이 있을 때만 실행
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./siksa-back/dockerfiles/backend.Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/siksa-backend-app:latest 
-          cache-from: type=gha 
-          cache-to: type=gha,mode=max 
           
-      # 4. 프론트엔드 이미지 빌드 및 푸시 (frontend-app)
+      # 3. 프론트엔드 이미지 빌드 및 푸시 (frontend-app)
       - name: Build and Push Frontend Image
         # siksa-front 폴더에 변경이 있을 때만 실행
         uses: docker/build-push-action@v5
@@ -73,9 +43,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # 5. SSH를 통해 VM 접속 및 이미지 pull/실행
+      # 4. SSH를 통해 VM 접속 및 이미지 pull/실행
       - name: Deploy Containers on VM via SSH
-        # 백엔드나 프론트엔드 중 하나라도 변경되었을 때만 실행
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST_IP }}
