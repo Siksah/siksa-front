@@ -29,7 +29,7 @@ FROM nginx:stable-alpine
 
 # Nginx 설정 파일을 이미지 내부로 복사합니다.
 # 빌드 컨텍스트의 경로에 맞춰 정확히 지정합니다.
-COPY ./dockerfiles/default.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # 🌟 핵심: 빌더 스테이지에서 생성된 React 정적 파일을 Nginx의 루트 디렉토리로 복사합니다.
 # 이 단계가 호스트의 파일 권한 문제를 근본적으로 해결해줍니다.
