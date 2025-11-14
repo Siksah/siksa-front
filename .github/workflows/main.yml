@@ -35,7 +35,7 @@ jobs:
         # siksa-front 폴더에 변경이 있을 때만 실행
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./siksa-front
           file: ./siksa-front/dockerfiles/frontend.Dockerfile 
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/siksa-frontend-app:latest

@@ -9,13 +9,13 @@ WORKDIR /app
 
 # 프로젝트 루트 디렉토리에서 siksa-front 폴더의 내용을 복사합니다.
 # Docker Compose의 context가 "."(루트)이므로, siksa-front 폴더 내부 내용만 복사해야 합니다.
-COPY ./siksa-front/package.json ./siksa-front/package-lock.json ./
+COPY ./package.json ./package-lock.json ./
 
 RUN --mount=type=cache,target=/root/.npm \ 
     npm ci
 
 # 나머지 React 소스 코드 복사
-COPY ./siksa-front/ .
+COPY . .
 
 # React 빌드 명령어를 실행합니다.
 # 빌드 결과물(정적 파일)은 보통 /app/dist 또는 /app/build 폴더에 생성됩니다.
@@ -29,7 +29,7 @@ FROM nginx:alpine
 
 # 🌟 Nginx 설정 파일을 이미지 내부로 복사합니다.
 # 이 경로는 Docker Compose 실행 시 VM의 루트에서 ./siksa-front/nginx/default.conf를 찾습니다.
-COPY ./siksa-front/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # 빌드 단계에서 생성된 React 정적 파일(build 폴더 가정)을 Nginx의 루트 디렉토리로 복사합니다.
 # 실제 빌드 결과 폴더명(dist 또는 build)에 따라 수정해야 합니다. 여기서는 build를 가정합니다.
