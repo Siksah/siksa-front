@@ -36,8 +36,20 @@ COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 # 🌟 핵심: 빌더 스테이지에서 생성된 React 정적 파일을 Nginx의 루트 디렉토리로 복사합니다.
 # 이 단계가 호스트의 파일 권한 문제를 근본적으로 해결해줍니다.
 # 'builder' 스테이지가 존재하고, 빌드 결과물이 /app/dist 에 있다고 가정합니다.
-COPY --from=builder /app/index.html /usr/share/nginx/html 
+COPY --from=builder /app /usr/share/nginx/html 
 
+# 불필요한 폴더(소스 코드, node_modules, Dockerfile 등)를 Nginx 루트 디렉토리에서 제거합니다.
+# 빌드된 정적 파일(.html, .js, .css 등)만 남깁니다.
+RUN rm -rf /usr/share/nginx/html/node_modules \
+    /usr/share/nginx/html/src \
+    /usr/share/nginx/html/package.json \
+    /usr/share/nginx/html/package-lock.json \
+    /usr/share/nginx/html/nginx \
+    /usr/share/nginx/html/dockerfiles \
+    /usr/share/nginx/html/README.md \
+    /usr/share/nginx/html/tsconfig.* \
+    /usr/share/nginx/html/vite.config.* \
+    /usr/share/nginx/html/eslint.config.js
 
 # 🚨 Nginx Worker Process가 복사된 파일을 읽을 수 있도록 권한을 설정합니다.
 RUN chown -R nginx:nginx /usr/share/nginx/html
