@@ -35,8 +35,8 @@ jobs:
         # siksa-front 폴더에 변경이 있을 때만 실행
         uses: docker/build-push-action@v5
         with:
-          context: ./siksa-front
-          file: ./siksa-front/dockerfiles/frontend.Dockerfile 
+          context: .
+          file: ./dockerfiles/frontend.Dockerfile 
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/siksa-frontend-app:latest
           build-args: VITE_API_BASE_URL=${{ secrets.VITE_FRONTEND_API_BASE_URL }}
