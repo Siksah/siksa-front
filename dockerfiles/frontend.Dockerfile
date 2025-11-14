@@ -22,6 +22,7 @@ COPY . .
 RUN VITE_API_BASE_URL=${VITE_API_BASE_URL} npm run build
 
 RUN echo "--- /app 디렉토리 내용 확인 ---" && ls -l /app
+RUN echo "--- /app 디렉토리 내용 확인 ---" && ls -l /app/dist
 
 # ----------------------------------------------------
 
