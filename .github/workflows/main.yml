@@ -1,19 +1,49 @@
 name: Deploy GCP VM
+run-name: "[${{ github.ref_name }}] [${{ github.event.head_commit.message }}] [${{ github.actor }}]"
 
 on:
   push:
     branches:
       - main
       - proto
-    paths:
-      - '**'
+
+  pull_request:
+    branches: [ "main", "proto" ]
+    types: [labeled]
+    
+
   # 💡 수동 실행(Manual Trigger) 옵션 추가 
   workflow_dispatch: {}
-      
+
+permissions:
+  contents: read
+
 jobs:
+  # 1. pull_request 이벤트에서 레이블 검사만 하는 Job
+  check_pr_label:
+    runs-on: ubuntu-latest
+    
+    # pull_request 이벤트이고, 특정 레이블만 실행
+    if: github.event_name == 'pull_request' 
+        && (github.event.label.name == 'documentation' || github.event.label.name == 'dep')
+    
+    steps:
+      - name: Label Check Passed
+        run: echo "Label check passed for PR."
+
   deploy:
     # 이 작업이 실행될 가상 환경 정의 (GitHub Runner)
     runs-on: ubuntu-latest
+
+    # check_pr_label Job에 의존합니다.
+    # check_pr_label Job이 스킵되면 deploy Job은 실행됩니다.
+    # (단, push 이벤트일 때만 해당 Job이 스킵되므로 의도대로 작동합니다.)
+    needs: [check_pr_label]
+
+    # 1) 이벤트가 'push' 이거나 (push 이벤트는 레이블과 무관하게 실행)
+    # 2) 이벤트가 'pull_request'이고, 'check_pr_label' Job이 성공했을 때만 실행
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && success())
+    
     steps:
       # Git 레포지토리의 코드를 Runner 환경으로 복제
       - name: Checkout Code
@@ -32,7 +62,6 @@ jobs:
           
       # 3. 프론트엔드 이미지 빌드 및 푸시 (frontend-app)
       - name: Build and Push Frontend Image
-        # siksa-front 폴더에 변경이 있을 때만 실행
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -60,9 +89,11 @@ jobs:
             # 7. 이미지 다운로드 (pull)
             echo "--- Pulling latest images from Docker Hub ---"
             /usr/local/bin/docker-compose pull
+            # /usr/local/bin/docker-compose -f ../docker-compose.yml pull
             
             # 8. 컨테이너 실행 (--no-build 옵션으로 빌드를 건너뜁니다)
             echo "--- Starting containers with latest images ---"
             /usr/local/bin/docker-compose up -d --force-recreate --no-build
-            
+            # /usr/local/bin/docker-compose -f ../docker-compose.yml up -d --force-recreate --no-build
+
             echo "--- Deployment complete ---"
