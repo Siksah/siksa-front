@@ -51,7 +51,6 @@ jobs:
       # 3. 백엔드 이미지 빌드 및 푸시 (siksa-backend-app)
       - name: Build and Push Backend Image
         # siksa-back 폴더에 변경이 있을 때만 실행
-        if: steps.changes.outputs.BACKEND_CHANGED == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -64,7 +63,6 @@ jobs:
       # 4. 프론트엔드 이미지 빌드 및 푸시 (frontend-app)
       - name: Build and Push Frontend Image
         # siksa-front 폴더에 변경이 있을 때만 실행
-        if: steps.changes.outputs.FRONTEND_CHANGED == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -78,7 +76,6 @@ jobs:
       # 5. SSH를 통해 VM 접속 및 이미지 pull/실행
       - name: Deploy Containers on VM via SSH
         # 백엔드나 프론트엔드 중 하나라도 변경되었을 때만 실행
-        if: steps.changes.outputs.BACKEND_CHANGED == 'true' || steps.changes.outputs.FRONTEND_CHANGED == 'true'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST_IP }}
