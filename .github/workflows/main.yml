@@ -13,7 +13,12 @@ on:
     
 
   # 💡 수동 실행(Manual Trigger) 옵션 추가 
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      commit_message:
+        description: '임의 커밋 메시지'
+        required: true
+        default: 'Manual deploy' # 입력이 없을 경우 기본값
 
 permissions:
   contents: read
@@ -24,8 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     
     # pull_request 이벤트이고, 특정 레이블만 실행
-    # if: github.event_name == 'pull_request' 
-    #    && (github.event.label.name == 'documentation' || github.event.label.name == 'dep')
+    if: github.event_name == 'pull_request' 
+       && (github.event.label.name == 'documentation' || github.event.label.name == 'dep')
     
     steps:
       - name: Label Check Passed
@@ -42,7 +47,7 @@ jobs:
 
     # 1) 이벤트가 'push' 이거나 (push 이벤트는 레이블과 무관하게 실행)
     # 2) 이벤트가 'pull_request'이고, 'check_pr_label' Job이 성공했을 때만 실행
-    # if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && success())
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && success())
     
     steps:
       # Git 레포지토리의 코드를 Runner 환경으로 복제
