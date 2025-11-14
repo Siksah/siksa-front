@@ -131,7 +131,7 @@ const saveToDatabase = async (dataToSave: Record<string, string>, setCurrentPage
         setCurrentPage('COMPLETE'); // 저장 성공 시 완료 페이지로 이동
     } catch (error) {
         console.error('🚨 데이터 저장 중 오류 발생:', error);
-        alert('데이터 저장에 실패했습니다. (서버 연결 확인 필요)!!\n' + API_BASE_URL2 + '\n'+ API_BASE_URL3);
+        alert('데이터 저장에 실패했습니다. (서버 연결 확인 필요)!!'+API_BASE_URL+'\n' + API_BASE_URL2 + '\n'+ API_BASE_URL3);
         setCurrentPage('A1'); // 실패 시 결과 페이지로 돌아가기
     }
 };
