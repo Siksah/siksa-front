@@ -44,19 +44,6 @@ COPY --from=builder /app/dist/ /usr/share/nginx/html
 # 디버깅: 복사된 파일 목록 확인
 RUN echo "--- NGINX ROOT FILES (Expected React files) ---" && ls -l /usr/share/nginx/html/
 
-# 불필요한 폴더(소스 코드, node_modules, Dockerfile 등)를 Nginx 루트 디렉토리에서 제거합니다.
-# 빌드된 정적 파일(.html, .js, .css 등)만 남깁니다.
-RUN rm -rf /usr/share/nginx/html/node_modules \
-    /usr/share/nginx/html/src \
-    /usr/share/nginx/html/package.json \
-    /usr/share/nginx/html/package-lock.json \
-    /usr/share/nginx/html/nginx \
-    /usr/share/nginx/html/dockerfiles \
-    /usr/share/nginx/html/README.md \
-    /usr/share/nginx/html/tsconfig.* \
-    /usr/share/nginx/html/vite.config.* \
-    /usr/share/nginx/html/eslint.config.js
-
 # 🚨 Nginx Worker Process가 복사된 파일을 읽을 수 있도록 권한을 설정합니다.
 RUN chown -R nginx:nginx /usr/share/nginx/html
 
