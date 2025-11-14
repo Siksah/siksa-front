@@ -29,6 +29,8 @@ RUN echo "--- /app 디렉토리 내용 확인 ---" && ls -l /app
 # 가볍고 안전한 Nginx 이미지를 사용하여 정적 파일을 호스팅합니다.
 FROM nginx:stable-alpine
 
+RUN rm -rf /usr/share/nginx/html/*
+
 # Nginx 설정 파일을 이미지 내부로 복사합니다.
 # 빌드 컨텍스트의 경로에 맞춰 정확히 지정합니다.
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
