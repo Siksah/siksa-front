@@ -39,7 +39,7 @@ COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 # 🌟 핵심: 빌더 스테이지에서 생성된 React 정적 파일을 Nginx의 루트 디렉토리로 복사합니다.
 # 이 단계가 호스트의 파일 권한 문제를 근본적으로 해결해줍니다.
 # 'builder' 스테이지가 존재하고, 빌드 결과물이 /app/dist 에 있다고 가정합니다.
-COPY --from=builder /app/dist/index.html /usr/share/nginx/html 
+COPY --from=builder /app/dist/ /usr/share/nginx/html 
 
 # 디버깅: 복사된 파일 목록 확인
 RUN echo "--- NGINX ROOT FILES (Expected React files) ---" && ls -l /usr/share/nginx/html/
