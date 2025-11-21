@@ -229,6 +229,15 @@ const saveToDatabase = async (
     };
 
 function App() {
+
+    // 💡 리셋 핸들러 함수 추가
+    const handleFullReset = () => {
+        localStorage.clear(); // 로컬 스토리지 데이터 완전히 삭제
+        setResponses({});     // 응답 데이터 초기화
+        setCurrentPage('MAIN'); // 페이지를 MAIN으로 강제 이동
+        console.log('✅ 애플리케이션 상태가 완전히 리셋되었습니다. 브라우저 설정을 확인해주세요.');
+    };
+
   // 상태 및 Ref 정의
   const containerRef = useRef<HTMLDivElement>(null);; // DOM 요소에 접근하기 위한 ref
 
@@ -309,7 +318,7 @@ function App() {
   // 💡 Kakao Map 연동 (COMPLETE 페이지일 때 실행)
   useEffect(() => {
     // useEffect: currentPage가 바뀔 때마다 localStorage에 저장
-    localStorage.setItem('lastPage', currentPage);
+    // localStorage.setItem('lastPage', currentPage);
 
     if (currentPage === 'COMPLETE' && userLocation && searchKeyword) {
       // index.html에 카카오 스크립트가 로드되어 있어야 함
@@ -496,8 +505,18 @@ function App() {
 
       {/* 개발자 디버깅용 (완료시 숨김 추천) */}
       {currentPage !== 'COMPLETE' && (
-        <div style={{ position: 'fixed', top: 0, left: 0, background: 'rgba(0,0,0,0.5)', color: 'white' }}>
-            <small>{currentPage}</small>
+        <div style={{ position: 'fixed', top: 0, left: 0, background: 'rgba(0,0,0,0.5)', color: 'white', padding: '10px' }}>
+            <small>
+                페이지: {currentPage} / 키워드: {searchKeyword || '로딩 중...'}<br/>
+                권한 상태: {locationPermissionState} {/* 💡 TS6133 오류 해결을 위해 추가 */}
+            </small>
+            <pre>응답 데이터: {JSON.stringify(responses, null, 2)}</pre>
+            <button 
+                onClick={handleFullReset} 
+                style={{ background: 'red', color: 'white', padding: '5px', border: 'none', cursor: 'pointer', marginTop: '5px' }}
+            >
+                강제 리셋 (LocalStorage 사용 안 함)
+            </button>
         </div>
       )}
 
@@ -507,10 +526,25 @@ function App() {
           id="map" 
           style={{ 
             width: '100%', 
-            height: '100vh', // 전체 화면 꽉 채우기
-            zIndex: 100 
+            height: '100vh', 
+            zIndex: 100,
+            position: 'relative', 
           }} 
-        />
+        >
+          {/* 💡 위치 권한 거부 시 안내 메시지 */}
+          {locationPermissionState === 'denied' && (
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+              backgroundColor: 'rgba(255, 0, 0, 0.8)', color: 'white', 
+              padding: '20px', borderRadius: '8px', textAlign: 'center', zIndex: 200
+            }}>
+              <h3>⚠️ 위치 권한이 거부되었습니다.</h3>
+              <p>현재 기본 위치(제주)로 지도를 표시하고 있습니다.</p>
+              <p>실제 위치를 사용하려면 브라우저 주소창 옆 자물쇠 아이콘(🔒)을 눌러</p>
+              <p><strong>'위치' 권한을 '허용'으로 변경</strong> 후 페이지를 새로고침 해 주세요.</p>
+            </div>
+          )}
+        </div>
       )}
 
     </div>
