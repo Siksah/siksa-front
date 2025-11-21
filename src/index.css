@@ -1,3 +1,10 @@
+* {
+    margin: 0;
+    padding: 0;
+    /* 💡 모든 요소의 박스 크기 계산 방식을 border-box로 통일하면 레이아웃이 훨씬 쉬워집니다. */
+    box-sizing: border-box; 
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -11,10 +18,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
+  padding: 0;ht: 500;
   color: #646cff;
   text-decoration: inherit;
 }
