@@ -8,6 +8,37 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Typography - Font Family */
+  --font-sans: "Nanum AmSeuTeReuDam", sans-serif;
+
+  /* Typography - Font Sizes */
+  --font-size-title-lg: 55px;
+  --font-size-title-sm: 32px;
+  --font-size-text-lg: 30px;
+  --font-size-text-md: 26px;
+  --font-size-text-sm: 22px;
+  --font-size-caption: 20px;
+
+  /* Typography - Font Weights */
+  --font-weight-regular: 400;
+
+  /* Custom Color Palette - Direct Tailwind Utilities */
+  --color-orange-60: #e91b0e;
+  --color-orange-50: #f73418;
+  --color-orange-40: #fa502d;
+  --color-orange-30: #fd9476;
+  --color-orange-20: #fec7ac;
+  --color-orange-10: #fee1d6;
+  --color-navy: #1c202c;
+  --color-black: #171717;
+  --color-white: #ffffff;
+  --color-grey-50: #4b5767;
+  --color-grey-30: #777a8d;
+  --color-grey-20: #dae1e9;
+  --color-grey-10: #f3f4f8;
+
+  /* shadcn/ui Color Mappings */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -43,71 +74,108 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Base Colors - Using Custom Palette */
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+
+  /* Primary Colors - Orange Palette */
+  --primary: #f73418;
+  --primary-foreground: #ffffff;
+
+  /* Secondary Colors - Grey Palette */
+  --secondary: #f3f4f8;
+  --secondary-foreground: #171717;
+
+  /* Muted Colors - Grey Palette */
+  --muted: #f3f4f8;
+  --muted-foreground: #4b5767;
+
+  /* Accent Colors - Orange Light Palette */
+  --accent: #fee1d6;
+  --accent-foreground: #171717;
+
+  /* Destructive - Orange Dark */
+  --destructive: #e91b0e;
+  --destructive-foreground: #ffffff;
+
+  /* Border & Input - Grey Palette */
+  --border: #dae1e9;
+  --input: #dae1e9;
+  --ring: #fa502d;
+
+  /* Chart Colors - Orange Palette Variations */
+  --chart-1: #f73418;
+  --chart-2: #fa502d;
+  --chart-3: #fd9476;
+  --chart-4: #fec7ac;
+  --chart-5: #fee1d6;
+
+  /* Sidebar Colors */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #171717;
+  --sidebar-primary: #f73418;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f3f4f8;
+  --sidebar-accent-foreground: #171717;
+  --sidebar-border: #dae1e9;
+  --sidebar-ring: #fa502d;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark Mode - Using Navy and Grey Palette */
+  --background: #1c202c;
+  --foreground: #ffffff;
+  --card: #171717;
+  --card-foreground: #ffffff;
+  --popover: #171717;
+  --popover-foreground: #ffffff;
+
+  /* Primary Colors - Orange Palette (lighter for dark mode) */
+  --primary: #fa502d;
+  --primary-foreground: #ffffff;
+
+  /* Secondary Colors - Grey Dark Palette */
+  --secondary: #4b5767;
+  --secondary-foreground: #ffffff;
+
+  /* Muted Colors - Grey Palette */
+  --muted: #4b5767;
+  --muted-foreground: #dae1e9;
+
+  /* Accent Colors - Orange Light for Dark Mode */
+  --accent: #777a8d;
+  --accent-foreground: #ffffff;
+
+  /* Destructive - Orange Dark */
+  --destructive: #e91b0e;
+  --destructive-foreground: #ffffff;
+
+  /* Border & Input - Grey Palette */
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #fa502d;
+
+  /* Chart Colors - Orange Palette Variations */
+  --chart-1: #fa502d;
+  --chart-2: #fd9476;
+  --chart-3: #fec7ac;
+  --chart-4: #fee1d6;
+  --chart-5: #f73418;
+
+  /* Sidebar Colors */
+  --sidebar: #171717;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #fa502d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #4b5767;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #fa502d;
 }
 
 @layer base {
@@ -115,6 +183,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: "Nanum AmSeuTeReuDam", sans-serif;
   }
 }

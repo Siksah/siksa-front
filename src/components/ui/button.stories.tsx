@@ -16,6 +16,8 @@ const meta = {
         "destructive",
         "outline",
         "secondary",
+        "navy",
+        "orange-text",
         "ghost",
         "link",
       ],
@@ -86,6 +88,38 @@ export const Destructive: Story = {
   args: {
     children: "Destructive Button",
     variant: "destructive",
+    size: "lg",
+  },
+};
+
+export const Navy: Story = {
+  args: {
+    children: "Navy Button",
+    variant: "navy",
+    size: "lg",
+  },
+};
+
+export const OrangeText: Story = {
+  args: {
+    children: "Orange Text Button",
+    variant: "orange-text",
+    size: "lg",
+  },
+};
+
+export const Ghost: Story = {
+  args: {
+    children: "Ghost Button",
+    variant: "ghost",
+    size: "lg",
+  },
+};
+
+export const Link: Story = {
+  args: {
+    children: "Link Button",
+    variant: "link",
     size: "lg",
   },
 };

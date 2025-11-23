@@ -10,19 +10,21 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-orange-40 active:bg-orange-60",
+          "bg-primary text-primary-foreground hover:bg-orange-60 active:bg-orange-60",
         destructive:
           "bg-destructive text-white hover:bg-destructive focus-visible:ring-destructive/20",
         outline:
           "border border-border bg-background shadow-xs hover:bg-secondary hover:text-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-grey-20",
+        navy: "bg-navy text-white hover:opacity-90 active:opacity-80",
+        "orange-text": "bg-white text-orange-50 border-0 hover:bg-grey-10 active:bg-grey-20",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-[53px] px-6 text-md has-[>svg]:px-4",
-        sm: "h-[53px] rounded-md gap-1.5 px-6 text-md has-[>svg]:px-4",
-        lg: "h-[65px] rounded-md px-8 text-lg has-[>svg]:px-6",
+        sm: "w-[162px] py-[11px] px-6 text-md has-[>svg]:px-4",
+        lg: "w-[320px] py-[9.5px] px-8 text-lg has-[>svg]:px-6",
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
