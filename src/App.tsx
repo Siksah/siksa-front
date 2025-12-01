@@ -15,7 +15,7 @@ import result_don2 from './assets/result_don2.png';
 import result_don3 from './assets/result_don3.png';
 import loading from './assets/loading.png';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://fallback.api'; 
+const env = import.meta.env; 
 
 // 💡 Kakao Map을 위한 타입 선언 (TS 에러 방지)
 declare global {
@@ -176,13 +176,11 @@ const saveToDatabase = async (
         setCurrentPage('SAVING'); // 저장 중 상태로 전환
 
         let ANSWER_API_URL = 'http://localhost:3001/answer';
-        // let GEMINI_API_URL = 'http://localhost:3001/api/common';
-        let GEMINI_API_URL = `${API_BASE_URL}/api/common`;
+        const GEMINI_API_URL = `${env.VITE_API_BASE_URL}/api/common`;
 
-        console.log(import.meta.env.PROD);
-        if (import.meta.env.PROD) { // 운영
-            ANSWER_API_URL = `${API_BASE_URL}/answer`
-            GEMINI_API_URL = `${API_BASE_URL}/api/common`
+        console.log('env', env);
+        if (env.PROD) { // 운영
+            ANSWER_API_URL = `${env.VITE_API_BASE_URL}/answer`
         }
         
         // 최종적으로 서버에 보낼 데이터
@@ -203,7 +201,7 @@ const saveToDatabase = async (
             
         } catch (error) {
             console.error('🚨 데이터 저장 중 오류 발생:', error);
-            console.error('데이터 저장에 실패했습니다. (서버 연결 확인 필요)!!'+API_BASE_URL);
+            console.error('데이터 저장에 실패했습니다. (서버 연결 확인 필요)!!');
             alert('데이터 저장에 실패했습니다. (서버 연결 확인 필요)');
             setCurrentPage('Q6'); // 실패 시 Q6 페이지로 돌아가기
             return; // 저장 실패 시 키워드 검색 진행하지 않음
@@ -496,11 +494,6 @@ function App() {
       
       <div>
           <h1>현재 페이지: {currentPage}</h1>
-          {currentPage !== 'COMPLETE' && (
-            <pre>
-                응답 데이터: {JSON.stringify(responses, null, 2)}
-            </pre>
-          )}
       </div>
 
       {/* 개발자 디버깅용 (완료시 숨김 추천) */}
