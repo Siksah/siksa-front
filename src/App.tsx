@@ -348,7 +348,7 @@ function App() {
           const searchOptions = {
               location: centerCoord, // 중심 좌표를 기준으로 검색
               radius: 1000,          // 1000m(1km) 반경 내 검색
-              sort: window.kakao.maps.services.Sort.DISTANCE // 거리순 정렬
+              sort: window.kakao.maps.services.SortBy.DISTANCE // 거리순 정렬
           };
 
           // 키워드 검색 실행
