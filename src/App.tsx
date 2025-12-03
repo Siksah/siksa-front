@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { CommonService, type RequestServiceArgs } from './comm/common.service';
 import './App.css'
-import axios from 'axios';
 
 import mainImage from './assets/main.png';
 import Q1Image from './assets/Q1.png';
@@ -23,6 +23,8 @@ declare global {
     kakao: any;
   }
 }
+
+const commonService = new CommonService();
 
 // ====================================================================
 // 💡 TypeScript 인터페이스 정의
@@ -175,34 +177,20 @@ const saveToDatabase = async (
 
         setCurrentPage('SAVING'); // 저장 중 상태로 전환
 
-        let ANSWER_API_URL = 'http://localhost:3001/answer';
-        const GEMINI_API_URL = `${env.VITE_API_BASE_URL}/api/common`;
-
-        console.log('env', env);
-        if (env.PROD) { // 운영
-            ANSWER_API_URL = `${env.VITE_API_BASE_URL}/answer`
-        }
-        
-        // 최종적으로 서버에 보낼 데이터
-        const finalData = {
-            ...dataToSave,
-            timestamp: new Date().toISOString(),
-        };
-
         // 1. 데이터 저장
         try {
-            await axios.post(ANSWER_API_URL, finalData);
+            await commonService.requestService({
+                serviceId: 'answer',
+                data: dataToSave, 
+            });
             
             // 🚨 시뮬레이션: 1초 지연 후 성공 처리
             // await new Promise(resolve => setTimeout(resolve, 1000));
             console.log('✅ 데이터 MongoDB (시뮬레이션) 성공적으로 저장됨:', dataToSave);
-            console.log('✅ 저장 성공:', finalData);
             alert('데이터 저장 성공:');
             
         } catch (error) {
             console.error('🚨 데이터 저장 중 오류 발생:', error);
-            console.error('데이터 저장에 실패했습니다. (서버 연결 확인 필요)!!');
-            alert('데이터 저장에 실패했습니다. (서버 연결 확인 필요)');
             setCurrentPage('Q6'); // 실패 시 Q6 페이지로 돌아가기
             return; // 저장 실패 시 키워드 검색 진행하지 않음
         }
@@ -211,7 +199,11 @@ const saveToDatabase = async (
         try {
             // 백엔드에 최종 응답 데이터를 보내서 추천 키워드를 받습니다.
             // 서버 응답은 { keyword: "추천_키워드" } 형태라고 가정합니다.
-            const keywordResponse = await axios.post(GEMINI_API_URL, finalData);
+            const keywordResponse = await commonService.requestService<{ keyword: string }>({
+                serviceId: 'api/common',
+                data: dataToSave,
+                devUrlIsTrue : false // 어느 환경이든 원격 서버에 호출
+            });
             const recommendedKeyword = keywordResponse.data.keyword; 
             
             setSearchKeyword(recommendedKeyword);

@@ -12,7 +12,7 @@ interface ImportMeta {
 
 const env = import.meta.env;
 
-interface RequestServiceArgs {
+export interface RequestServiceArgs {
     serviceId: string;
     data: Record<string, any>;
     devUrlIsTrue?: boolean;
@@ -37,6 +37,7 @@ export class CommonService {
    */
   getRequestUrl(command: string, devUrlIsTrue: boolean): string {
 
+    console.log('Server Mode', env.MODE);
     const serverUrl = (env.MODE === 'production' || !devUrlIsTrue) // 개발 모드
         ? env.VITE_API_BASE_URL
         : 'http://localhost:3001';
