@@ -179,15 +179,14 @@ const saveToDatabase = async (
 
         // 1. 데이터 저장
         try {
-            await commonService.requestService({
+            const res = await commonService.requestService({
                 serviceId: 'answer',
                 data: dataToSave, 
             });
-            
+            console.log('res', res);
             // 🚨 시뮬레이션: 1초 지연 후 성공 처리
             // await new Promise(resolve => setTimeout(resolve, 1000));
             console.log('✅ 데이터 MongoDB (시뮬레이션) 성공적으로 저장됨:', dataToSave);
-            alert('데이터 저장 성공:');
             
         } catch (error) {
             console.error('🚨 데이터 저장 중 오류 발생:', error);
@@ -204,7 +203,9 @@ const saveToDatabase = async (
                 data: dataToSave,
                 devUrlIsTrue : false // 어느 환경이든 원격 서버에 호출
             });
+            console.log('keywordResponse', keywordResponse)
             const recommendedKeyword = keywordResponse.data.keyword; 
+            console.log('recommendedKeyword', recommendedKeyword)
             
             setSearchKeyword(recommendedKeyword);
             console.log('✅ 키워드 추천 성공:', recommendedKeyword);
