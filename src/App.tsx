@@ -392,7 +392,12 @@ function App() {
   const currentConfig = PAGE_CONFIG[currentPage as PageKey];
   
   if (currentConfig.questionKey === null) {
-    REFERENCE_WIDTH = 447.53125; 
+    REFERENCE_WIDTH = 447.53125;
+    commonService.createAnonymousSession().then(() => {
+      console.log('session Id가 쿠키에 저장');
+    }).catch(() => {
+      console.log('session 생성 실패')
+    })
   } else if (currentConfig.questionKey === 'RD') {
     REFERENCE_WIDTH = 377.0625;
   } else if (currentConfig.questionKey === 'RD2') {

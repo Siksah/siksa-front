@@ -25,7 +25,7 @@ export class CommonService {
    * @param command, devUrlIsTrue - API 커맨드 (예: 'login', 'users')
    * @returns 완전한 서버 요청 URL
    */
-  getRequestUrl(command: string, devUrlIsTrue: boolean): string {
+  getRequestUrl(command: string, devUrlIsTrue?: boolean): string {
 
     console.log('command', command);
     console.log('devUrlIsTrue', devUrlIsTrue);
@@ -105,5 +105,21 @@ export class CommonService {
         }
         throw error;
     }
+  }
+
+  createAnonymousSession = async () => {
+    try {
+      const response = await axios.post(
+        this.getRequestUrl('sessions/create'),
+        {},
+        { withCredentials: true }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('🚨 익명 세션 생성 실패:', error);
+      throw error;
+    }
+
   }
 }
