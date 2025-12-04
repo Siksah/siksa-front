@@ -1,14 +1,9 @@
 import axios, { type AxiosPromise, type AxiosResponse, AxiosError } from 'axios';
 
-
-interface ImportMetaEnv {
-  readonly MODE: 'development' | 'production';
-  readonly VITE_API_BASE_URL: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
+// type ImportMetaEnv = {
+//   readonly MODE: 'development' | 'production';
+//   readonly VITE_API_BASE_URL: string;
+// }
 
 const env = import.meta.env;
 
@@ -16,11 +11,6 @@ export interface RequestServiceArgs {
     serviceId: string;
     data: Record<string, any>;
     devUrlIsTrue?: boolean;
-}
-
-interface CustomServiceError {
-  errorCode: string;
-  errorMessage: string;
 }
 
 // AxiosPromise의 제네릭 T는 응답 데이터의 타입이 됩니다.

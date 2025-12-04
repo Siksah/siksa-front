@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { CommonService, type RequestServiceArgs } from './comm/common.service';
+import { CommonService } from './comm/common.service';
 import './App.css'
 
 import mainImage from './assets/main.png';
@@ -14,8 +14,6 @@ import result_don from './assets/result_don.png';
 import result_don2 from './assets/result_don2.png';
 import result_don3 from './assets/result_don3.png';
 import loading from './assets/loading.png';
-
-const env = import.meta.env; 
 
 // 💡 Kakao Map을 위한 타입 선언 (TS 에러 방지)
 declare global {

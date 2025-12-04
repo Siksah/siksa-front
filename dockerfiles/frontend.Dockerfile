@@ -9,13 +9,13 @@ WORKDIR /app
 
 # 프로젝트 루트 디렉토리에서 siksa-front 폴더의 내용을 복사합니다.
 # Docker Compose의 context가 "."(루트)이므로, siksa-front 폴더 내부 내용만 복사해야 합니다.
-COPY ./siksa-front/package.json ./siksa-front/package-lock.json ./
+COPY ./package.json ./package-lock.json ./
 
 RUN --mount=type=cache,target=/root/.npm \ 
     npm ci
 
 # 나머지 React 소스 코드 복사
-COPY ./siksa-front .
+COPY . .
 
 # React 빌드 명령어를 실행합니다.
 # 빌드 결과물(정적 파일)은 보통 /app/dist 또는 /app/build 폴더에 생성됩니다.
