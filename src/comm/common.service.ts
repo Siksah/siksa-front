@@ -110,7 +110,7 @@ export class CommonService {
   createAnonymousSession = async () => {
     try {
       const response = await axios.post(
-        this.getRequestUrl('sessions/create'),
+        this.getRequestUrl('session/create'),
         {},
         { withCredentials: true }
       );
