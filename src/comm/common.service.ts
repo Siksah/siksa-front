@@ -46,9 +46,38 @@ export class CommonService {
 
     const safeBase = serverUrl.replace(/\/$/, '');
     const safeCommand = command.replace(/^\//, '');
-
+    console.log('Url', `${safeBase}/${safeCommand}`);
     return `${safeBase}/${safeCommand}`;
   }
+
+  /**
+   * 값이 비어있는지 확인
+   * @param value 검사할 값
+   * @returns 값이 비어 있으면 true, 값이 존재하면 false
+   */
+  isEmpty(value: unknown): boolean {
+    if (value === undefined || value === null) {
+      return true;
+    }
+
+    if (typeof value === 'string') {
+      return value.trim() === '';
+    }
+
+    if (typeof value === 'number') {
+      return Number.isNaN(value);
+    }
+
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+
+    if (typeof value === 'object') {
+      return Object.keys(value as object).length === 0;
+    }
+
+    return false;
+}
 
   /**
    * API 서버로 POST 요청
@@ -107,14 +136,34 @@ export class CommonService {
     }
   }
 
+  // session 생성
   createAnonymousSession = async () => {
+    // sessionStorage에 세션 ID가 있는지 확인
+    const savedSessionId = sessionStorage.getItem('anon_session_id');
+    console.log('createAnonymousSession savedSessionId:', savedSessionId);
+
+    if (!this.isEmpty(savedSessionId)) {
+      console.log('기존 탭 세션 유지:', savedSessionId);
+      return { sessionId: savedSessionId };
+    }
+
     try {
+      // 2. 세션이 없으면(새 탭) 서버에서 새로 생성
       const response = await axios.post(
         this.getRequestUrl('session/create'),
         {},
-        { withCredentials: true }
+        { withCredentials: true } // CORS 허용을 위해 필수
       );
+      console.log('createResponse', response);
+      console.log('createResponse', response.data);
 
+      const sessionId = response.data.data.sessionId;
+      console.log('sessionId', sessionId);
+
+      // 3. 💡 sessionStorage에 저장 (탭 닫으면 자동 삭제됨)
+      sessionStorage.setItem('anon_session_id', sessionId);
+
+      console.log('새로운 탭 세션 발급:', sessionId);
       return response.data;
     } catch (error) {
       console.error('🚨 익명 세션 생성 실패:', error);

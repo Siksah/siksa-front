@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { CommonService } from './comm/common.service';
 import './App.css'
+import { useSession } from './hooks/useSession';
 
 import mainImage from './assets/main.png';
 import Q1Image from './assets/Q1.png';
@@ -253,6 +254,10 @@ function App() {
   // 💡 위치 권한 상태를 저장하는 상태
   const [locationPermissionState, setLocationPermissionState] = useState<'granted' | 'denied' | 'prompt' | 'unknown'>('unknown');
 
+  // hook 호출
+  // session 생성 함수 가져오기
+  const { sessionId, createSession } = useSession();
+
   // 카카오 본사 (실패시 사용할 기본 위치)
   const defaultLat = 33.450701;
   const defaultLng = 126.570667;
@@ -393,11 +398,6 @@ function App() {
   
   if (currentConfig.questionKey === null) {
     REFERENCE_WIDTH = 447.53125;
-    commonService.createAnonymousSession().then(() => {
-      console.log('session Id가 쿠키에 저장');
-    }).catch(() => {
-      console.log('session 생성 실패')
-    })
   } else if (currentConfig.questionKey === 'RD') {
     REFERENCE_WIDTH = 377.0625;
   } else if (currentConfig.questionKey === 'RD2') {
@@ -407,19 +407,19 @@ function App() {
   }
 
   // 5. 클릭 핸들러: 핵심 로직
-  const handleAppClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleAppClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     if (!currentConfig || !currentConfig.areas || currentConfig.areas.length === 0) return;
 
     const rect = containerRef.current.getBoundingClientRect();
     const currentWidth = rect.width;
     const currentHeight = rect.height;
-    console.log(`- ${currentConfig.questionKey}비율 확인: currentWidth :${currentWidth} currentHeight : ${currentHeight}`);
-    console.log('REFERENCE_WIDTH', REFERENCE_WIDTH);
+    // console.log(`- ${currentConfig.questionKey}비율 확인: currentWidth :${currentWidth} currentHeight : ${currentHeight}`);
+    // console.log('REFERENCE_WIDTH', REFERENCE_WIDTH);
     // X/Y 비율 계산 (반응형 비율)
     const scaleFactorX = currentWidth / REFERENCE_WIDTH;
     const scaleFactorY = currentHeight / REFERENCE_HEIGHT;
-    console.log(`- ${currentConfig.questionKey}비율 확인: scaleFactorX :${scaleFactorX} scaleFactorY : ${scaleFactorY}`);
+    // console.log(`- ${currentConfig.questionKey}비율 확인: scaleFactorX :${scaleFactorX} scaleFactorY : ${scaleFactorY}`);
 
     // 마우스가 클릭한 브라우저 화면 기준의 좌표
     const clickX = e.clientX; 
@@ -446,6 +446,7 @@ function App() {
         if (isInside) {
             // 1. 응답 데이터 누적
             // console.log(`- 응답 저장: ${currentConfig.questionKey} = ${area.value}`);
+            
             if (currentConfig.questionKey) {
                 setResponses(prevResponses => ({
                     ...prevResponses,
@@ -453,6 +454,11 @@ function App() {
                 }));
                 // console.log(`- 응답 저장: ${currentConfig.questionKey} = ${area.value}`);
             }
+
+            // session 생성
+            if (area.nextPage === 'Q1') {
+              await createSession();
+            } 
             
             // 2. 페이지 이동 또는 DB 저장 처리
             if (area.nextPage === 'SAVING') {
@@ -498,6 +504,7 @@ function App() {
             <small>
                 페이지: {currentPage} / 키워드: {searchKeyword || '로딩 중...'}<br/>
                 권한 상태: {locationPermissionState} {/* 💡 TS6133 오류 해결을 위해 추가 */}
+                현재 세션 ID: {sessionId ? sessionId : '없음'}
             </small>
             <pre>응답 데이터: {JSON.stringify(responses, null, 2)}</pre>
             <button 
