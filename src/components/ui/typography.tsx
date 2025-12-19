@@ -2,6 +2,77 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+// 각 글자에 변형값 생성 (픽셀 튀는 현상 최소화)
+function getCharTransform(
+  char: string,
+  index: number
+): {
+  rotate: number;
+  translateY: number;
+  scale: number;
+} {
+  // 일관된 랜덤값을 위한 seed (이전 글자와의 연속성을 위해 인덱스 기반)
+  const seed = char.charCodeAt(0) + index * 7;
+
+  // 더 부드러운 변형을 위해 범위 축소 및 부드러운 곡선 사용
+  const random1 = ((seed * 17) % 100) / 100;
+  const random2 = ((seed * 23) % 100) / 100;
+  const random3 = ((seed * 31) % 100) / 100;
+
+  // 부드러운 곡선 함수 적용 (sin 곡선 사용)
+  const smooth1 = Math.sin(random1 * Math.PI * 2) * 0.5 + 0.5;
+  const smooth2 = Math.sin(random2 * Math.PI * 2) * 0.5 + 0.5;
+  const smooth3 = Math.sin(random3 * Math.PI * 2) * 0.5 + 0.5;
+
+  // transform을 거의 제거하여 자글자글함 최소화 (SVG 필터만으로 손글씨 효과 표현)
+  const rotate = 0; // transform 제거
+  const translateY = 0; // transform 제거
+  const scale = 1; // transform 제거
+
+  return {
+    rotate: parseFloat(rotate),
+    translateY: parseFloat(translateY),
+    scale: parseFloat(scale),
+  };
+}
+
+// 손글씨 효과를 위한 래퍼 컴포넌트
+// 근본적인 해결: 전체 텍스트를 하나로 유지하고 필터를 한 번만 적용
+function HandwritingWrapper({
+  sketchy,
+  filterId,
+  children,
+}: {
+  sketchy: boolean;
+  filterId: string;
+  children: React.ReactNode;
+}) {
+  if (!sketchy) {
+    return <>{children}</>;
+  }
+
+  // 전체 텍스트를 하나의 요소로 유지 (글자 분리 제거)
+  // 고해상도 렌더링을 위한 스타일 추가
+  return (
+    <span
+      style={{
+        filter: `url(#sketchy-${filterId})`,
+        textRendering: "geometricPrecision",
+        WebkitFontSmoothing: "antialiased",
+        MozOsxFontSmoothing: "grayscale",
+        display: "inline-block",
+        // 고해상도 렌더링 힌트
+        shapeRendering: "geometricPrecision",
+        // GPU 가속으로 부드러운 렌더링
+        willChange: "filter",
+        transform: "translateZ(0)",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
 const typographyVariants = cva("font-regular", {
   variants: {
     variant: {
@@ -10,7 +81,7 @@ const typographyVariants = cva("font-regular", {
       "title-sm": "text-[2rem] leading-[1.15] tracking-[-0.3px]",
       "text-lg": "text-[1.875rem] leading-normal tracking-normal",
       "text-md": "text-[1.625rem] leading-[1.2] tracking-[-0.3px]",
-      "text-sm": "text-[1.375rem] leading-[1.875rem] tracking-[-0.3px]",
+      "text-sm": "text-[1.375rem] leading-7.5 tracking-[-0.3px]",
       caption: "text-[1.25rem] leading-[1.2] tracking-normal",
     },
   },
@@ -22,6 +93,14 @@ export interface TypographyProps
   as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
   sketchy?: boolean;
   sketchyIntensity?: number;
+  // 커스텀 필터 파라미터 (테스트용)
+  filterParams?: {
+    morphologyRadius?: number;
+    blurStdDev?: number;
+    displacementScale?: number;
+    transferSlope?: number;
+    transferIntercept?: number;
+  };
   // Common style props
   isShadow?: boolean;
   shadowColor?: string;
@@ -44,6 +123,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       as,
       sketchy,
       sketchyIntensity,
+      filterParams,
       isShadow = true,
       shadowColor = "#A6160D",
       fontFamily,
@@ -64,10 +144,6 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     // sketchy가 undefined일 때만 preset 사용, 그 외에는 명시적 값 사용
     const finalSketchy =
       sketchy !== undefined ? sketchy : presetStyles?.sketchy ?? false;
-    const finalSketchyIntensity =
-      sketchyIntensity !== undefined
-        ? sketchyIntensity
-        : presetStyles?.sketchyIntensity ?? 3;
     const finalFontFamily = fontFamily ?? presetStyles?.fontFamily;
     const finalFontSize = fontSize ?? presetStyles?.fontSize;
     const finalFontWeight = fontWeight ?? presetStyles?.fontWeight;
@@ -79,6 +155,25 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
         : undefined);
     const Component = as || getDefaultTag(variant);
     const filterId = React.useId();
+
+    // 필터 파라미터 계산 (filterParams가 있으면 우선 사용, 없으면 sketchyIntensity에 따라 조정)
+    const finalSketchyIntensity =
+      sketchyIntensity !== undefined
+        ? sketchyIntensity
+        : presetStyles?.sketchyIntensity ?? 1;
+
+    const morphologyRadius =
+      filterParams?.morphologyRadius ??
+      0.08 + (finalSketchyIntensity - 1) * 0.04; // 0.08 ~ 0.16
+    const blurStdDev =
+      filterParams?.blurStdDev ?? 0.15 + (finalSketchyIntensity - 1) * 0.1; // 0.15 ~ 0.35
+    const displacementScale =
+      filterParams?.displacementScale ?? 6 * finalSketchyIntensity; // 6 ~ 10
+    const transferSlope =
+      filterParams?.transferSlope ?? 4 + (finalSketchyIntensity - 1) * 1; // 4 ~ 6
+    const transferIntercept =
+      filterParams?.transferIntercept ??
+      -0.5 - (finalSketchyIntensity - 1) * 0.1; // -0.5 ~ -0.7
 
     // Build className with Tailwind utilities
     const shadowValue = shadowColor.replace("#", "");
@@ -142,11 +237,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       styleProps["--typography-letter-spacing"] = finalLetterSpacing;
     }
 
-    // Filter 설정 (가장 중요!)
-    if (finalSketchy) {
-      styleProps.filter = `url(#sketchy-${filterId})`;
-    }
-
+    // Filter는 HandwritingWrapper에서 각 글자에 적용하므로 여기서는 제거
     const hasStyleProps = Object.keys(styleProps).length > 0;
 
     return (
@@ -156,23 +247,56 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
             <defs>
               <filter
                 id={`sketchy-${filterId}`}
-                x="0%"
-                y="0%"
-                width="100%"
-                height="100%"
+                x="-20%"
+                y="-20%"
+                width="140%"
+                height="140%"
+                colorInterpolationFilters="sRGB"
               >
+                {/* 1단계: 잉크 보충 (고해상도 샘플링) */}
+                <feMorphology
+                  operator="dilate"
+                  radius={morphologyRadius}
+                  in="SourceGraphic"
+                  result="thickened"
+                />
+                {/* 2단계: 왜곡 맵 (매우 부드러운 노이즈로 자글자글함 최소화) */}
                 <feTurbulence
-                  baseFrequency="0.04 0.08"
+                  type="fractalNoise"
+                  baseFrequency="0.01"
                   numOctaves="3"
+                  seed="1"
                   result="noise"
                 />
+                {/* 노이즈 블러 (더 부드러운 변형) */}
+                <feGaussianBlur
+                  in="noise"
+                  stdDeviation="1"
+                  result="smoothNoise"
+                />
+                {/* 3단계: 필압 효과 (부드러운 노이즈 사용) */}
                 <feDisplacementMap
-                  in="SourceGraphic"
-                  in2="noise"
-                  scale={finalSketchyIntensity}
+                  in="thickened"
+                  in2="smoothNoise"
+                  scale={displacementScale}
                   xChannelSelector="R"
                   yChannelSelector="G"
+                  result="distorted"
                 />
+                {/* 4단계: 부드러운 블러 (자글자글함 최소화) */}
+                <feGaussianBlur
+                  in="distorted"
+                  stdDeviation={blurStdDev}
+                  result="blurred"
+                />
+                {/* 알파 채널 조정 (자연스러운 대비) */}
+                <feComponentTransfer in="blurred">
+                  <feFuncA
+                    type="linear"
+                    slope={transferSlope}
+                    intercept={transferIntercept}
+                  />
+                </feComponentTransfer>
               </filter>
             </defs>
           </svg>
@@ -182,7 +306,15 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
           className={cn(baseClasses)}
           style={hasStyleProps ? styleProps : undefined}
           {...props}
-        />
+        >
+          {finalSketchy && preset !== "main-title" ? (
+            <HandwritingWrapper sketchy={finalSketchy} filterId={filterId}>
+              {props.children}
+            </HandwritingWrapper>
+          ) : (
+            props.children
+          )}
+        </Component>
       </>
     );
   }

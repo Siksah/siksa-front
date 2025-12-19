@@ -1,25 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 
 // Figma에서 제공된 이미지 URL들
-const imgGroup5 =
-  "https://www.figma.com/api/mcp/asset/b30f40f8-9dcb-4c0b-be84-f57f31505e52"; // 포크
-const imgGroup6 =
-  "https://www.figma.com/api/mcp/asset/595e5797-0036-4436-afa1-719c5d59c9ba"; // 숟가락
-const imgGroup7 =
-  "https://www.figma.com/api/mcp/asset/a35ab8ac-79fe-4ab5-8347-f69487b965b6"; // 접시
-const imgVector11 =
-  "https://www.figma.com/api/mcp/asset/614d54bc-81f3-4ae4-ab6e-9a98deced618"; // 배경 장식 (오른쪽 하단)
-const imgVector10 =
-  "https://www.figma.com/api/mcp/asset/50b14718-a6dc-493f-80d5-30301c257ccf"; // 배경 장식 (왼쪽 상단)
-const imgVector9 =
-  "https://www.figma.com/api/mcp/asset/069565b8-57e2-481a-9aac-c06dbf240c9b"; // 배경 장식 (왼쪽 하단)
-const imgVector12 =
-  "https://www.figma.com/api/mcp/asset/3530ef42-561b-4d7e-bf81-e988acec69cd"; // 배경 장식 (오른쪽 중간)
-const imgImage103 =
-  "https://www.figma.com/api/mcp/asset/2573eef2-1ee4-473a-ae29-0809814515f2"; // 배경 텍스처
+const imgGroup5 = "/assets/images/fork_figma.svg"; // 포크
+const imgGroup6 = "/assets/images/spoon_figma.svg"; // 숟가락
+const imgGroup7 = "/assets/images/plate_figma.svg"; // 접시
+const imgVector11 = "/assets/images/bg_decor_bottom_right_figma.svg"; // 배경 장식 (오른쪽 하단)
+const imgVector10 = "/assets/images/bg_decor_top_left_figma.svg"; // 배경 장식 (왼쪽 상단)
+const imgVector9 = "/assets/images/bg_decor_bottom_left_figma.svg"; // 배경 장식 (왼쪽 하단)
+const imgVector12 = "/assets/images/bg_decor_mid_right_figma.svg"; // 배경 장식 (오른쪽 중간)
+const imgImage103 = "/assets/images/bg_texture.png"; // 배경 텍스처
 
 export function MainPage() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col flex-1 relative">
       {/* 배경 텍스처 */}
@@ -114,7 +109,12 @@ export function MainPage() {
 
         {/* 하단 버튼 */}
         <div className="mb-24">
-          <Button variant="handwriting" size="lg" className="w-full">
+          <Button
+            variant="handwriting"
+            size="lg"
+            className="w-full"
+            onClick={() => navigate("/question")}
+          >
             메뉴 정하기
           </Button>
         </div>

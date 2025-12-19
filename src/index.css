@@ -40,13 +40,22 @@
   --color-grey-10: #f3f4f8;
 
   /* Background Patterns */
-  --bg-pattern-texture: url("/image 103.png");
+  --bg-pattern-texture: url("/assets/images/bg_texture.png");
   --bg-gradient-orange: linear-gradient(
     to top,
     var(--color-orange-40) 0%,
     var(--color-orange-50) 60%,
     var(--color-orange-60) 100%
   );
+  --bg-gradient-party-size: linear-gradient(
+    180deg,
+    #fff7f4 0%,
+    #fff 17.79%,
+    #fff 87.02%,
+    #fff7f4 100%
+  );
+  --bg-pattern-party-size: var(--bg-pattern-texture),
+    var(--bg-gradient-party-size);
   --bg-pattern-with-gradient: var(--bg-pattern-texture),
     var(--bg-gradient-orange);
   --bg-gradient-loading: linear-gradient(
@@ -213,8 +222,23 @@
     background-image: var(--bg-pattern-texture);
   }
 
+  .bg-pattern-texture-only {
+    background-image: var(--bg-pattern-texture);
+  }
+
   .bg-gradient-orange {
     background-image: var(--bg-gradient-orange);
+  }
+
+  .bg-gradient-party-size {
+    background-image: var(--bg-gradient-party-size);
+  }
+
+  .bg-pattern-party-size {
+    background-image: var(--bg-pattern-party-size);
+    background-size: auto, 100% 100%;
+    background-position: center;
+    background-repeat: repeat, no-repeat;
   }
 
   .bg-pattern-with-gradient {

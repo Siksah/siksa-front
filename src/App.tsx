@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PageLayout } from "./components/layout/PageLayout";
 import { MainPage } from "./pages/MainPage";
-import { PartySizePage } from "./pages/PartySizePage";
+import { FunnelPage } from "./pages/FunnelPage";
 import { LoadingPage } from "./pages/LoadingPage";
 import { ResultPage } from "./pages/ResultPage";
 
@@ -14,8 +14,8 @@ const router = createBrowserRouter([
         element: <MainPage />,
       },
       {
-        path: "/party-size",
-        element: <PartySizePage />,
+        path: "/question",
+        element: <FunnelPage />,
       },
       {
         path: "/loading",
