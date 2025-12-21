@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -10,8 +10,8 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   /* Typography - Font Family */
-  --font-sans: "Nanum AmSeuTeReuDam", sans-serif;
-  --font-single-day: "Single Day", sans-serif;
+  --font-sans: 'Nanum AmSeuTeReuDam', sans-serif;
+  --font-single-day: 'Single Day', sans-serif;
 
   /* Typography - Font Sizes */
   --font-size-title-lg: 55px;
@@ -40,7 +40,7 @@
   --color-grey-10: #f3f4f8;
 
   /* Background Patterns */
-  --bg-pattern-texture: url("/assets/images/bg_texture.png");
+  --bg-pattern-texture: url('/assets/images/bg_texture.png');
   --bg-gradient-orange: linear-gradient(
     to top,
     var(--color-orange-40) 0%,
@@ -54,10 +54,10 @@
     #fff 87.02%,
     #fff7f4 100%
   );
-  --bg-pattern-party-size: var(--bg-pattern-texture),
-    var(--bg-gradient-party-size);
-  --bg-pattern-with-gradient: var(--bg-pattern-texture),
-    var(--bg-gradient-orange);
+  --bg-pattern-party-size:
+    var(--bg-pattern-texture), var(--bg-gradient-party-size);
+  --bg-pattern-with-gradient:
+    var(--bg-pattern-texture), var(--bg-gradient-orange);
   --bg-gradient-loading: linear-gradient(
     180deg,
     #fec1ac 0%,
@@ -213,7 +213,7 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: "Nanum AmSeuTeReuDam", sans-serif;
+    font-family: 'Nanum AmSeuTeReuDam', sans-serif;
   }
 }
 
@@ -236,7 +236,9 @@
 
   .bg-pattern-party-size {
     background-image: var(--bg-pattern-party-size);
-    background-size: auto, 100% 100%;
+    background-size:
+      auto,
+      100% 100%;
     background-position: center;
     background-repeat: repeat, no-repeat;
   }

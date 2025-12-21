@@ -1,16 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Typography } from "@/components/ui/typography";
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Typography } from '@/components/ui/typography';
 
 // Figma에서 제공된 이미지 URL들
-const imgGroup5 = "/assets/images/fork_figma.svg"; // 포크
-const imgGroup6 = "/assets/images/spoon_figma.svg"; // 숟가락
-const imgGroup7 = "/assets/images/plate_figma.svg"; // 접시
-const imgVector11 = "/assets/images/bg_decor_bottom_right_figma.svg"; // 배경 장식 (오른쪽 하단)
-const imgVector10 = "/assets/images/bg_decor_top_left_figma.svg"; // 배경 장식 (왼쪽 상단)
-const imgVector9 = "/assets/images/bg_decor_bottom_left_figma.svg"; // 배경 장식 (왼쪽 하단)
-const imgVector12 = "/assets/images/bg_decor_mid_right_figma.svg"; // 배경 장식 (오른쪽 중간)
-const imgImage103 = "/assets/images/bg_texture.png"; // 배경 텍스처
+const imgGroup5 = '/assets/images/fork_figma.svg'; // 포크
+const imgGroup6 = '/assets/images/spoon_figma.svg'; // 숟가락
+const imgGroup7 = '/assets/images/plate_figma.svg'; // 접시
+const imgVector11 = '/assets/images/bg_decor_bottom_right_figma.svg'; // 배경 장식 (오른쪽 하단)
+const imgVector10 = '/assets/images/bg_decor_top_left_figma.svg'; // 배경 장식 (왼쪽 상단)
+const imgVector9 = '/assets/images/bg_decor_bottom_left_figma.svg'; // 배경 장식 (왼쪽 하단)
+const imgVector12 = '/assets/images/bg_decor_mid_right_figma.svg'; // 배경 장식 (오른쪽 중간)
+const imgImage103 = '/assets/images/bg_texture.png'; // 배경 텍스처
 
 export function MainPage() {
   const navigate = useNavigate();
@@ -113,7 +113,7 @@ export function MainPage() {
             variant="handwriting"
             size="lg"
             className="w-full"
-            onClick={() => navigate("/question")}
+            onClick={() => navigate('/question')}
           >
             메뉴 정하기
           </Button>

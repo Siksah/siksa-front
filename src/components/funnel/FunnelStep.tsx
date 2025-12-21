@@ -1,27 +1,22 @@
-import { Typography } from "@/components/ui/typography";
-import { FunnelLayout } from "./FunnelLayout";
-import { FunnelOption } from "./FunnelOption";
-
-export interface FunnelStepData {
-  id: string;
-  question: string;
-  options: {
-    id: string;
-    title: string;
-    subtitle?: string;
-    icon?: React.ReactNode;
-  }[];
-  stepNumber: number;
-}
+import { Typography } from '@/components/ui/typography';
+import { FunnelLayout } from './FunnelLayout';
+import { FunnelOption } from './FunnelOption';
+import { getIcon } from './iconMap';
+import type { FunnelStepData } from '@/types/funnel';
 
 interface FunnelStepProps {
-  data: FunnelStepData;
+  data: FunnelStepData & { stepNumber: number };
   onSelect: (value: string) => void;
   selectedValue?: string;
   onBack?: () => void;
 }
 
-export function FunnelStep({ data, onSelect, selectedValue, onBack }: FunnelStepProps) {
+export function FunnelStep({
+  data,
+  onSelect,
+  selectedValue,
+  onBack,
+}: FunnelStepProps) {
   return (
     <FunnelLayout stepNumber={data.stepNumber} onBack={onBack}>
       {/* Question */}
@@ -40,11 +35,12 @@ export function FunnelStep({ data, onSelect, selectedValue, onBack }: FunnelStep
         {data.options.map((option) => (
           <FunnelOption
             key={option.id}
+            value={option.id}
             title={option.title}
             subtitle={option.subtitle}
-            icon={option.icon}
+            icon={getIcon(option.iconId)}
             selected={selectedValue === option.id}
-            onClick={() => onSelect(option.id)}
+            onChange={onSelect}
             className="flex-1"
           />
         ))}

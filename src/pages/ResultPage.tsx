@@ -1,6 +1,6 @@
-import { ThumbsUp, ThumbsDown, Share2 } from "lucide-react";
-import { Typography } from "@/components/ui/typography";
-import { Button } from "@/components/ui/button";
+import { ThumbsUp, ThumbsDown, Share2 } from 'lucide-react';
+import { Typography } from '@/components/ui/typography';
+import { Button } from '@/components/ui/button';
 
 interface ResultPageProps {
   menuName: string;

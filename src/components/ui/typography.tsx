@@ -1,40 +1,6 @@
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-
-// 각 글자에 변형값 생성 (픽셀 튀는 현상 최소화)
-function getCharTransform(
-  char: string,
-  index: number
-): {
-  rotate: number;
-  translateY: number;
-  scale: number;
-} {
-  // 일관된 랜덤값을 위한 seed (이전 글자와의 연속성을 위해 인덱스 기반)
-  const seed = char.charCodeAt(0) + index * 7;
-
-  // 더 부드러운 변형을 위해 범위 축소 및 부드러운 곡선 사용
-  const random1 = ((seed * 17) % 100) / 100;
-  const random2 = ((seed * 23) % 100) / 100;
-  const random3 = ((seed * 31) % 100) / 100;
-
-  // 부드러운 곡선 함수 적용 (sin 곡선 사용)
-  const smooth1 = Math.sin(random1 * Math.PI * 2) * 0.5 + 0.5;
-  const smooth2 = Math.sin(random2 * Math.PI * 2) * 0.5 + 0.5;
-  const smooth3 = Math.sin(random3 * Math.PI * 2) * 0.5 + 0.5;
-
-  // transform을 거의 제거하여 자글자글함 최소화 (SVG 필터만으로 손글씨 효과 표현)
-  const rotate = 0; // transform 제거
-  const translateY = 0; // transform 제거
-  const scale = 1; // transform 제거
-
-  return {
-    rotate: parseFloat(rotate),
-    translateY: parseFloat(translateY),
-    scale: parseFloat(scale),
-  };
-}
+import * as React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
 // 손글씨 효과를 위한 래퍼 컴포넌트
 // 근본적인 해결: 전체 텍스트를 하나로 유지하고 필터를 한 번만 적용
@@ -57,15 +23,15 @@ function HandwritingWrapper({
     <span
       style={{
         filter: `url(#sketchy-${filterId})`,
-        textRendering: "geometricPrecision",
-        WebkitFontSmoothing: "antialiased",
-        MozOsxFontSmoothing: "grayscale",
-        display: "inline-block",
+        textRendering: 'geometricPrecision',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale',
+        display: 'inline-block',
         // 고해상도 렌더링 힌트
-        shapeRendering: "geometricPrecision",
+        shapeRendering: 'geometricPrecision',
         // GPU 가속으로 부드러운 렌더링
-        willChange: "filter",
-        transform: "translateZ(0)",
+        willChange: 'filter',
+        transform: 'translateZ(0)',
       }}
     >
       {children}
@@ -73,24 +39,25 @@ function HandwritingWrapper({
   );
 }
 
-const typographyVariants = cva("font-regular", {
+const typographyVariants = cva('font-regular', {
   variants: {
     variant: {
-      "title-xl": "text-[4.375rem] leading-none tracking-normal",
-      "title-lg": "text-[3.4375rem] leading-none tracking-normal",
-      "title-sm": "text-[2rem] leading-[1.15] tracking-[-0.3px]",
-      "text-lg": "text-[1.875rem] leading-normal tracking-normal",
-      "text-md": "text-[1.625rem] leading-[1.2] tracking-[-0.3px]",
-      "text-sm": "text-[1.375rem] leading-7.5 tracking-[-0.3px]",
-      caption: "text-[1.25rem] leading-[1.2] tracking-normal",
+      'title-xl': 'text-[4.375rem] leading-none tracking-normal',
+      'title-lg': 'text-[3.4375rem] leading-none tracking-normal',
+      'title-sm': 'text-[2rem] leading-[1.15] tracking-[-0.3px]',
+      'text-lg': 'text-[1.875rem] leading-normal tracking-normal',
+      'text-md': 'text-[1.625rem] leading-[1.2] tracking-[-0.3px]',
+      'text-sm': 'text-[1.375rem] leading-7.5 tracking-[-0.3px]',
+      caption: 'text-[1.25rem] leading-[1.2] tracking-normal',
     },
   },
 });
 
 export interface TypographyProps
-  extends Omit<React.HTMLAttributes<HTMLElement>, "style">,
+  extends
+    Omit<React.HTMLAttributes<HTMLElement>, 'style'>,
     VariantProps<typeof typographyVariants> {
-  as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div';
   sketchy?: boolean;
   sketchyIntensity?: number;
   // 커스텀 필터 파라미터 (테스트용)
@@ -108,7 +75,7 @@ export interface TypographyProps
   fontFamily?: string;
   fontSize?: string;
   fontWeight?: string | number;
-  fontStyle?: "normal" | "italic";
+  fontStyle?: 'normal' | 'italic';
   lineHeight?: string;
   letterSpacing?: string;
   // Preset prop - applies preset styles
@@ -125,11 +92,11 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       sketchyIntensity,
       filterParams,
       isShadow = true,
-      shadowColor = "#A6160D",
+      shadowColor = '#A6160D',
       fontFamily,
       fontSize,
       fontWeight,
-      fontStyle = "normal",
+      fontStyle = 'normal',
       lineHeight,
       letterSpacing,
       preset,
@@ -143,7 +110,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     // Merge preset styles with explicit props (explicit props take precedence)
     // sketchy가 undefined일 때만 preset 사용, 그 외에는 명시적 값 사용
     const finalSketchy =
-      sketchy !== undefined ? sketchy : presetStyles?.sketchy ?? false;
+      sketchy !== undefined ? sketchy : (presetStyles?.sketchy ?? false);
     const finalFontFamily = fontFamily ?? presetStyles?.fontFamily;
     const finalFontSize = fontSize ?? presetStyles?.fontSize;
     const finalFontWeight = fontWeight ?? presetStyles?.fontWeight;
@@ -160,7 +127,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     const finalSketchyIntensity =
       sketchyIntensity !== undefined
         ? sketchyIntensity
-        : presetStyles?.sketchyIntensity ?? 1;
+        : (presetStyles?.sketchyIntensity ?? 1);
 
     const morphologyRadius =
       filterParams?.morphologyRadius ??
@@ -176,38 +143,38 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       -0.5 - (finalSketchyIntensity - 1) * 0.1; // -0.5 ~ -0.7
 
     // Build className with Tailwind utilities
-    const shadowValue = shadowColor.replace("#", "");
+    const shadowValue = shadowColor.replace('#', '');
 
     // Use Tailwind arbitrary values with CSS variables
     const fontFamilyClass = finalFontFamily
-      ? "[font-family:var(--typography-font-family)]"
+      ? '[font-family:var(--typography-font-family)]'
       : null;
     const fontSizeClass = finalFontSize
-      ? "[font-size:var(--typography-font-size)]"
+      ? '[font-size:var(--typography-font-size)]'
       : null;
     const fontWeightClass = finalFontWeight
-      ? typeof finalFontWeight === "number"
-        ? "[font-weight:var(--typography-font-weight)]"
+      ? typeof finalFontWeight === 'number'
+        ? '[font-weight:var(--typography-font-weight)]'
         : `font-${finalFontWeight}`
       : null;
     const lineHeightClass = finalLineHeight
-      ? finalLineHeight === "normal"
-        ? "leading-normal"
-        : "[line-height:var(--typography-line-height)]"
+      ? finalLineHeight === 'normal'
+        ? 'leading-normal'
+        : '[line-height:var(--typography-line-height)]'
       : null;
     const letterSpacingClass = finalLetterSpacing
-      ? finalLetterSpacing === "normal" || finalLetterSpacing === "0%"
-        ? "tracking-normal"
-        : "[letter-spacing:var(--typography-letter-spacing)]"
+      ? finalLetterSpacing === 'normal' || finalLetterSpacing === '0%'
+        ? 'tracking-normal'
+        : '[letter-spacing:var(--typography-letter-spacing)]'
       : null;
 
     const baseClasses = [
-      "text-white", // 기본 색상 흰색
-      "whitespace-nowrap", // 기본값
+      'text-white', // 기본 색상 흰색
+      'whitespace-nowrap', // 기본값
       variant && typographyVariants({ variant }),
       isShadow && `[text-shadow:2px_2px_2px_#${shadowValue}]`,
-      fontStyle === "italic" && "italic",
-      fontStyle === "normal" && "not-italic",
+      fontStyle === 'italic' && 'italic',
+      fontStyle === 'normal' && 'not-italic',
       fontFamilyClass,
       fontSizeClass,
       fontWeightClass,
@@ -222,19 +189,19 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
 
     // CSS variables 설정
     if (finalFontFamily) {
-      styleProps["--typography-font-family"] = finalFontFamily;
+      styleProps['--typography-font-family'] = finalFontFamily;
     }
     if (finalFontSize) {
-      styleProps["--typography-font-size"] = finalFontSize;
+      styleProps['--typography-font-size'] = finalFontSize;
     }
     if (finalFontWeight) {
-      styleProps["--typography-font-weight"] = String(finalFontWeight);
+      styleProps['--typography-font-weight'] = String(finalFontWeight);
     }
     if (finalLineHeight) {
-      styleProps["--typography-line-height"] = finalLineHeight;
+      styleProps['--typography-line-height'] = finalLineHeight;
     }
     if (finalLetterSpacing) {
-      styleProps["--typography-letter-spacing"] = finalLetterSpacing;
+      styleProps['--typography-letter-spacing'] = finalLetterSpacing;
     }
 
     // Filter는 HandwritingWrapper에서 각 글자에 적용하므로 여기서는 제거
@@ -307,7 +274,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
           style={hasStyleProps ? styleProps : undefined}
           {...props}
         >
-          {finalSketchy && preset !== "main-title" ? (
+          {finalSketchy && preset !== 'main-title' ? (
             <HandwritingWrapper sketchy={finalSketchy} filterId={filterId}>
               {props.children}
             </HandwritingWrapper>
@@ -320,51 +287,51 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
   }
 );
 
-Typography.displayName = "Typography";
+Typography.displayName = 'Typography';
 
 function getDefaultTag(
   variant?:
-    | "title-xl"
-    | "title-lg"
-    | "title-sm"
-    | "text-lg"
-    | "text-md"
-    | "text-sm"
-    | "caption"
+    | 'title-xl'
+    | 'title-lg'
+    | 'title-sm'
+    | 'text-lg'
+    | 'text-md'
+    | 'text-sm'
+    | 'caption'
     | null
-): "h1" | "h2" | "p" | "span" {
+): 'h1' | 'h2' | 'p' | 'span' {
   switch (variant) {
-    case "title-lg":
-      return "h1";
-    case "title-sm":
-      return "h2";
-    case "text-lg":
-    case "text-md":
-    case "text-sm":
-      return "p";
-    case "caption":
-      return "span";
+    case 'title-lg':
+      return 'h1';
+    case 'title-sm':
+      return 'h2';
+    case 'text-lg':
+    case 'text-md':
+    case 'text-sm':
+      return 'p';
+    case 'caption':
+      return 'span';
     default:
-      return "p";
+      return 'p';
   }
 }
 
 // Typography presets for common use cases
 export const typographyPresets = {
-  "main-subtitle": {
+  'main-subtitle': {
     fontFamily: '"Nanum AmSeuTeReuDam", sans-serif',
-    fontSize: "1.875rem",
-    fontWeight: "400",
-    lineHeight: "100%",
-    letterSpacing: "-0.1em",
+    fontSize: '1.875rem',
+    fontWeight: '400',
+    lineHeight: '100%',
+    letterSpacing: '-0.1em',
     sketchy: true,
     sketchyIntensity: 1,
   },
-  "main-title": {
+  'main-title': {
     fontFamily: '"Single Day", sans-serif',
-    fontSize: "4.375rem",
-    fontWeight: "400",
-    lineHeight: "normal",
+    fontSize: '4.375rem',
+    fontWeight: '400',
+    lineHeight: 'normal',
     letterSpacing: undefined,
     sketchy: true,
     sketchyIntensity: 1,

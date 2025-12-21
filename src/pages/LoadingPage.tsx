@@ -1,4 +1,4 @@
-import { Typography } from "@/components/ui/typography";
+import { Typography } from '@/components/ui/typography';
 
 interface LoadingPageProps {
   menuImage?: string;
@@ -21,7 +21,7 @@ export function LoadingPage({
             <div className="w-[12.5rem] h-[12.5rem] flex items-center justify-center">
               <img
                 src={menuImage}
-                alt={menuName || "메뉴"}
+                alt={menuName || '메뉴'}
                 className="max-w-full max-h-full object-contain"
               />
             </div>

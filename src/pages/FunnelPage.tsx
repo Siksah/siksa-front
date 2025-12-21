@@ -1,104 +1,101 @@
-import { useNavigate } from "react-router-dom";
-import { useFunnel } from "@use-funnel/react-router-dom";
-import { funnelSteps } from "@/data/funnelData";
-import { FunnelStep } from "@/components/funnel/FunnelStep";
+import { useNavigate } from 'react-router-dom';
+import { useFunnel, createFunnelSteps } from '@use-funnel/react-router-dom';
+import { funnelStepsById } from '@/data/funnelData';
+import { FunnelStep } from '@/components/funnel/FunnelStep';
 
-// Define the accumulated context for each step
-type FunnelContext = {
-  "party-size": { [key: string]: any }; // Initial step has empty or minimal context
-  taste: { "party-size": string };
-  texture: { "party-size": string; taste: string };
-  temperature: { "party-size": string; taste: string; texture: string };
-  speed: { "party-size": string; taste: string; texture: string; temperature: string };
-  atmosphere: { "party-size": string; taste: string; texture: string; temperature: string; speed: string };
+/**
+ * 펀널에서 수집할 전체 데이터 타입
+ */
+interface FunnelData {
+  'party-size'?: string;
+  taste?: string;
+  texture?: string;
+  temperature?: string;
+  speed?: string;
+  atmosphere?: string;
 }
 
-const steps = [
-  "party-size",
-  "taste",
-  "texture",
-  "temperature",
-  "speed",
-  "atmosphere",
-] as const;
+/**
+ * createFunnelSteps를 사용하여 타입 안전한 스텝 정의
+ */
+const steps = createFunnelSteps<FunnelData>()
+  .extends('party-size')
+  .extends('taste', { requiredKeys: 'party-size' })
+  .extends('texture', { requiredKeys: 'taste' })
+  .extends('temperature', { requiredKeys: 'texture' })
+  .extends('speed', { requiredKeys: 'temperature' })
+  .extends('atmosphere', { requiredKeys: 'speed' })
+  .build();
 
 export function FunnelPage() {
   const navigate = useNavigate();
-  const funnel = useFunnel<FunnelContext>({
-    id: "siksa-funnel",
+  const funnel = useFunnel({
+    id: 'siksa-funnel',
     steps: steps,
     initial: {
-      step: "party-size",
+      step: 'party-size',
       context: {},
     },
   });
-
-  // Helper to safely get the next step's context
-  const handleSelect = <T extends keyof FunnelContext>(
-    currentStep: T, 
-    value: string, 
-    nextStep?: keyof FunnelContext
-  ) => {
-    // Current context is inferred based on step, but simplified here
-    const currentContext = funnel.context; 
-    const nextContext = { ...currentContext, [currentStep]: value };
-
-    if (nextStep) {
-      // We need to cast or ensure nextContext matches the expected type for nextStep
-      // @ts-ignore - Dynamic funnel typing is tricky, ensuring runtime correctness
-      funnel.history.push(nextStep, nextContext);
-    } else {
-      console.log("Completed Funnel:", nextContext);
-      navigate("/result");
-    }
-  };
 
   return (
     <funnel.Render
       party-size={({ history }) => (
         <FunnelStep
-          data={funnelSteps.find((s) => s.id === "party-size")!}
-          onSelect={(val) => handleSelect("party-size", val, "taste")}
-          selectedValue={funnel.context["party-size"] as string}
+          data={funnelStepsById['party-size']}
+          onSelect={(val) => history.push('taste', { 'party-size': val })}
+          selectedValue={undefined}
         />
       )}
-      taste={({ history }) => (
+      taste={({ context, history }) => (
         <FunnelStep
-          data={funnelSteps.find((s) => s.id === "taste")!}
-          onSelect={(val) => handleSelect("taste", val, "texture")}
-          selectedValue={(funnel.context as any).taste}
+          data={funnelStepsById['taste']}
+          onSelect={(val) =>
+            history.push('texture', { ...context, taste: val })
+          }
+          selectedValue={context.taste}
           onBack={() => history.back()}
         />
       )}
-      texture={({ history }) => (
+      texture={({ context, history }) => (
         <FunnelStep
-          data={funnelSteps.find((s) => s.id === "texture")!}
-          onSelect={(val) => handleSelect("texture", val, "temperature")}
-          selectedValue={(funnel.context as any).texture}
+          data={funnelStepsById['texture']}
+          onSelect={(val) =>
+            history.push('temperature', { ...context, texture: val })
+          }
+          selectedValue={context.texture}
           onBack={() => history.back()}
         />
       )}
-      temperature={({ history }) => (
+      temperature={({ context, history }) => (
         <FunnelStep
-          data={funnelSteps.find((s) => s.id === "temperature")!}
-          onSelect={(val) => handleSelect("temperature", val, "speed")}
-          selectedValue={(funnel.context as any).temperature}
+          data={funnelStepsById['temperature']}
+          onSelect={(val) =>
+            history.push('speed', { ...context, temperature: val })
+          }
+          selectedValue={context.temperature}
           onBack={() => history.back()}
         />
       )}
-      speed={({ history }) => (
+      speed={({ context, history }) => (
         <FunnelStep
-          data={funnelSteps.find((s) => s.id === "speed")!}
-          onSelect={(val) => handleSelect("speed", val, "atmosphere")}
-          selectedValue={(funnel.context as any).speed}
+          data={funnelStepsById['speed']}
+          onSelect={(val) =>
+            history.push('atmosphere', { ...context, speed: val })
+          }
+          selectedValue={context.speed}
           onBack={() => history.back()}
         />
       )}
-      atmosphere={({ history }) => (
+      atmosphere={({ context, history }) => (
         <FunnelStep
-          data={funnelSteps.find((s) => s.id === "atmosphere")!}
-          onSelect={(val) => handleSelect("atmosphere", val, undefined)}
-          selectedValue={(funnel.context as any).atmosphere}
+          data={funnelStepsById['atmosphere']}
+          onSelect={(val) => {
+            const finalContext = { ...context, atmosphere: val };
+            console.log('Completed Funnel:', finalContext);
+            navigate('/result', { state: finalContext });
+          }}
+          selectedValue={context.atmosphere}
           onBack={() => history.back()}
         />
       )}

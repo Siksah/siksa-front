@@ -1,23 +1,23 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Typography } from "./typography";
+import type { Meta, StoryObj } from '@storybook/react';
+import { Typography } from './typography';
 
 const meta = {
-  title: "Components/Typography",
+  title: 'Components/Typography',
   component: Typography,
   parameters: {
-    layout: "padded",
+    layout: 'padded',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
-      control: "select",
+      control: 'select',
       options: [
-        "title-lg",
-        "title-sm",
-        "text-lg",
-        "text-md",
-        "text-sm",
-        "caption",
+        'title-lg',
+        'title-sm',
+        'text-lg',
+        'text-md',
+        'text-sm',
+        'caption',
       ],
     },
   },
@@ -28,49 +28,49 @@ type Story = StoryObj<typeof meta>;
 
 export const TitleLarge: Story = {
   args: {
-    variant: "title-lg",
-    children: "Title Large (55px)",
+    variant: 'title-lg',
+    children: 'Title Large (55px)',
   },
 };
 
 export const TitleSmall: Story = {
   args: {
-    variant: "title-sm",
-    children: "Title Small (32px)",
+    variant: 'title-sm',
+    children: 'Title Small (32px)',
   },
 };
 
 export const TextLarge: Story = {
   args: {
-    variant: "text-lg",
-    children: "Text Large (30px)",
+    variant: 'text-lg',
+    children: 'Text Large (30px)',
   },
 };
 
 export const TextMedium: Story = {
   args: {
-    variant: "text-md",
-    children: "Text Medium (26px)",
+    variant: 'text-md',
+    children: 'Text Medium (26px)',
   },
 };
 
 export const TextSmall: Story = {
   args: {
-    variant: "text-sm",
-    children: "Text Small (22px)",
+    variant: 'text-sm',
+    children: 'Text Small (22px)',
   },
 };
 
 export const Caption: Story = {
   args: {
-    variant: "caption",
-    children: "Caption (20px)",
+    variant: 'caption',
+    children: 'Caption (20px)',
   },
 };
 
 export const AllVariants: Story = {
   args: {
-    children: "",
+    children: '',
   },
   render: () => (
     <div className="space-y-8">
