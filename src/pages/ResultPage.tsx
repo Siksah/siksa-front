@@ -1,22 +1,33 @@
+import { useEffect } from 'react';
 import { ThumbsUp, ThumbsDown, Share2 } from 'lucide-react';
 import { Typography } from '@/components/ui/typography';
 import { Button } from '@/components/ui/button';
+import { useMenuResultFlow } from '@/hooks';
 
-interface ResultPageProps {
-  menuName: string;
-  menuDescription: string;
-  menuImage?: string;
-  onRetry?: () => void;
-  onFindRestaurant?: () => void;
-}
+export function ResultPage() {
+  const { funnelResult, goToHome, goToQuestion } = useMenuResultFlow();
 
-export function ResultPage({
-  menuName,
-  menuDescription,
-  menuImage,
-  onRetry,
-  onFindRestaurant,
-}: ResultPageProps) {
+  useEffect(() => {
+    if (!funnelResult) {
+      goToHome();
+    }
+  }, [funnelResult, goToHome]);
+
+  if (!funnelResult) {
+    return null;
+  }
+
+  const menuName = '냉면';
+  const menuDescription = '오늘은 시원하게\n새콤한 냉면';
+
+  const handleRetry = () => {
+    goToQuestion();
+  };
+
+  const handleFindRestaurant = () => {
+    console.log('식당 찾아보기', funnelResult);
+  };
+
   return (
     <>
       {/* Content */}
@@ -43,17 +54,6 @@ export function ResultPage({
               >
                 {menuDescription}
               </Typography>
-
-              {/* Menu Image */}
-              {menuImage && (
-                <div className="w-full h-[11.25rem] flex items-center justify-center mt-auto">
-                  <img
-                    src={menuImage}
-                    alt={menuName}
-                    className="max-w-full max-h-full object-contain"
-                  />
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -73,13 +73,13 @@ export function ResultPage({
 
         {/* Action Buttons */}
         <div className="flex gap-[0.625rem] mt-auto mb-6">
-          <Button variant="navy" size="sm" onClick={onRetry} className="flex-1">
+          <Button variant="navy" size="sm" onClick={handleRetry} className="flex-1">
             다시하기
           </Button>
           <Button
             variant="default"
             size="sm"
-            onClick={onFindRestaurant}
+            onClick={handleFindRestaurant}
             className="flex-1"
           >
             식당 찾아보기

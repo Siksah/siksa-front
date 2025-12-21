@@ -1,16 +1,33 @@
+import { useEffect, useState } from 'react';
+
 import { Typography } from '@/components/ui/typography';
+import { useMenuResultFlow } from '@/hooks';
 
 interface LoadingPageProps {
   menuImage?: string;
   menuName?: string;
-  progress?: number;
 }
 
-export function LoadingPage({
-  menuImage,
-  menuName,
-  progress = 25,
-}: LoadingPageProps) {
+export function LoadingPage({ menuImage, menuName }: LoadingPageProps) {
+  const [progress, setProgress] = useState(0);
+  const { funnelResult, goToResult } = useMenuResultFlow();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          setTimeout(() => {
+            goToResult(funnelResult || {});
+          }, 200);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 150);
+    return () => clearInterval(timer);
+  }, [goToResult, funnelResult]);
+
   return (
     <>
       {/* Content */}

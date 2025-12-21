@@ -13,6 +13,10 @@ import {
 } from 'lucide-react';
 import type { IconId } from '@/types/funnel';
 
+import iconAlone from '@/assets/images/icon_alone_figma.svg';
+import iconTwo from '@/assets/images/icon_two_figma.svg';
+import iconGroup from '@/assets/images/icon_group_figma.svg';
+
 /**
  * 아이콘 ID를 React 노드로 매핑
  * 디자인 변경 시 이 파일만 수정하면 됨
@@ -21,21 +25,21 @@ export const iconMap: Record<IconId, React.ReactNode> = {
   // party-size (이미지 아이콘)
   alone: (
     <img
-      src="/assets/images/icon_alone_figma.svg"
+      src={iconAlone}
       alt="alone"
       className="w-[15px] h-[20px] object-contain"
     />
   ),
   two: (
     <img
-      src="/assets/images/icon_two_figma.svg"
+      src={iconTwo}
       alt="two"
       className="w-[30px] h-[20px] object-contain"
     />
   ),
   group: (
     <img
-      src="/assets/images/icon_group_figma.svg"
+      src={iconGroup}
       alt="group"
       className="w-[44px] h-[20px] object-contain"
     />

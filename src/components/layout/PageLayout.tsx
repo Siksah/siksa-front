@@ -1,17 +1,9 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-
-const backgroundMap: Record<string, string> = {
-  '/': 'bg-gradient-to-t from-orange-40 via-orange-50 to-orange-60 bg-repeat bg-auto bg-blend-overlay bg-pattern-with-gradient',
-  '/question': 'bg-repeat bg-auto bg-blend-overlay bg-pattern-party-size',
-  '/loading': 'bg-repeat bg-auto bg-blend-overlay bg-pattern-loading',
-  '/result':
-    'bg-orange-10 bg-repeat bg-auto bg-blend-overlay bg-pattern-with-gradient',
-};
+import { useBackgroundClass } from '@/hooks';
 
 export function PageLayout() {
-  const location = useLocation();
-  const background = backgroundMap[location.pathname] || '';
+  const background = useBackgroundClass();
 
   return (
     <div className="w-dvw h-dvh flex justify-center items-center">
