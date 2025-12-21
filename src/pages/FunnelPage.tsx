@@ -93,7 +93,7 @@ export function FunnelPage() {
           onSelect={(val) => {
             const finalContext = { ...context, atmosphere: val };
             console.log('Completed Funnel:', finalContext);
-            navigate('/result', { state: finalContext });
+            navigate('/loading', { state: finalContext });
           }}
           selectedValue={context.atmosphere}
           onBack={() => history.back()}

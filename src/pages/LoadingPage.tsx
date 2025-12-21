@@ -3,14 +3,21 @@ import { useEffect, useState } from 'react';
 import { Typography } from '@/components/ui/typography';
 import { useMenuResultFlow } from '@/hooks';
 
+import loadingPot from '@/assets/images/loading_pot.svg';
+import loadingBurger from '@/assets/images/loading_burger.svg';
+
 interface LoadingPageProps {
   menuImage?: string;
   menuName?: string;
 }
 
-export function LoadingPage({ menuImage, menuName }: LoadingPageProps) {
+export function LoadingPage({ menuImage: propMenuImage, menuName: propMenuName }: LoadingPageProps) {
   const [progress, setProgress] = useState(0);
   const { funnelResult, goToResult } = useMenuResultFlow();
+
+  const isHot = funnelResult?.temperature === 'hot';
+  const menuImage = propMenuImage || (isHot ? loadingPot : loadingBurger);
+  const menuName = propMenuName || (isHot ? '따뜻한 집밥' : '든든한 한끼');
 
   useEffect(() => {
     const timer = setInterval(() => {
