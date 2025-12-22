@@ -40,7 +40,7 @@
   --color-grey-10: #f3f4f8;
 
   /* Background Patterns */
-  --bg-pattern-texture: url('/assets/images/bg_texture.png');
+  --bg-pattern-texture: url('./assets/images/bg_texture.png');
   --bg-gradient-orange: linear-gradient(
     to top,
     var(--color-orange-40) 0%,
@@ -60,10 +60,10 @@
     var(--bg-pattern-texture), var(--bg-gradient-orange);
   --bg-gradient-loading: linear-gradient(
     180deg,
-    #fec1ac 0%,
-    #fff2ee 27.02%,
-    #fff2ee 75.96%,
-    #fec1ac 100%
+    rgba(254, 193, 172, 1) 0%,
+    rgba(255, 242, 238, 1) 27.02%,
+    rgba(255, 242, 238, 1) 75.96%,
+    rgba(254, 193, 172, 1) 100%
   );
   --bg-pattern-loading: var(--bg-pattern-texture), var(--bg-gradient-loading);
 
@@ -213,6 +213,11 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
+    font-family: 'Nanum AmSeuTeReuDam', sans-serif;
+  }
+  
+  /* Ensure form elements inherit the font */
+  button, input, select, textarea {
     font-family: 'Nanum AmSeuTeReuDam', sans-serif;
   }
 }

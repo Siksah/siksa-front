@@ -39,13 +39,13 @@ function HandwritingWrapper({
   );
 }
 
-const typographyVariants = cva('font-regular', {
+const typographyVariants = cva('font-normal', {
   variants: {
     variant: {
       'title-xl': 'text-[4.375rem] leading-none tracking-normal',
-      'title-lg': 'text-[3.4375rem] leading-none tracking-normal',
+      'title-lg': 'text-[3.4375rem] leading-[1] tracking-normal',
       'title-sm': 'text-[2rem] leading-[1.15] tracking-[-0.3px]',
-      'text-lg': 'text-[1.875rem] leading-normal tracking-normal',
+      'text-lg': 'text-[1.875rem] leading-[1] tracking-normal',
       'text-md': 'text-[1.625rem] leading-[1.2] tracking-[-0.3px]',
       'text-sm': 'text-[1.375rem] leading-7.5 tracking-[-0.3px]',
       caption: 'text-[1.25rem] leading-[1.2] tracking-normal',
