@@ -11,8 +11,21 @@ import imgVector9 from '@/assets/images/bg_decor_bottom_left_figma.svg';
 import imgVector12 from '@/assets/images/bg_decor_mid_right_figma.svg';
 import imgImage103 from '@/assets/images/bg_texture.png';
 
+import { useSession } from '../hooks/useSession';
+
 export function MainPage() {
   const navigate = useNavigate();
+  const { createSession } = useSession();
+  
+  // '메뉴 시작하기' 버튼 클릭 시
+  const startMenuClick = async () => {
+
+    // session 생성
+    await createSession();
+
+    // 페이지 이동
+    navigate('/question');
+  };
 
   return (
     <div className="flex flex-col flex-1 relative">
@@ -112,7 +125,8 @@ export function MainPage() {
             variant="handwriting"
             size="lg"
             className="w-full"
-            onClick={() => navigate('/question')}
+            // onClick={() => navigate('/question')}
+            onClick={startMenuClick}
           >
             메뉴 정하기
           </Button>

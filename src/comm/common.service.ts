@@ -9,7 +9,7 @@ const env = import.meta.env;
 
 export interface RequestServiceArgs {
     serviceId: string;
-    data: Record<string, any>;
+    data?: Record<string, any>;
     devUrlIsTrue?: boolean;
 }
 
@@ -27,9 +27,9 @@ export class CommonService {
    */
   getRequestUrl(command: string, devUrlIsTrue?: boolean): string {
 
-    console.log('command', command);
-    console.log('devUrlIsTrue', devUrlIsTrue);
-    console.log('Server Mode', env.MODE);
+    // console.log('command', command);
+    // console.log('devUrlIsTrue', devUrlIsTrue);
+    // console.log('Server Mode', env.MODE);
     
     const serverUrl = (env.MODE === 'production' || !devUrlIsTrue) // 개발 모드
         ? env.VITE_API_BASE_URL
@@ -46,7 +46,7 @@ export class CommonService {
 
     const safeBase = serverUrl.replace(/\/$/, '');
     const safeCommand = command.replace(/^\//, '');
-    console.log('Url', `${safeBase}/${safeCommand}`);
+    // console.log('Url', `${safeBase}/${safeCommand}`);
     return `${safeBase}/${safeCommand}`;
   }
 
@@ -90,7 +90,7 @@ export class CommonService {
       return Promise.reject(errorStub);
     }
 
-    const { serviceId: command, data, devUrlIsTrue = true } = reqSvc;
+    const { serviceId: command, data = {}, devUrlIsTrue = true } = reqSvc;
 
     const finalData = {
         ...data,

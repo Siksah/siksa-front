@@ -2,6 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useFunnel, createFunnelSteps } from '@use-funnel/react-router-dom';
 import { funnelStepsById } from '@/data/funnelData';
 import { FunnelStep } from '@/components/funnel/FunnelStep';
+import { CommonService } from '../comm/common.service';
+
+const commonService = new CommonService();
 
 /**
  * 펀널에서 수집할 전체 데이터 타입
@@ -90,8 +93,21 @@ export function FunnelPage() {
       atmosphere={({ context, history }) => (
         <FunnelStep
           data={funnelStepsById['atmosphere']}
-          onSelect={(val) => {
+          onSelect={async (val) => {
             const finalContext = { ...context, atmosphere: val };
+            console.log('finalContext', finalContext);
+            try {
+                const res = await commonService.requestService({
+                    serviceId: 'answer',
+                    data: finalContext,
+                });
+                console.log('데이터 저장 성공:', res);
+                
+            } catch (error) {
+                console.error('데이터 저장 중 오류 발생:', error);
+                history.back();
+                return; // 저장 실패 시 키워드 검색 진행하지 않음
+            }
             console.log('Completed Funnel:', finalContext);
             navigate('/loading', { state: finalContext });
           }}
