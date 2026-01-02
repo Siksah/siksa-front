@@ -7,8 +7,8 @@ export const FUNNEL_STEPS = [
   'taste',
   'texture',
   'temperature',
-  'speed',
-  'atmosphere',
+  'avoid',
+  'aftermeal',
 ] as const;
 
 export type StepId = (typeof FUNNEL_STEPS)[number];
@@ -18,25 +18,35 @@ export type StepId = (typeof FUNNEL_STEPS)[number];
  */
 export type IconId =
   // party-size
-  | 'alone'
-  | 'two'
-  | 'group'
+  | 'solo'
+  | 'duo'
+  | 'group3p'
   // taste
-  | 'healthy'
+  | 'hearty'
   | 'light'
-  | 'any'
+  | 'spicy'
+  | 'sweet'
+  | 'no_appetite'
   // texture
-  | 'crispy'
   | 'soft'
+  | 'chewy'
+  | 'crispy'
+  | 'any'
   // temperature
   | 'cold'
-  | 'hot'
-  // speed
-  | 'fast'
-  | 'any-speed'
-  // atmosphere
-  | 'quiet'
-  | 'relaxed';
+  | 'warmPlate'
+  // avoid
+  | 'greasy'
+  | 'soupy'
+  | 'wheat'
+  | 'seafood'
+  | 'salad'
+  | 'null'
+  // aftermeal
+  | 'back_to_work'
+  | 'coffee_break'
+  | 'long_chat'
+  ;
 
 /**
  * Funnel 옵션 데이터 (순수 데이터, UI 없음)
@@ -69,7 +79,7 @@ export const FUNNEL_RENDER_CONFIG: FunnelRenderConfig[] = [
   { id: 'party-size', next: 'taste' },
   { id: 'taste', next: 'texture' },
   { id: 'texture', next: 'temperature' },
-  { id: 'temperature', next: 'speed' },
-  { id: 'speed', next: 'atmosphere' },
-  { id: 'atmosphere' },
+  { id: 'temperature', next: 'avoid' },
+  { id: 'avoid', next: 'aftermeal' },
+  { id: 'aftermeal' },
 ];

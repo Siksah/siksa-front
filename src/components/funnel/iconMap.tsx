@@ -6,9 +6,14 @@ import {
   MessageCircle,
   Moon,
   Sparkles,
-  Cloud,
+  Minimize,
   Snowflake,
   Sun,
+  CakeSlice,
+  Zap,
+  Loader,
+  Laugh,
+  EqualApproximately,
   CircleHelp as HelpCircle,
 } from 'lucide-react';
 import type { IconId } from '@/types/funnel';
@@ -23,21 +28,21 @@ import iconGroup from '@/assets/images/icon_group.svg';
  */
 export const iconMap: Record<IconId, React.ReactNode> = {
   // party-size (이미지 아이콘)
-  alone: (
+  solo: (
     <img
       src={iconAlone}
-      alt="alone"
+      alt="solo"
       className="w-[15px] h-[20px] object-contain"
     />
   ),
-  two: (
+  duo: (
     <img
       src={iconTwo}
-      alt="two"
+      alt="duo"
       className="w-[30px] h-[20px] object-contain"
     />
   ),
-  group: (
+  group3p: (
     <img
       src={iconGroup}
       alt="group"
@@ -46,25 +51,35 @@ export const iconMap: Record<IconId, React.ReactNode> = {
   ),
 
   // taste (lucide 아이콘)
-  healthy: <BicepsFlexed className="w-8 h-8 text-current" />,
+  hearty: <BicepsFlexed className="w-8 h-8 text-current" />,
   light: <LeafyGreen className="w-8 h-8 text-current" />,
-  any: <HelpCircle className="w-8 h-8 text-current" />,
+  spicy: <Zap className="w-8 h-8 text-current" />,
+  sweet: <CakeSlice className="w-8 h-8 text-current" />,
+  no_appetite: <HelpCircle className="w-8 h-8 text-current" />,
 
   // texture
-  crispy: <Sparkles className="w-8 h-8 text-current" />,
-  soft: <Cloud className="w-8 h-8 text-current" />,
+  soft: <EqualApproximately className="w-8 h-8 text-current" />,
+  chewy: <Minimize className="w-8 h-8 text-current" />,
+  crispy: <Loader className="w-8 h-8 text-current" />,
+  any: <Laugh className="w-8 h-8 text-current" />,
 
   // temperature
   cold: <Snowflake className="w-8 h-8 text-current" />,
-  hot: <Sun className="w-8 h-8 text-current" />,
+  warmPlate: <Sun className="w-8 h-8 text-current" />,
 
-  // speed
-  fast: <Timer className="w-8 h-8 text-current" />,
-  'any-speed': <Coffee className="w-8 h-8 text-current" />,
+  // avoid
+  greasy: <Timer className="w-8 h-8 text-current" />,
+  soupy: <Timer className="w-8 h-8 text-current" />,
+  wheat: <Timer className="w-8 h-8 text-current" />,
+  seafood: <Timer className="w-8 h-8 text-current" />,
+  salad: <Timer className="w-8 h-8 text-current" />,
+  null: <Timer className="w-8 h-8 text-current" />,
+  // 'any-speed': <Coffee className="w-8 h-8 text-current" />,
 
-  // atmosphere
-  quiet: <Moon className="w-8 h-8 text-current" />,
-  relaxed: <MessageCircle className="w-8 h-8 text-current" />,
+  // aftermeal
+  back_to_work: <Moon className="w-8 h-8 text-current" />,
+  coffee_break: <MessageCircle className="w-8 h-8 text-current" />,
+  long_chat: <MessageCircle className="w-8 h-8 text-current" />,
 };
 
 /**

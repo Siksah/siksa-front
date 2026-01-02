@@ -82,7 +82,7 @@ export function FunnelPage() {
       )}
       speed={({ context, history }) => (
         <FunnelStep
-          data={funnelStepsById['speed']}
+          data={funnelStepsById['avoid']}
           onSelect={(val) =>
             history.push('atmosphere', { ...context, speed: val })
           }
@@ -92,7 +92,7 @@ export function FunnelPage() {
       )}
       atmosphere={({ context, history }) => (
         <FunnelStep
-          data={funnelStepsById['atmosphere']}
+          data={funnelStepsById['aftermeal']}
           onSelect={async (val) => {
             const finalContext = { ...context, atmosphere: val };
             try {
