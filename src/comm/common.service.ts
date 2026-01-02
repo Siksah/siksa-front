@@ -101,7 +101,9 @@ export class CommonService {
 
     try {
         // axios.post 호출은 Promise를 반환
-        return axios.post<T>(url, finalData); 
+        return axios.post<T>(url, finalData, {
+          withCredentials: true 
+        });
     } catch (error) {
         console.error(`🚨 [${command}] API 호출 중 공통 오류 발생:`, error);
         

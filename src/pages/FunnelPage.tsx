@@ -95,7 +95,6 @@ export function FunnelPage() {
           data={funnelStepsById['atmosphere']}
           onSelect={async (val) => {
             const finalContext = { ...context, atmosphere: val };
-            console.log('finalContext', finalContext);
             try {
                 const res = await commonService.requestService({
                     serviceId: 'answer',
