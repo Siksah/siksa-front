@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { useMenuResultFlow } from '@/hooks';
 
 import { foodIcons } from '@/components/funnel/IconPresets';
+import decorTopLeft from '@/assets/images/result_decor_top_left.svg';
+import decorTopRight from '@/assets/images/result_decor_top_right.svg';
+import decorBottomRight from '@/assets/images/result_decor_bottom_right.svg';
 
 export function ResultPage() {
   const { funnelResult, goToHome, goToQuestion } = useMenuResultFlow();
@@ -45,22 +48,34 @@ export function ResultPage() {
 
         {/* Menu Card */}
         <div className="flex justify-center mb-6">
-          <div className="bg-white border-[0.1875rem] border-orange-30 border-solid rounded-[1.875rem] w-[18.1875rem] h-[28.9375rem] overflow-hidden flex flex-col">
+          <div className="bg-white border-[3px] border-orange-30 border-solid rounded-[1.875rem] w-[291px] h-[463px] overflow-hidden relative shadow-[5px_5px_5px_0px_rgba(250,80,45,0.3)]">
             {/* Card Background Gradient */}
-            <div className="bg-gradient-to-t from-orange-40 to-orange-50 border-[0.1875rem] border-orange-10 border-solid rounded-[1.0625rem] m-[0.8125rem_0.875rem] flex-1 flex flex-col items-center justify-center px-4 py-8 relative">
-              <img src={RandomIcon} alt="Random Food" className="w-[150px] h-[150px] mb-6 object-contain drop-shadow-lg" />
-              <Typography
-                variant="title-lg"
-                className="text-white text-center mb-4"
-              >
-                {menuName}
-              </Typography>
-              <Typography
-                variant="text-lg"
-                className="text-orange-10 text-center mb-auto whitespace-pre-line"
-              >
-                {menuDescription}
-              </Typography>
+            <div className="absolute inset-[11.5px_12.5px] bg-gradient-to-t from-orange-40 to-orange-50 border-[3px] border-orange-10 border-solid rounded-[1.0625rem] overflow-hidden flex flex-col items-center">
+              {/* Decoration Icons */}
+              <img src={decorTopLeft} alt="" className="absolute left-[12px] top-[78px] w-[58.7px] h-[55.4px] pointer-events-none" />
+              <img src={decorTopRight} alt="" className="absolute left-[219.6px] top-[33.7px] w-[36.3px] h-[37.8px] pointer-events-none" />
+              <img src={decorBottomRight} alt="" className="absolute left-[186px] top-[214.5px] w-[79.2px] h-[75.6px] rotate-[331.87deg] pointer-events-none opacity-100" />
+              
+              {/* Text Area */}
+              <div className="mt-[120px] w-full px-4 text-center z-10 flex flex-col gap-2">
+                <Typography
+                  variant="title-lg"
+                  className="text-white"
+                >
+                  {menuName}
+                </Typography>
+                <Typography
+                  variant="text-lg"
+                  className="text-orange-10 whitespace-pre-line leading-[1.2] tracking-[-0.3px]"
+                >
+                  {menuDescription}
+                </Typography>
+              </div>
+
+              {/* Food Illustration */}
+              <div className="mt-auto mb-12 w-[244.2px] h-[176.9px] flex items-center justify-center z-10">
+                <img src={RandomIcon} alt="Recommended Food" className="w-full h-full object-contain drop-shadow-lg" />
+              </div>
             </div>
           </div>
         </div>

@@ -13,9 +13,9 @@ import {
 } from 'lucide-react';
 import type { IconId } from '@/types/funnel';
 
-import iconAlone from '@/assets/images/icon_alone_figma.svg';
-import iconTwo from '@/assets/images/icon_two_figma.svg';
-import iconGroup from '@/assets/images/icon_group_figma.svg';
+import iconAlone from '@/assets/images/icon_alone.svg';
+import iconTwo from '@/assets/images/icon_two.svg';
+import iconGroup from '@/assets/images/icon_group.svg';
 
 /**
  * 아이콘 ID를 React 노드로 매핑
