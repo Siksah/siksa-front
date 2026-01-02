@@ -4,13 +4,7 @@ run-name: "[${{ github.ref_name }}] [${{ github.event.head_commit.message }}] [$
 on:
   push:
     branches:
-      - main
-      - proto2
-
-  pull_request:
-    branches: [ "main", "proto" ]
-    types: [labeled]
-    
+      - '**'
 
   # 💡 수동 실행(Manual Trigger) 옵션 추가 
   workflow_dispatch:
