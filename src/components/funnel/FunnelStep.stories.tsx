@@ -34,7 +34,7 @@ export const PartySize: Story = {
 export const PartySizeWithSelection: Story = {
   args: {
     data: funnelStepsById['party-size'],
-    selectedValue: 'alone',
+    selectedValue: 'solo',
     onSelect: (value) => console.log('Selected:', value),
   },
 };
@@ -49,7 +49,7 @@ export const Taste: Story = {
 export const TasteWithSelection: Story = {
   args: {
     data: funnelStepsById['taste'],
-    selectedValue: 'healthy',
+    selectedValue: 'hearty',
     onSelect: (value) => console.log('Selected:', value),
   },
 };
@@ -70,14 +70,14 @@ export const Temperature: Story = {
 
 export const Speed: Story = {
   args: {
-    data: funnelStepsById['speed'],
+    data: funnelStepsById['avoid'],
     onSelect: (value) => console.log('Selected:', value),
   },
 };
 
 export const Atmosphere: Story = {
   args: {
-    data: funnelStepsById['atmosphere'],
+    data: funnelStepsById['aftermeal'],
     onSelect: (value) => console.log('Selected:', value),
   },
 };
