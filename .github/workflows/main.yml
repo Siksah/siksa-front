@@ -95,4 +95,7 @@ jobs:
             /usr/local/bin/docker-compose up -d --force-recreate --no-build
             # /usr/local/bin/docker-compose -f ../docker-compose.yml up -d --force-recreate --no-build
 
+            # 사용하지 않는 이미지(구버전) 즉시 삭제
+            docker image prune -af
+
             echo "--- Deployment complete ---"
