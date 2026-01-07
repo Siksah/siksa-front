@@ -10,7 +10,7 @@ const env = import.meta.env;
 export interface RequestServiceArgs {
     serviceId: string;
     data?: Record<string, any>;
-    devUrlIsTrue?: boolean;
+    prodUrlIsTrue?: boolean;
 }
 
 // AxiosPromise의 제네릭 T는 응답 데이터의 타입이 됩니다.
@@ -22,18 +22,20 @@ export class CommonService {
 
   /**
    * 서버 요청 URL을 리턴
-   * @param command, devUrlIsTrue - API 커맨드 (예: 'login', 'users')
+   * @param command, prodUrlIsTrue - API 커맨드 (예: 'login', 'users'), local에서 prodUrl을 사용시 false로 전송
    * @returns 완전한 서버 요청 URL
    */
-  getRequestUrl(command: string, devUrlIsTrue?: boolean): string {
+  getRequestUrl(command: string, prodUrlIsTrue?: boolean): string {
 
     // console.log('command', command);
-    // console.log('devUrlIsTrue', devUrlIsTrue);
     // console.log('Server Mode', env.MODE);
+
+    const isProdUrl = prodUrlIsTrue === true;
     
-    const serverUrl = (env.MODE === 'production' || !devUrlIsTrue) // 개발 모드
-        ? env.VITE_API_BASE_URL
-        : 'http://localhost:3001';
+    const serverUrl = (env.MODE === 'production' || isProdUrl)
+        ? env.VITE_API_BASE_URL // 배포 주소
+        : 'http://localhost:3001/api' // local 주소
+        ;
     
     // serverUrl이 null, undefined이거나, 공백 문자열인 경우
     if (!serverUrl || serverUrl.trim() === '') {
@@ -90,14 +92,15 @@ export class CommonService {
       return Promise.reject(errorStub);
     }
 
-    const { serviceId: command, data = {}, devUrlIsTrue = true } = reqSvc;
+    const { serviceId: command, data = {}, prodUrlIsTrue = true } = reqSvc;
 
     const finalData = {
         ...data,
         timestamp: new Date().toISOString(),
     };
+    console.log('finalData', finalData);
 
-    const url = this.getRequestUrl(command, devUrlIsTrue);
+    const url = this.getRequestUrl(command, prodUrlIsTrue);
 
     try {
         // axios.post 호출은 Promise를 반환
@@ -150,22 +153,19 @@ export class CommonService {
     }
 
     try {
-      // 2. 세션이 없으면(새 탭) 서버에서 새로 생성
+      // 세션이 없으면(새 탭) 서버에서 새로 생성
       const response = await axios.post(
         this.getRequestUrl('session/create'),
         {},
         { withCredentials: true } // CORS 허용을 위해 필수
       );
       console.log('createResponse', response);
-      console.log('createResponse', response.data);
 
       const sessionId = response.data.data.sessionId;
-      console.log('sessionId', sessionId);
 
-      // 3. 💡 sessionStorage에 저장 (탭 닫으면 자동 삭제됨)
+      // sessionStorage에 저장 (탭 닫으면 자동 삭제됨)
       sessionStorage.setItem('anon_session_id', sessionId);
 
-      console.log('새로운 탭 세션 발급:', sessionId);
       return response.data;
     } catch (error) {
       console.error('🚨 익명 세션 생성 실패:', error);
@@ -173,4 +173,5 @@ export class CommonService {
     }
 
   }
+
 }
