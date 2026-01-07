@@ -83,16 +83,24 @@ export class CommonService {
 
   /**
    * API 서버로 POST 요청
-   * @param reqSvc - { serviceId: API 커맨드, data: 요청 본문 데이터 }
+   * @param reqSvc, prodUrlIsTrue - { serviceId: API 커맨드, data: 요청 본문 데이터 }
+   * @param prodUrlIsTrue - local 환경에서 true를 전달하면 상용 URL, 생략하거나 false면 로컬 URL 사용
    * @returns Axios Promise(성공 시 AxiosResponse<T>, 실패 시 AxiosError 또는 ServiceRejectError)
    */
-  requestService<T = any>(reqSvc: RequestServiceArgs): ServiceRequestResult<T> {
+  requestService<T = any>(
+    reqSvc: RequestServiceArgs,
+    prodUrlIsTrue: boolean = false
+  ): ServiceRequestResult<T> {
+
     if(!reqSvc || !reqSvc.serviceId) {
       const errorStub = new AxiosError('서비스 ID가 없습니다.', '-20001');
       return Promise.reject(errorStub);
     }
 
-    const { serviceId: command, data = {}, prodUrlIsTrue = true } = reqSvc;
+    const { serviceId: command, data = {} } = reqSvc;
+
+    // 인자가 없거나 false면 false, 오직 true일 때만 true가 됩니다.
+    const finalProdUrl = prodUrlIsTrue === true;
 
     const finalData = {
         ...data,
@@ -100,7 +108,7 @@ export class CommonService {
     };
     console.log('finalData', finalData);
 
-    const url = this.getRequestUrl(command, prodUrlIsTrue);
+    const url = this.getRequestUrl(command, finalProdUrl);
 
     try {
         // axios.post 호출은 Promise를 반환
