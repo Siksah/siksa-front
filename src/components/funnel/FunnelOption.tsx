@@ -9,6 +9,7 @@ interface FunnelOptionProps<T extends string = string> {
   selected?: boolean;
   onChange?: (value: T) => void;
   className?: string;
+  disabled?: boolean;
 }
 
 export function FunnelOption<T extends string = string>({
@@ -19,15 +20,18 @@ export function FunnelOption<T extends string = string>({
   selected,
   onChange,
   className,
+  disabled,
 }: FunnelOptionProps<T>) {
   return (
     <button
-      onClick={() => onChange?.(value)}
+      onClick={() => !disabled && onChange?.(value)}
+      disabled={disabled}
       className={cn(
         'flex-1 min-h-0 relative rounded-lg transition-all duration-200',
         selected
           ? 'bg-[#f8e8e4] border-2 border-orange-40'
           : 'bg-white border-2 border-grey-20',
+        disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
     >
