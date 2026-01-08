@@ -94,7 +94,13 @@ export function FunnelPage() {
         <FunnelStep
           data={funnelStepsById['aftermeal']}
           onSelect={async (val) => {
-            const finalContext = { ...context, atmosphere: val };
+            const sessionId = sessionStorage.getItem('anon_session_id'); // sessionStorage 기존 session 가져오기
+            const finalContext = { ...context, atmosphere: val, sessionId: sessionId };
+
+            if (!sessionId) {
+              console.warn('session ID가 없습니다..');
+            }
+
             try {
                 const res = await commonService.requestService({
                     serviceId: 'answer',
