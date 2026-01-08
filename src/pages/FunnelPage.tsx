@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useFunnel, createFunnelSteps } from '@use-funnel/react-router-dom';
 import { funnelStepsById } from '@/data/funnelData';
 import { FunnelStep } from '@/components/funnel/FunnelStep';
@@ -32,6 +33,7 @@ const steps = createFunnelSteps<FunnelData>()
 
 export function FunnelPage() {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const funnel = useFunnel({
     id: 'siksa-funnel',
     steps: steps,
@@ -93,7 +95,10 @@ export function FunnelPage() {
       atmosphere={({ context, history }) => (
         <FunnelStep
           data={funnelStepsById['aftermeal']}
+          loading={isSubmitting}
           onSelect={async (val) => {
+            if (isSubmitting) return;
+            setIsSubmitting(true);
             const sessionId = sessionStorage.getItem('anon_session_id'); // sessionStorage 기존 session 가져오기
             const finalContext = { ...context, atmosphere: val, sessionId: sessionId };
 
@@ -110,8 +115,8 @@ export function FunnelPage() {
                 
             } catch (error) {
                 console.error('데이터 저장 중 오류 발생:', error);
-                history.back();
-                return; // 저장 실패 시 키워드 검색 진행하지 않음
+                // history.back();
+                // return; // 저장 실패 시 키워드 검색 진행하지 않음
             }
             console.log('Completed Funnel:', finalContext);
             navigate('/loading', { state: finalContext });

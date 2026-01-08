@@ -9,6 +9,7 @@ interface FunnelStepProps {
   onSelect: (value: string) => void;
   selectedValue?: string;
   onBack?: () => void;
+  loading?: boolean;
 }
 
 export function FunnelStep({
@@ -16,6 +17,7 @@ export function FunnelStep({
   onSelect,
   selectedValue,
   onBack,
+  loading,
 }: FunnelStepProps) {
   return (
     <FunnelLayout stepNumber={data.stepNumber} onBack={onBack}>
@@ -42,6 +44,7 @@ export function FunnelStep({
             selected={selectedValue === option.id}
             onChange={onSelect}
             className="flex-1"
+            disabled={loading}
           />
         ))}
       </div>

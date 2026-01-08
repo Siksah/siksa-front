@@ -2,9 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
 
-import mainFork from '@/assets/images/main_fork.svg';
-import mainSpoon from '@/assets/images/main_spoon.svg';
-import mainPlate from '@/assets/images/main_plate.svg';
+import mainVisualGroup from '@/assets/images/main_visual_group.svg';
 import decorBottomRight from '@/assets/images/main_decor_bottom_right.svg';
 import decorTopLeft from '@/assets/images/main_decor_top_left.svg';
 import decorBottomLeft from '@/assets/images/main_decor_bottom_left.svg';
@@ -89,33 +87,12 @@ export function MainPage() {
 
         {/* 가운데 접시 아이콘 */}
         <div className="flex items-center justify-center mb-auto py-8">
-          <div className="flex items-center justify-center">
-            {/* 왼쪽 포크 */}
-            <div className="rotate-338 w-[5.84rem] h-[9.69rem] flex items-center justify-center -mr-2">
-              <img
-                src={mainFork}
-                alt="포크"
-                className="w-full h-full object-contain"
-              />
-            </div>
-
-            {/* 가운데 접시 */}
-            <div className="w-45 h-[10.94rem] flex items-center justify-center z-10">
-              <img
-                src={mainPlate}
-                alt="접시"
-                className="w-full h-full object-contain"
-              />
-            </div>
-
-            {/* 오른쪽 숟가락 */}
-            <div className="rotate-25 w-[6.63rem] h-[9.74rem] flex items-center justify-center -ml-2">
-              <img
-                src={mainSpoon}
-                alt="숟가락"
-                className="w-full h-full object-contain"
-              />
-            </div>
+          <div className="w-[21.88rem] h-[12.5rem] flex items-center justify-center">
+            <img
+              src={mainVisualGroup}
+              alt="접시와 수저"
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
 
