@@ -112,6 +112,7 @@ export function FunnelPage() {
                     data: finalContext,
                 });
                 console.log('데이터 저장 성공:', res);
+                alert(JSON.stringify(res.data.data.recommendation, null, 2));
                 
             } catch (error) {
                 console.error('데이터 저장 중 오류 발생:', error);
