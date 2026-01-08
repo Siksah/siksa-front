@@ -68,7 +68,7 @@ export const Temperature: Story = {
   },
 };
 
-export const Speed: Story = {
+export const avoid: Story = {
   args: {
     data: funnelStepsById['avoid'],
     onSelect: (value) => console.log('Selected:', value),
