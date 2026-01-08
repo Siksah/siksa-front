@@ -15,8 +15,8 @@ interface FunnelData {
   taste?: string;
   texture?: string;
   temperature?: string;
-  speed?: string;
-  atmosphere?: string;
+  avoid?: string;
+  aftermeal?: string;
 }
 
 /**
@@ -27,8 +27,8 @@ const steps = createFunnelSteps<FunnelData>()
   .extends('taste', { requiredKeys: 'party-size' })
   .extends('texture', { requiredKeys: 'taste' })
   .extends('temperature', { requiredKeys: 'texture' })
-  .extends('speed', { requiredKeys: 'temperature' })
-  .extends('atmosphere', { requiredKeys: 'speed' })
+  .extends('avoid', { requiredKeys: 'temperature' })
+  .extends('aftermeal', { requiredKeys: 'avoid' })
   .build();
 
 export function FunnelPage() {
@@ -76,23 +76,23 @@ export function FunnelPage() {
         <FunnelStep
           data={funnelStepsById['temperature']}
           onSelect={(val) =>
-            history.push('speed', { ...context, temperature: val })
+            history.push('avoid', { ...context, temperature: val })
           }
           selectedValue={context.temperature}
           onBack={() => history.back()}
         />
       )}
-      speed={({ context, history }) => (
+      avoid={({ context, history }) => (
         <FunnelStep
           data={funnelStepsById['avoid']}
           onSelect={(val) =>
-            history.push('atmosphere', { ...context, speed: val })
+            history.push('aftermeal', { ...context, avoid: val })
           }
-          selectedValue={context.speed}
+          selectedValue={context.avoid}
           onBack={() => history.back()}
         />
       )}
-      atmosphere={({ context, history }) => (
+      aftermeal={({ context, history }) => (
         <FunnelStep
           data={funnelStepsById['aftermeal']}
           loading={isSubmitting}
@@ -100,7 +100,7 @@ export function FunnelPage() {
             if (isSubmitting) return;
             setIsSubmitting(true);
             const sessionId = sessionStorage.getItem('anon_session_id'); // sessionStorage 기존 session 가져오기
-            const finalContext = { ...context, atmosphere: val, sessionId: sessionId };
+            const finalContext = { ...context, aftermeal: val, sessionId: sessionId };
 
             if (!sessionId) {
               console.warn('session ID가 없습니다..');
@@ -121,7 +121,7 @@ export function FunnelPage() {
             console.log('Completed Funnel:', finalContext);
             navigate('/loading', { state: finalContext });
           }}
-          selectedValue={context.atmosphere}
+          selectedValue={context.aftermeal}
           onBack={() => history.back()}
         />
       )}
