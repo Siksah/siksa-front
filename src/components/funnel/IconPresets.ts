@@ -16,13 +16,39 @@ import decorYellow from '@/assets/images/result/result_food_decor_yellow.svg';
 import decorStars from '@/assets/images/result/result_food_decor_stars.svg';
 
 export const foodIcons = [
-  soba, donkatsu, plateDrooling, plateBlush, plateSubtle, plateCheeky,
-  forkRight, forkLeft, forkGrey, spoonBR, spoonBL, spoonRight,
-  steam, decorPink, decorYellow, decorStars
+  soba,
+  donkatsu,
+  plateDrooling,
+  plateBlush,
+  plateSubtle,
+  plateCheeky,
+  forkRight,
+  forkLeft,
+  forkGrey,
+  spoonBR,
+  spoonBL,
+  spoonRight,
+  steam,
+  decorPink,
+  decorYellow,
+  decorStars,
 ];
 
 export const debugIcons = {
-  soba, donkatsu, plateDrooling, plateBlush, plateSubtle, plateCheeky,
-  forkRight, forkLeft, forkGrey, spoonBR, spoonBL, spoonRight,
-  steam, decorPink, decorYellow, decorStars
+  soba,
+  donkatsu,
+  plateDrooling,
+  plateBlush,
+  plateSubtle,
+  plateCheeky,
+  forkRight,
+  forkLeft,
+  forkGrey,
+  spoonBR,
+  spoonBL,
+  spoonRight,
+  steam,
+  decorPink,
+  decorYellow,
+  decorStars,
 };

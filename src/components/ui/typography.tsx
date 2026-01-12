@@ -60,6 +60,8 @@ export interface TypographyProps
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div';
   sketchy?: boolean;
   sketchyIntensity?: number;
+  highlightText?: string;
+  highlightColor?: string;
   // 커스텀 필터 파라미터 (테스트용)
   filterParams?: {
     morphologyRadius?: number;
@@ -90,6 +92,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       as,
       sketchy,
       sketchyIntensity,
+      highlightText,
+      highlightColor = 'text-orange-50',
       filterParams,
       isShadow = true,
       shadowColor = '#A6160D',
@@ -207,6 +211,28 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     // Filter는 HandwritingWrapper에서 각 글자에 적용하므로 여기서는 제거
     const hasStyleProps = Object.keys(styleProps).length > 0;
 
+    const renderChildren = () => {
+      if (typeof props.children === 'string' && highlightText) {
+        const parts = props.children.split(
+          new RegExp(`(${highlightText})`, 'gi')
+        );
+        return (
+          <>
+            {parts.map((part, index) =>
+              part.toLowerCase() === highlightText.toLowerCase() ? (
+                <span key={index} className={highlightColor}>
+                  {part}
+                </span>
+              ) : (
+                <span key={index}>{part}</span>
+              )
+            )}
+          </>
+        );
+      }
+      return props.children;
+    };
+
     return (
       <>
         {finalSketchy && (
@@ -274,12 +300,12 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
           style={hasStyleProps ? styleProps : undefined}
           {...props}
         >
-          {finalSketchy && preset !== 'main-title' ? (
+          {finalSketchy ? (
             <HandwritingWrapper sketchy={finalSketchy} filterId={filterId}>
-              {props.children}
+              {renderChildren()}
             </HandwritingWrapper>
           ) : (
-            props.children
+            renderChildren()
           )}
         </Component>
       </>
@@ -320,16 +346,16 @@ function getDefaultTag(
 export const typographyPresets = {
   'main-subtitle': {
     fontFamily: '"Nanum AmSeuTeReuDam", sans-serif',
-    fontSize: '1.875rem',
+    fontSize: '20px',
     fontWeight: '400',
-    lineHeight: '100%',
-    letterSpacing: '-0.1em',
+    lineHeight: 'normal',
+    letterSpacing: undefined,
     sketchy: true,
     sketchyIntensity: 1,
   },
   'main-title': {
     fontFamily: '"Single Day", sans-serif',
-    fontSize: '4.375rem',
+    fontSize: '70px',
     fontWeight: '400',
     lineHeight: 'normal',
     letterSpacing: undefined,

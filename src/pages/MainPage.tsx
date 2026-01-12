@@ -1,108 +1,74 @@
 import { useNavigate } from 'react-router-dom';
+import { useSession } from '../hooks/useSession';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
 
-import mainVisualGroup from '@/assets/images/main_visual_group.svg';
-import decorBottomRight from '@/assets/images/main_decor_bottom_right.svg';
-import decorTopLeft from '@/assets/images/main_decor_top_left.svg';
-import decorBottomLeft from '@/assets/images/main_decor_bottom_left.svg';
-import decorMidRight from '@/assets/images/main_decor_mid_right.svg';
-import bgTexture from '@/assets/images/bg_texture.png';
-
-import { useSession } from '../hooks/useSession';
+// 이미지 import
+import mainBgTexture from '@/assets/images/main_bg.png'; // 텍스처용
+import mainDecorFinal from '@/assets/images/main_decor_final.png'; // 장식용
+import mainHeroFinal from '@/assets/images/main_hero_final.png';
 
 export function MainPage() {
   const navigate = useNavigate();
   const { createSession } = useSession();
-  
-  // '메뉴 시작하기' 버튼 클릭 시
+
   const startMenuClick = async () => {
-
-    // session 생성
     await createSession();
-
-    // 페이지 이동
     navigate('/question');
   };
 
   return (
-    <div className="flex flex-col flex-1 relative">
-      {/* 배경 텍스처 */}
-      <div className="absolute flex items-center justify-center left-[-6.03rem] top-[-0.27rem] mix-blend-soft-light pointer-events-none w-[34.2rem] h-[51.2rem]">
-        <div className="rotate-[270deg] w-full h-full">
-          <img
-            src={bgTexture}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </div>
+    <div className="grid grid-cols-1 grid-rows-1 w-full h-full overflow-hidden bg-gradient-to-t from-[#fa502d] via-[#f73418] to-[#e91b0e]">
+      {/* 1. 배경 텍스처 레이어 (Grid Item) */}
+      <img
+        src={mainBgTexture}
+        alt=""
+        className="col-start-1 row-start-1 w-full h-full object-cover z-0 mix-blend-overlay opacity-60 pointer-events-none"
+      />
 
-      {/* 배경 장식 아이콘들 - absolute로 정확한 위치에 배치 */}
-      {/* 왼쪽 상단 장식 */}
-      <div className="absolute left-[-0.6rem] top-[5.9rem] w-[4.8rem] h-[4.5rem] pointer-events-none">
-        <img
-          src={decorTopLeft}
-          alt=""
-          className="w-full h-full object-contain"
-        />
-      </div>
-
-      {/* 왼쪽 하단 장식 */}
-      <div className="absolute left-[-0.74rem] top-[30.75rem] w-[4rem] h-[4.1rem] pointer-events-none">
-        <img src={decorBottomLeft} alt="" className="w-full h-full object-contain" />
-      </div>
-
-      {/* 오른쪽 중간 장식 */}
-      <div className="absolute left-[18.02rem] top-[14.91rem] w-[2.27rem] h-[2.36rem] pointer-events-none">
-        <img
-          src={decorMidRight}
-          alt=""
-          className="w-full h-full object-contain"
-        />
-      </div>
-
-      {/* 오른쪽 하단 장식 */}
-      <div className="absolute flex items-center justify-center left-[16.93rem] top-[34.46rem] w-[7.95rem] h-[5.3rem] pointer-events-none">
-        <div className="rotate-[331.871deg] w-full h-full">
-          <img
-            src={decorBottomRight}
-            alt=""
-            className="w-full h-full object-contain"
-          />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-col flex-1 px-7 pt-40 relative z-10">
-        {/* 상단 텍스트 영역 */}
-        <div className="flex flex-col items-center mb-8">
-          <Typography className="text-center mb-4" preset="main-subtitle">
+      {/* 2. 배경 장식 레이어 (Grid Item으로 배치) */}
+      {/* Figma: Group 1707481895 (x: -11.89, y: 94.47). Margin-top (25.19%) is relative to width (375px) to maintain aspect ratio */}
+      <img
+        src={mainDecorFinal}
+        alt=""
+        className="col-start-1 row-start-1 z-0 ml-[-3.17%] mt-[25.19%] w-[109.32%] h-auto max-w-none pointer-events-none self-start justify-self-start"
+      />
+      
+      {/* 3. 콘텐츠 그룹 (Grid Item & Flexbox 레이아웃) */}
+      <div className="col-start-1 row-start-1 z-20 flex flex-col items-center w-full h-full pt-[177px] pb-[97px]">
+        {/* 텍스트 그룹 */}
+        <div className="flex flex-col items-center">
+          <Typography 
+            preset="main-subtitle"
+            className="!text-white !leading-none"
+          >
             오늘은 무얼 먹어볼까?
           </Typography>
-          <Typography className="text-center" preset="main-title">
+
+          <Typography 
+            preset="main-title"
+            className="mt-[10px] !text-white !leading-none"
+          >
             냠냠쩝쩝
           </Typography>
         </div>
 
-        {/* 가운데 접시 아이콘 */}
-        <div className="flex items-center justify-center mb-auto py-8">
-          <div className="w-[21.88rem] h-[12.5rem] flex items-center justify-center">
-            <img
-              src={mainVisualGroup}
-              alt="접시와 수저"
-              className="w-full h-full object-contain"
-            />
-          </div>
+        {/* 히어로 이미지 영역 */}
+        <div className="mt-[60px] w-[324px] h-[187px]">
+          <img
+            src={mainHeroFinal}
+            alt="Food Illustrations"
+            className="w-full h-full object-contain drop-shadow-lg"
+          />
         </div>
 
-        {/* 하단 버튼 */}
-        <div className="mb-24">
+        {/* 하단 버튼 영역 */}
+        <div className="mt-auto w-full px-[28px]">
           <Button
             variant="handwriting"
             size="lg"
-            className="w-full"
-            // onClick={() => navigate('/question')}
+            className="w-full h-[65px] text-[40px] rounded-[8px] bg-[#1C202C] text-white border-none shadow-xl"
+            style={{ fontFamily: "'Nanum AmSeuTeReuDam', sans-serif" }}
             onClick={startMenuClick}
           >
             메뉴 정하기

@@ -31,11 +31,7 @@ export const iconMap: Record<IconId, React.ReactNode> = {
     />
   ),
   two: (
-    <img
-      src={iconTwo}
-      alt="two"
-      className="w-[30px] h-[20px] object-contain"
-    />
+    <img src={iconTwo} alt="two" className="w-[30px] h-[20px] object-contain" />
   ),
   group: (
     <img

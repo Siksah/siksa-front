@@ -11,7 +11,8 @@ export function useMenuResultFlow() {
 
   const goToHome = () => navigate('/');
   const goToQuestion = () => navigate('/question');
-  const goToLoading = (ctx: FunnelResult) => navigate('/loading', { state: ctx });
+  const goToLoading = (ctx: FunnelResult) =>
+    navigate('/loading', { state: ctx });
   const goToResult = (ctx: FunnelResult) => navigate('/result', { state: ctx });
 
   return {

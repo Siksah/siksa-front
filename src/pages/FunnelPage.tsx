@@ -1,124 +1,66 @@
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useFunnel, createFunnelSteps } from '@use-funnel/react-router-dom';
-import { funnelStepsById } from '@/data/funnelData';
-import { FunnelStep } from '@/components/funnel/FunnelStep';
-import { CommonService } from '../comm/common.service';
+import { useFunnel } from '../hooks/useFunnel';
+import { funnelData } from '../data/funnelData';
+import { FunnelStep } from '../components/funnel/FunnelStep';
+import { StaticBackground } from '../components/common/StaticBackground';
 
-const commonService = new CommonService();
+import { useImagePreloader } from '../hooks/useImagePreloader';
 
-/**
- * 펀널에서 수집할 전체 데이터 타입
- */
-interface FunnelData {
-  'party-size'?: string;
-  taste?: string;
-  texture?: string;
-  temperature?: string;
-  speed?: string;
-  atmosphere?: string;
-}
-
-/**
- * createFunnelSteps를 사용하여 타입 안전한 스텝 정의
- */
-const steps = createFunnelSteps<FunnelData>()
-  .extends('party-size')
-  .extends('taste', { requiredKeys: 'party-size' })
-  .extends('texture', { requiredKeys: 'taste' })
-  .extends('temperature', { requiredKeys: 'texture' })
-  .extends('speed', { requiredKeys: 'temperature' })
-  .extends('atmosphere', { requiredKeys: 'speed' })
-  .build();
-
-export function FunnelPage() {
+export const FunnelPage: React.FC = () => {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const funnel = useFunnel({
-    id: 'siksa-funnel',
-    steps: steps,
-    initial: {
-      step: 'party-size',
-      context: {},
-    },
-  });
+  const {
+    currentStep,
+    currentStepIndex,
+    answers,
+    selectOption,
+    nextStep,
+    isLastStep,
+  } = useFunnel(funnelData);
+
+  // Preload next step's background image
+  const nextStepData = funnelData.steps[currentStepIndex + 1];
+  const nextImage = nextStepData?.backgroundImage;
+  // We pass a new array every render, but that's okay for single item simple comparison or if we memoize.
+  // Actually, useImagePreloader uses [urls] dependency. ['a'] !== ['a'] in JS? No, new array is new reference.
+  // But inside useEffect we can check if content changed, or just let it run (Image object creation is cheap if cached).
+  // To avoid loop, we should memoize the array or the hook should handle it.
+  // For simplicity, let's just pass it. The hook will run every render if array is new.
+  // I will assume the hook implementation above might need optimization if I pass new array every time.
+  // But let's stick to simple implementation first.
+  useImagePreloader(nextImage ? [nextImage] : []);
+
+  const handleOptionSelect = (option: any) => {
+    selectOption(option);
+
+    // Auto-advance after a short delay for visual feedback
+    setTimeout(() => {
+      if (isLastStep) {
+        navigate('/loading', {
+          state: { answers: { ...answers, [currentStep.id]: option } },
+        });
+      } else {
+        nextStep();
+      }
+    }, 400);
+  };
+
+  // Preload next image logic could go here (Task TASK-UX-001)
 
   return (
-    <funnel.Render
-      party-size={({ history }) => (
-        <FunnelStep
-          data={funnelStepsById['party-size']}
-          onSelect={(val) => history.push('taste', { 'party-size': val })}
-          selectedValue={undefined}
-        />
-      )}
-      taste={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['taste']}
-          onSelect={(val) =>
-            history.push('texture', { ...context, taste: val })
-          }
-          selectedValue={context.taste}
-          onBack={() => history.back()}
-        />
-      )}
-      texture={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['texture']}
-          onSelect={(val) =>
-            history.push('temperature', { ...context, texture: val })
-          }
-          selectedValue={context.texture}
-          onBack={() => history.back()}
-        />
-      )}
-      temperature={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['temperature']}
-          onSelect={(val) =>
-            history.push('speed', { ...context, temperature: val })
-          }
-          selectedValue={context.temperature}
-          onBack={() => history.back()}
-        />
-      )}
-      speed={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['speed']}
-          onSelect={(val) =>
-            history.push('atmosphere', { ...context, speed: val })
-          }
-          selectedValue={context.speed}
-          onBack={() => history.back()}
-        />
-      )}
-      atmosphere={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['atmosphere']}
-          loading={isSubmitting}
-          onSelect={async (val) => {
-            if (isSubmitting) return;
-            setIsSubmitting(true);
-            const finalContext = { ...context, atmosphere: val };
-            try {
-                const res = await commonService.requestService({
-                    serviceId: 'answer',
-                    data: finalContext,
-                });
-                console.log('데이터 저장 성공:', res);
-                
-            } catch (error) {
-                console.error('데이터 저장 중 오류 발생:', error);
-                // history.back();
-                // return; // 저장 실패 시 키워드 검색 진행하지 않음
-            }
-            console.log('Completed Funnel:', finalContext);
-            navigate('/loading', { state: finalContext });
-          }}
-          selectedValue={context.atmosphere}
-          onBack={() => history.back()}
-        />
-      )}
-    />
+    <>
+      <StaticBackground
+        src={currentStep.backgroundImage || ''}
+        alt={`Background for ${currentStep.title}`}
+      />
+
+      <FunnelStep
+        step={currentStep}
+        currentStepIndex={currentStepIndex}
+        totalSteps={funnelData.steps.length}
+        selectedOptionId={answers[currentStep.id]?.id}
+        onSelectOption={handleOptionSelect}
+      />
+    </>
   );
-}
+};

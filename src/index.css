@@ -40,7 +40,7 @@
   --color-grey-10: #f3f4f8;
 
   /* Background Patterns */
-  --bg-pattern-texture: url('./assets/images/bg_texture.png');
+  --bg-pattern-texture: url('./assets/images/main_bg.png');
   --bg-gradient-orange: linear-gradient(
     to top,
     var(--color-orange-40) 0%,
@@ -215,9 +215,12 @@
     @apply bg-background text-foreground font-sans;
     font-family: 'Nanum AmSeuTeReuDam', sans-serif;
   }
-  
+
   /* Ensure form elements inherit the font */
-  button, input, select, textarea {
+  button,
+  input,
+  select,
+  textarea {
     font-family: 'Nanum AmSeuTeReuDam', sans-serif;
   }
 }

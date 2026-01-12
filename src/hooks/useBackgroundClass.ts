@@ -1,7 +1,7 @@
 import { useLocation, matchPath } from 'react-router-dom';
 
 const backgroundMap: Record<string, string> = {
-  '/': 'bg-gradient-to-t from-orange-40 via-orange-50 to-orange-60 bg-repeat bg-auto bg-blend-overlay bg-pattern-with-gradient',
+  '/': '', // 메인 페이지는 자체 배경 이미지 사용
   '/question': 'bg-repeat bg-auto bg-blend-overlay bg-pattern-party-size',
   '/loading': 'bg-repeat bg-auto bg-blend-overlay bg-pattern-loading',
   '/result': 'bg-repeat bg-auto bg-blend-overlay bg-pattern-loading',

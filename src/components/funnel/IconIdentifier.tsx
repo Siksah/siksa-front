@@ -1,4 +1,3 @@
-
 // Import all SVGs to identify them
 import img1 from '@/assets/images/result/result_food_15.svg';
 import img2 from '@/assets/images/result/result_food_2.svg';

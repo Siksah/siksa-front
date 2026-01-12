@@ -5,6 +5,7 @@ import { FunnelPage } from './pages/FunnelPage';
 import { LoadingPage } from './pages/LoadingPage';
 import { ResultPage } from './pages/ResultPage';
 import { ErrorPage } from './pages/ErrorPage';
+import { FunnelGuard } from './components/funnel/FunnelGuard';
 
 const router = createBrowserRouter([
   {
@@ -16,16 +17,24 @@ const router = createBrowserRouter([
         element: <MainPage />,
       },
       {
-        path: '/question',
+        path: '/funnel',
         element: <FunnelPage />,
       },
       {
         path: '/loading',
-        element: <LoadingPage />,
+        element: (
+          <FunnelGuard>
+            <LoadingPage />
+          </FunnelGuard>
+        ),
       },
       {
         path: '/result',
-        element: <ResultPage />,
+        element: (
+          <FunnelGuard>
+            <ResultPage />
+          </FunnelGuard>
+        ),
       },
     ],
   },

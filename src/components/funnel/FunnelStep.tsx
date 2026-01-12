@@ -1,53 +1,41 @@
-import { Typography } from '@/components/ui/typography';
+import React from 'react';
+import type { FunnelStepData, FunnelOptionData } from '../../types/funnel';
 import { FunnelLayout } from './FunnelLayout';
+import { QuestionBadge } from './QuestionBadge';
+import { QuestionTitle } from './QuestionTitle';
 import { FunnelOption } from './FunnelOption';
-import { getIcon } from './iconMap';
-import type { FunnelStepData } from '@/types/funnel';
 
 interface FunnelStepProps {
-  data: FunnelStepData & { stepNumber: number };
-  onSelect: (value: string) => void;
-  selectedValue?: string;
-  onBack?: () => void;
-  loading?: boolean;
+  step: FunnelStepData;
+  currentStepIndex: number;
+  totalSteps: number;
+  selectedOptionId?: string;
+  onSelectOption: (option: FunnelOptionData) => void;
 }
 
-export function FunnelStep({
-  data,
-  onSelect,
-  selectedValue,
-  onBack,
-  loading,
-}: FunnelStepProps) {
+export const FunnelStep: React.FC<FunnelStepProps> = ({
+  step,
+  currentStepIndex,
+  totalSteps,
+  selectedOptionId,
+  onSelectOption,
+}) => {
   return (
-    <FunnelLayout stepNumber={data.stepNumber} onBack={onBack}>
-      {/* Question */}
-      <div className="flex justify-center mt-6 mb-8">
-        <Typography
-          variant="title-sm"
-          className="text-navy text-center tracking-[-0.3px]"
-          sketchy={true}
-        >
-          {data.question}
-        </Typography>
-      </div>
+    <FunnelLayout>
+      <QuestionBadge stepIndex={currentStepIndex} totalSteps={totalSteps} />
 
-      {/* Options Grid */}
-      <div className="flex flex-col gap-[0.625rem] pb-8 flex-1">
-        {data.options.map((option) => (
+      <QuestionTitle title={step.title} subtitle={step.subtitle} />
+
+      <div className="flex flex-col gap-3 w-full mt-2">
+        {step.options.map((option) => (
           <FunnelOption
             key={option.id}
-            value={option.id}
-            title={option.title}
-            subtitle={option.subtitle}
-            icon={getIcon(option.iconId)}
-            selected={selectedValue === option.id}
-            onChange={onSelect}
-            className="flex-1"
-            disabled={loading}
+            option={option}
+            isSelected={selectedOptionId === option.id}
+            onSelect={onSelectOption}
           />
         ))}
       </div>
     </FunnelLayout>
   );
-}
+};

@@ -1,159 +1,76 @@
-import type { FunnelStepData, StepId } from '@/types/funnel';
-import { FUNNEL_STEPS } from '@/types/funnel';
+import type { FunnelData } from '../types/funnel';
 
-/**
- * Funnel 스텝 데이터 (순수 데이터, JSX 없음)
- * - iconId 토큰으로 UI 분리
- * - stepNumber는 자동 계산
- */
-const funnelStepsRaw: Omit<FunnelStepData, 'stepNumber'>[] = [
-  {
-    id: 'party-size',
-    question: '점심 식사 파티원 수는?',
-    options: [
-      {
-        id: 'alone',
-        iconId: 'alone',
-        title: '혼자만의 고독한 미식가',
-        subtitle: '(혼자)',
-      },
-      {
-        id: 'two',
-        iconId: 'two',
-        title: '딱 한 명의 식사메이트',
-        subtitle: '(둘이)',
-      },
-      {
-        id: 'group',
-        iconId: 'group',
-        title: '왁자지껄 그룹',
-        subtitle: '(3인 이상)',
-      },
-    ],
-  },
-  {
-    id: 'taste',
-    question: '오늘의 입맛은?',
-    options: [
-      {
-        id: 'healthy',
-        iconId: 'healthy',
-        title: '튼튼! 건강 챙기는 보양식',
-      },
-      {
-        id: 'light',
-        iconId: 'light',
-        title: '산뜻하게! 가벼운 샐러드',
-      },
-      {
-        id: 'any',
-        iconId: 'any',
-        title: '아무거나! 집 나간 입맛',
-      },
-    ],
-  },
-  {
-    id: 'texture',
-    question: '선호하는 식감은?',
-    options: [
-      {
-        id: 'crispy',
-        iconId: 'crispy',
-        title: '와삭 콰사삭!',
-        subtitle: '(바삭하게)',
-      },
-      {
-        id: 'soft',
-        iconId: 'soft',
-        title: '말랑 말랑~',
-        subtitle: '(부드럽게)',
-      },
-    ],
-  },
-  {
-    id: 'temperature',
-    question: '원하는 온도는?',
-    options: [
-      {
-        id: 'cold',
-        iconId: 'cold',
-        title: '이냉치냉! 속 시원한 요리',
-      },
-      {
-        id: 'hot',
-        iconId: 'hot',
-        title: '따뜻하고 갓 만든 요리',
-      },
-    ],
-  },
-  {
-    id: 'speed',
-    question: '식사 시간은?',
-    options: [
-      {
-        id: 'fast',
-        iconId: 'fast',
-        title: '후루룩 뚝딱!',
-        subtitle: '(빠르게)',
-      },
-      {
-        id: 'any-speed',
-        iconId: 'any-speed',
-        title: '오늘은 뭐든 괜찮아',
-      },
-    ],
-  },
-  {
-    id: 'atmosphere',
-    question: '선호하는 분위기는?',
-    options: [
-      {
-        id: 'quiet',
-        iconId: 'quiet',
-        title: '조용하게 식사에 집중',
-      },
-      {
-        id: 'relaxed',
-        iconId: 'relaxed',
-        title: '여유롭게',
-        subtitle: '수다와 산책까지 풀코스',
-      },
-    ],
-  },
-];
-
-/**
- * stepNumber가 자동 계산된 스텝 데이터 (배열)
- */
-export const funnelSteps: (FunnelStepData & { stepNumber: number })[] =
-  funnelStepsRaw.map((step, index) => ({
-    ...step,
-    stepNumber: index + 1,
-  }));
-
-/**
- * stepId로 O(1) 접근 가능한 맵
- * - funnelSteps.find() 대신 사용
- * - 타입 안전하게 접근 가능
- */
-export const funnelStepsById: Record<
-  StepId,
-  FunnelStepData & { stepNumber: number }
-> = Object.fromEntries(funnelSteps.map((step) => [step.id, step])) as Record<
-  StepId,
-  FunnelStepData & { stepNumber: number }
->;
-
-/**
- * 스텝 순서 검증 (FUNNEL_STEPS와 일치하는지)
- */
-if (process.env.NODE_ENV === 'development') {
-  const dataStepIds = funnelSteps.map((s) => s.id);
-  const configStepIds = [...FUNNEL_STEPS];
-  if (JSON.stringify(dataStepIds) !== JSON.stringify(configStepIds)) {
-    console.warn('funnelData와 FUNNEL_STEPS의 순서가 일치하지 않습니다.', {
-      dataStepIds,
-      configStepIds,
-    });
-  }
-}
+export const funnelData: FunnelData = {
+  steps: [
+    {
+      id: 1,
+      title: '함께 식사하는 인원은\n몇 명인가요?',
+      subtitle: '인원 수에 따라 추천 메뉴가 달라질 수 있어요',
+      backgroundImage: '/assets/images/bg-step-1.jpg',
+      options: [
+        { id: '1-1', label: '혼자서', value: 'solo' },
+        { id: '1-2', label: '2~3명', value: 'small_group' },
+        { id: '1-3', label: '4명 이상', value: 'large_group' },
+      ],
+    },
+    {
+      id: 2,
+      title: '어떤 맛을\n선호하시나요?',
+      subtitle: '오늘따라 당기는 맛을 알려주세요',
+      backgroundImage: '/assets/images/bg-step-2.jpg',
+      options: [
+        { id: '2-1', label: '매콤한 맛', value: 'spicy' },
+        { id: '2-2', label: '담백한 맛', value: 'mild' },
+        { id: '2-3', label: '달콤한 맛', value: 'sweet' },
+        { id: '2-4', label: '짭짤한 맛', value: 'salty' },
+      ],
+    },
+    {
+      id: 3,
+      title: '선호하는 식감은\n무엇인가요?',
+      subtitle: '씹는 맛도 중요하니까요',
+      backgroundImage: '/assets/images/bg-step-3.jpg',
+      options: [
+        { id: '3-1', label: '부드러운', value: 'soft' },
+        { id: '3-2', label: '바삭한', value: 'crispy' },
+        { id: '3-3', label: '쫄깃한', value: 'chewy' },
+        { id: '3-4', label: '상관없음', value: 'any' },
+      ],
+    },
+    {
+      id: 4,
+      title: '원하는 음식의\n온도는요?',
+      subtitle: '날씨나 기분에 맞춰 골라보세요',
+      backgroundImage: '/assets/images/bg-step-4.jpg',
+      options: [
+        { id: '4-1', label: '따뜻한 국물/요리', value: 'hot' },
+        { id: '4-2', label: '시원한 요리', value: 'cold' },
+        { id: '4-3', label: '이열치열', value: 'very_hot' },
+      ],
+    },
+    {
+      id: 5,
+      title: '못 드시거나 싫어하는\n음식이 있나요?',
+      subtitle: '해당 재료가 들어간 메뉴는 제외할게요',
+      backgroundImage: '/assets/images/bg-step-5.jpg',
+      options: [
+        { id: '5-1', label: '해산물', value: 'no_seafood' },
+        { id: '5-2', label: '고기류', value: 'no_meat' },
+        { id: '5-3', label: '매운 것', value: 'no_spicy' },
+        { id: '5-4', label: '없음', value: 'none' },
+      ],
+    },
+    {
+      id: 6,
+      title: '어떤 분위기에서\n식사하고 싶으신가요?',
+      subtitle: '식사 장소의 분위기도 중요하죠',
+      backgroundImage: '/assets/images/bg-step-6.jpg',
+      options: [
+        { id: '6-1', label: '조용하고 차분한', value: 'quiet' },
+        { id: '6-2', label: '활기차고 시끌벅적한', value: 'lively' },
+        { id: '6-3', label: '깔끔하고 모던한', value: 'modern' },
+        { id: '6-4', label: '전통적인/노포 감성', value: 'traditional' },
+      ],
+    },
+  ],
+};
