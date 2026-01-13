@@ -39,6 +39,87 @@ function HandwritingWrapper({
   );
 }
 
+// 태그 파싱 및 스타일 적용 유틸리티
+const processDecorations = (text: string) => {
+  // <tag>content</tag> 패턴 매칭
+  // 지원 태그: orange, b (bold), u (underline), c (circle)
+  const regex = /<(orange|b|u|c)>(.*?)<\/\1>/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    // 매칭 전 일반 텍스트 추가
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+
+    const tag = match[1];
+    const content = match[2];
+    const key = `${tag}-${match.index}`;
+
+    // 태그별 스타일 적용
+    switch (tag) {
+      case 'orange':
+        parts.push(
+          <span key={key} className="!text-[#f73418] font-normal">
+            {content}
+          </span>
+        );
+        break;
+      case 'b':
+        parts.push(
+          <span key={key} className="!font-bold !text-[#1c202c]">
+            {content}
+          </span>
+        );
+        break;
+      case 'u':
+        parts.push(
+          <span key={key} className="relative inline-block">
+            <span className="relative z-10">{processDecorations(content)}</span>
+            <img
+              src="/assets/images/funnel/highlight_underline.svg"
+              alt=""
+              className="absolute bottom-[-8px] left-0 w-full h-[12px] z-0 opacity-100"
+            />
+          </span>
+        );
+        break;
+      case 'c':
+        // 한 글자일 때 더 동그랗게 보이도록 비율 조정
+        const isSingleChar = content.trim().length === 1;
+        parts.push(
+          <span key={key} className="relative inline-block">
+            <span className="relative z-10">{processDecorations(content)}</span>
+            <img
+              src="/assets/images/funnel/highlight_circle.svg"
+              alt=""
+              className={cn(
+                "absolute z-0 opacity-100 pointer-events-none",
+                isSingleChar
+                  ? "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] max-w-none"
+                  : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[130%] max-w-none !scale-x-[1.2]"
+              )}
+            />
+          </span>
+        );
+        break;
+      default:
+        parts.push(<span key={key}>{content}</span>);
+    }
+
+    lastIndex = regex.lastIndex;
+  }
+
+  // 남은 텍스트 추가
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+};
+
 const typographyVariants = cva('font-normal', {
   variants: {
     variant: {
@@ -212,6 +293,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     const hasStyleProps = Object.keys(styleProps).length > 0;
 
     const renderChildren = () => {
+      // highlightText prop이 있으면 기존 로직 사용
       if (typeof props.children === 'string' && highlightText) {
         const parts = props.children.split(
           new RegExp(`(${highlightText})`, 'gi')
@@ -230,6 +312,12 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
           </>
         );
       }
+      
+      // 문자열인 경우 데코레이션 태그 파싱 수행
+      if (typeof props.children === 'string') {
+        return processDecorations(props.children);
+      }
+      
       return props.children;
     };
 
@@ -359,6 +447,15 @@ export const typographyPresets = {
     fontWeight: '400',
     lineHeight: 'normal',
     letterSpacing: undefined,
+    sketchy: true,
+    sketchyIntensity: 1,
+  },
+  'funnel-title': {
+    fontFamily: '"Nanum AmSeuTeReuDam", sans-serif',
+    fontSize: '24px',
+    fontWeight: '400',
+    lineHeight: 'normal',
+    letterSpacing: '-0.3px',
     sketchy: true,
     sketchyIntensity: 1,
   },

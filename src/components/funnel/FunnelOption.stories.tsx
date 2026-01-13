@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { FunnelOption } from './FunnelOption';
-import { BicepsFlexed, Snowflake, Timer } from 'lucide-react';
 
 const meta = {
   title: 'Funnel/FunnelOption',
@@ -10,13 +9,10 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
-    selected: {
+    isSelected: {
       control: 'boolean',
     },
-    title: {
-      control: 'text',
-    },
-    subtitle: {
+    className: {
       control: 'text',
     },
   },
@@ -32,52 +28,48 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const mockOption = {
+  id: 'mock',
+  label: '옵션 제목',
+  value: 'mock',
+};
+
 export const Default: Story = {
   args: {
-    value: 'default',
-    title: '아무거나! 집 나간 입맛',
+    option: mockOption,
+    isSelected: false,
+    onSelect: () => {},
   },
 };
 
 export const Selected: Story = {
   args: {
-    value: 'selected',
-    title: '튼튼! 건강 챙기는 보양식',
-    selected: true,
+    option: { ...mockOption, label: '선택된 옵션' },
+    isSelected: true,
+    onSelect: () => {},
   },
 };
 
 export const WithIcon: Story = {
   args: {
-    value: 'with-icon',
-    title: '튼튼! 건강 챙기는 보양식',
-    icon: <BicepsFlexed className="w-8 h-8 text-current" />,
-  },
-};
-
-export const WithIconSelected: Story = {
-  args: {
-    value: 'with-icon-selected',
-    title: '이냉치냉! 속 시원한 요리',
-    icon: <Snowflake className="w-8 h-8 text-current" />,
-    selected: true,
+    option: { 
+        ...mockOption, 
+        label: '아이콘 포함', 
+        icon: 'snowflake' // Mock string icon, implementation might render lucide based on string
+    },
+    isSelected: false,
+    onSelect: () => {},
   },
 };
 
 export const WithSubtitle: Story = {
   args: {
-    value: 'with-subtitle',
-    title: '후루룩 뚝딱!',
-    subtitle: '(빠르게)',
-    icon: <Timer className="w-8 h-8 text-current" />,
-  },
-};
-
-export const WithSubtitleSelected: Story = {
-  args: {
-    value: 'with-subtitle-selected',
-    title: '혼자만의 고독한 미식가',
-    subtitle: '(혼자)',
-    selected: true,
+    option: { 
+        ...mockOption, 
+        label: '부제목 포함',
+        subLabel: '(부제목)'
+    },
+    isSelected: false,
+    onSelect: () => {},
   },
 };

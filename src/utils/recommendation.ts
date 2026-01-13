@@ -1,63 +1,50 @@
 import type { FunnelOptionData } from '../types/funnel';
+import { FOOD_RESULTS } from '../data/resultData';
+import type { FoodResult } from '../data/resultData';
 
-export interface RecommendationResult {
-  id: string;
-  name: string;
-  description: string;
-  image: string; // placeholder path
-  tags: string[];
-}
+// Re-export for compatibility if needed, but we should switch to using FoodResult directly
+export type RecommendationResult = FoodResult;
 
-export const RECOMMENDATIONS: Record<string, RecommendationResult> = {
-  donkatsu: {
-    id: 'donkatsu',
-    name: '프리미엄 돈카츠',
-    description: '바삭한 식감과 육즙이 가득한 일식 돈카츠입니다.',
-    image: '/assets/images/result-donkatsu.jpg',
-    tags: ['바삭한', '고기', '일식'],
-  },
-  soba: {
-    id: 'soba',
-    name: '냉소바',
-    description: '시원하고 깔끔한 국물의 메밀국수입니다.',
-    image: '/assets/images/result-soba.jpg',
-    tags: ['시원한', '면요리', '깔끔한'],
-  },
-  kimchi_stew: {
-    id: 'kimchi_stew',
-    name: '김치찌개',
-    description: '한국인의 소울푸드, 얼큰한 김치찌개입니다.',
-    image: '/assets/images/result-kimchi.jpg',
-    tags: ['매운', '한식', '국물'],
-  },
-  sushi: {
-    id: 'sushi',
-    name: '모둠 초밥',
-    description: '신선한 해산물이 올라간 초밥 세트입니다.',
-    image: '/assets/images/result-sushi.jpg',
-    tags: ['해산물', '일식', '깔끔한'],
-  },
-};
+export const RECOMMENDATIONS = FOOD_RESULTS.reduce((acc, item) => {
+    acc[item.id] = item;
+    return acc;
+}, {} as Record<string, FoodResult>);
 
 export const getRecommendation = (
   answers: Record<number, FunnelOptionData>
 ): RecommendationResult => {
   // Extract values for easier logic
-  const taste = answers[2]?.value; // spicy, mild, sweet, salty
-  const texture = answers[3]?.value; // soft, crispy, chewy, any
-  const temp = answers[4]?.value; // hot, cold, very_hot
-  const dislike = answers[5]?.value; // no_seafood, no_meat, no_spicy, none
+  // Q2: Need? (hearty, light, comfort, healthy, special) -> mapped to taste/style?
+  const need = answers[2]?.value; 
+  // Q3: Texture (soft, chewy, crispy, any)
+  const texture = answers[3]?.value; 
+  // Q4: Temp (cold, hot)
+  const temp = answers[4]?.value; 
+  // Q5: Dislike (no_oily, no_soup, no_carbs, no_seafood, no_salad, none)
+  const dislike = answers[5]?.value; 
 
   // Rule 1: Filtering
-  const candidates = Object.values(RECOMMENDATIONS).filter((item) => {
-    if (dislike === 'no_meat' && item.tags.includes('고기')) return false;
-    if (dislike === 'no_seafood' && item.tags.includes('해산물')) return false;
-    if (dislike === 'no_spicy' && item.tags.includes('매운')) return false;
+  const candidates = FOOD_RESULTS.filter((item) => {
+    const tags = item.tags;
+    
+    // Dislike filtering
+    if (dislike === 'no_oily' && (tags.includes('튀김') || tags.includes('헤비한'))) return false;
+    if (dislike === 'no_soup' && tags.includes('국물')) return false;
+    if (dislike === 'no_carbs' && (tags.includes('면') || tags.includes('빵') || tags.includes('밥'))) return false; // Maybe not exclude rice for carbs? user intent 'sok-i deoburook' (bloated) usually means flour/heavy.
+    // 'no_carbs' label is "속이 더부룩 -> 면, 빵류". So exclude noodles and bread. Rice is okay?
+    if (dislike === 'no_carbs' && (tags.includes('면') || tags.includes('빵'))) return false;
+    
+    if (dislike === 'no_seafood' && tags.includes('해산물')) return false;
+    if (dislike === 'no_salad' && (tags.includes('채소') || tags.includes('샐러드'))) return false; // Salad specific
+    
     return true;
   });
 
   // Fallback if all filtered out
-  if (candidates.length === 0) return RECOMMENDATIONS.soba;
+  if (candidates.length === 0) {
+      // Return something safe, e.g. Bibimbap or Rice Soup?
+      return RECOMMENDATIONS['bibimbap'] || FOOD_RESULTS[0];
+  }
 
   // Rule 2: Scoring
   let bestMatch = candidates[0];
@@ -65,21 +52,32 @@ export const getRecommendation = (
 
   candidates.forEach((candidate) => {
     let score = 0;
+    const tags = candidate.tags;
 
     // Texture match
-    if (texture === 'crispy' && candidate.tags.includes('바삭한')) score += 3;
+    if (texture === 'crispy' && tags.includes('바삭한')) score += 5;
+    if (texture === 'soft' && (tags.includes('부드러운') || tags.includes('죽') || tags.includes('국물'))) score += 3; // soft usually implies soup or soft texture
+    if (texture === 'chewy' && (tags.includes('쫄깃한') || tags.includes('면'))) score += 3;
 
     // Temp match
-    if (temp === 'cold' && candidate.tags.includes('시원한')) score += 3;
-    if (temp === 'hot' && candidate.tags.includes('국물')) score += 2;
+    if (temp === 'cold' && tags.includes('시원한')) score += 10; // Strong signal
+    if (temp === 'hot' && tags.includes('뜨거운')) score += 5;
 
-    // Taste match
-    if (taste === 'spicy' && candidate.tags.includes('매운')) score += 3;
-    if (taste === 'mild' && candidate.tags.includes('깔끔한')) score += 2;
+    // Need/Taste match
+    if (need === 'hearty' && (tags.includes('든든한') || tags.includes('고기') || tags.includes('국밥'))) score += 3;
+    if (need === 'light' && (tags.includes('가벼운') || tags.includes('샐러드') || tags.includes('샌드위치') || tags.includes('일식'))) score += 4;
+    if (need === 'comfort' && (tags.includes('매운') || tags.includes('자극적인') || tags.includes('마라탕'))) score += 5; // Stress relief -> spicy
+    if (need === 'healthy' && (tags.includes('건강한') || tags.includes('채소'))) score += 4;
+    if (need === 'special' && (tags.includes('이색적인') || tags.includes('양식') || tags.includes('아시안'))) score += 3;
 
     if (score > maxScore) {
       maxScore = score;
       bestMatch = candidate;
+    } else if (score === maxScore) {
+        // Random tie-breaker
+        if (Math.random() > 0.5) {
+            bestMatch = candidate;
+        }
     }
   });
 

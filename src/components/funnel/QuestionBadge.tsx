@@ -1,4 +1,5 @@
 import React from 'react';
+import { Typography } from '../ui/typography';
 
 interface QuestionBadgeProps {
   stepIndex: number; // 0-based index
@@ -7,10 +8,19 @@ interface QuestionBadgeProps {
 
 export const QuestionBadge: React.FC<QuestionBadgeProps> = ({ stepIndex }) => {
   return (
-    <div className="inline-flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1 self-start shadow-sm">
-      <span className="text-sm font-semibold text-white tracking-wide">
-        Q{stepIndex + 1}
-      </span>
+    <div className="relative inline-flex items-center justify-center">
+      {/* Background shape could be an image or SVG if strictly following Figma, 
+          but simpler to use a styled div or Typography background if possible. 
+          For now, maintaining the pill shape but using Typography for text. 
+      */}
+      <div className="bg-[#f73418] border border-[#f73418] text-white px-5 py-1.5 rounded-full shadow-sm">
+        <Typography 
+          preset="main-subtitle" 
+          className="!text-white !text-[20px] !leading-none"
+        >
+          Q{stepIndex + 1}.
+        </Typography>
+      </div>
     </div>
   );
 };

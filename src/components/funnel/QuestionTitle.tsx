@@ -1,4 +1,5 @@
 import React from 'react';
+import { Typography } from '../ui/typography';
 
 interface QuestionTitleProps {
   title: string;
@@ -10,10 +11,20 @@ export const QuestionTitle: React.FC<QuestionTitleProps> = ({
   subtitle,
 }) => {
   return (
-    <div className="flex flex-col gap-2 mb-4">
-      <h2 className="text-3xl font-bold text-white leading-tight">{title}</h2>
+    <div className="flex flex-col items-center gap-2 mb-4">
+      <Typography
+        preset="funnel-title"
+        className="!text-[#1c202c] !leading-normal text-center whitespace-pre-wrap"
+      >
+        {title}
+      </Typography>
       {subtitle && (
-        <p className="text-lg text-white/80 font-medium">{subtitle}</p>
+        <Typography
+          preset="main-subtitle"
+          className="!text-[#777a8d] !text-[18px] text-center whitespace-pre-wrap"
+        >
+          {subtitle}
+        </Typography>
       )}
     </div>
   );

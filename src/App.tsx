@@ -30,11 +30,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/result',
-        element: (
-          <FunnelGuard>
-            <ResultPage />
-          </FunnelGuard>
-        ),
+        element: <ResultPage />,
       },
     ],
   },

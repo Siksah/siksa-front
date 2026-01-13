@@ -14,7 +14,7 @@ export function MainPage() {
 
   const startMenuClick = async () => {
     await createSession();
-    navigate('/question');
+    navigate('/funnel');
   };
 
   return (

@@ -2,6 +2,7 @@ import React from 'react';
 import type { FunnelOptionData } from '../../types/funnel';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Typography } from '../ui/typography';
 
 interface FunnelOptionProps {
   option: FunnelOptionData;
@@ -43,14 +44,15 @@ export const FunnelOption: React.FC<FunnelOptionProps> = ({
         {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />}
       </div>
 
-      <span
+      <Typography
+        preset="main-subtitle"
         className={clsx(
-          'text-lg font-medium',
-          isSelected ? 'text-white' : 'text-white/90'
+          '!text-[20px] !leading-none',
+          isSelected ? '!text-white' : '!text-white/90'
         )}
       >
         {option.label}
-      </span>
+      </Typography>
     </button>
   );
 };

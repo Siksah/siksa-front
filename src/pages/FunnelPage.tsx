@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 import { useFunnel } from '../hooks/useFunnel';
 import { funnelData } from '../data/funnelData';
 import { FunnelStep } from '../components/funnel/FunnelStep';
-import { StaticBackground } from '../components/common/StaticBackground';
-
-import { useImagePreloader } from '../hooks/useImagePreloader';
 
 export const FunnelPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,20 +13,9 @@ export const FunnelPage: React.FC = () => {
     answers,
     selectOption,
     nextStep,
+    prevStep,
     isLastStep,
   } = useFunnel(funnelData);
-
-  // Preload next step's background image
-  const nextStepData = funnelData.steps[currentStepIndex + 1];
-  const nextImage = nextStepData?.backgroundImage;
-  // We pass a new array every render, but that's okay for single item simple comparison or if we memoize.
-  // Actually, useImagePreloader uses [urls] dependency. ['a'] !== ['a'] in JS? No, new array is new reference.
-  // But inside useEffect we can check if content changed, or just let it run (Image object creation is cheap if cached).
-  // To avoid loop, we should memoize the array or the hook should handle it.
-  // For simplicity, let's just pass it. The hook will run every render if array is new.
-  // I will assume the hook implementation above might need optimization if I pass new array every time.
-  // But let's stick to simple implementation first.
-  useImagePreloader(nextImage ? [nextImage] : []);
 
   const handleOptionSelect = (option: any) => {
     selectOption(option);
@@ -45,14 +32,32 @@ export const FunnelPage: React.FC = () => {
     }, 400);
   };
 
-  // Preload next image logic could go here (Task TASK-UX-001)
+  const handleBack = () => {
+    if (currentStepIndex > 0) {
+      prevStep();
+    } else {
+      navigate(-1);
+    }
+  };
 
   return (
-    <>
-      <StaticBackground
-        src={currentStep.backgroundImage || ''}
-        alt={`Background for ${currentStep.title}`}
-      />
+    <div
+      className="w-full h-full min-h-screen overflow-y-auto pt-[20px] pb-[40px] relative"
+      style={{
+        background:
+          'linear-gradient(179.31deg, rgba(255, 247, 244, 1) 0.28%, rgba(255, 255, 255, 1) 19.9%, rgba(255, 255, 255, 1) 91.2%, rgba(255, 247, 244, 1) 99.81%)',
+      }}
+    >
+      {/* Back Button */}
+      <div className="absolute top-[10px] left-[10px] z-50">
+        <button
+          onClick={handleBack}
+          className="p-2 text-[#1c202c] hover:bg-black/5 rounded-full transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-8 h-8" />
+        </button>
+      </div>
 
       <FunnelStep
         step={currentStep}
@@ -61,6 +66,6 @@ export const FunnelPage: React.FC = () => {
         selectedOptionId={answers[currentStep.id]?.id}
         onSelectOption={handleOptionSelect}
       />
-    </>
+    </div>
   );
 };

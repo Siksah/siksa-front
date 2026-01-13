@@ -1,75 +1,143 @@
 import type { FunnelData } from '../types/funnel';
 
+/**
+ * Funnel Data - Figma 디자인 기반 6단계 질문
+ * 
+ * Q1: 점심 식사 파티원 수는? (3 options, vertical-3)
+ * Q2: 지금 나에게 필요한 건? (5 options, vertical-5)
+ * Q3: 메인 메뉴에서 기대하는 식감은? (4 options, grid-2x2)
+ * Q4: 오늘 나를 달래줄 메뉴의 온도는? (2 options, cards-2)
+ * Q5: 내 식욕을 급격히 떨어뜨리는 요소는? (6 options, grid-2x3)
+ * Q6: 오늘의 점심 루틴은? (3 options, vertical-3)
+ */
 export const funnelData: FunnelData = {
   steps: [
     {
       id: 1,
-      title: '함께 식사하는 인원은\n몇 명인가요?',
-      subtitle: '인원 수에 따라 추천 메뉴가 달라질 수 있어요',
-      backgroundImage: '/assets/images/bg-step-1.jpg',
+      title: '점심 식사 <u>파티원 <c>수</c></u>는?',
+      layoutType: 'vertical-3',
       options: [
-        { id: '1-1', label: '혼자서', value: 'solo' },
-        { id: '1-2', label: '2~3명', value: 'small_group' },
-        { id: '1-3', label: '4명 이상', value: 'large_group' },
+        { id: '1-1', label: '나 홀로 식사', value: 'solo', icon: 'alone' },
+        { id: '1-2', label: '둘이서 오붓하게', value: 'duo', icon: 'two' },
+        { id: '1-3', label: '셋 이상 왁자지껄', value: 'group', icon: 'group' },
       ],
     },
     {
       id: 2,
-      title: '어떤 맛을\n선호하시나요?',
-      subtitle: '오늘따라 당기는 맛을 알려주세요',
-      backgroundImage: '/assets/images/bg-step-2.jpg',
+      title: '지금 나에게 <u>필요한 건</u>?',
+      layoutType: 'vertical-5',
       options: [
-        { id: '2-1', label: '매콤한 맛', value: 'spicy' },
-        { id: '2-2', label: '담백한 맛', value: 'mild' },
-        { id: '2-3', label: '달콤한 맛', value: 'sweet' },
-        { id: '2-4', label: '짭짤한 맛', value: 'salty' },
+        { id: '2-1', label: '힘 불끈! 든든하게!', value: 'hearty', icon: 'soup' },
+        { id: '2-2', label: '산틋하게 리프레시!', value: 'light', icon: 'leafy-green' },
+        { id: '2-3', label: '스트레스 해소! 맵고 자극적인 맛!', value: 'comfort', icon: 'zap' },
+        { id: '2-4', label: '기분전환! 달달함 추가', value: 'healthy', icon: 'biceps-flexed' },
+        { id: '2-5', label: '아무거나! 집 나간 입맛', value: 'special', icon: 'cake-slice' },
       ],
     },
     {
       id: 3,
-      title: '선호하는 식감은\n무엇인가요?',
-      subtitle: '씹는 맛도 중요하니까요',
-      backgroundImage: '/assets/images/bg-step-3.jpg',
+      title: '메인 메뉴에서 <u>기대하는</u> <c>식감</c>은?',
+      layoutType: 'grid-2x2',
       options: [
-        { id: '3-1', label: '부드러운', value: 'soft' },
-        { id: '3-2', label: '바삭한', value: 'crispy' },
-        { id: '3-3', label: '쫄깃한', value: 'chewy' },
-        { id: '3-4', label: '상관없음', value: 'any' },
+        { 
+          id: '3-1', 
+          label: '후루룩- 호로록-', 
+          subLabel: '부드럽게',
+          icon: '/assets/images/funnel/icon_soft.svg',
+          value: 'soft' 
+        },
+        { 
+          id: '3-2', 
+          label: '쫄깃 쫠깃', 
+          subLabel: '쫄깃/탄력있게',
+          icon: 'audio-waveform',
+          value: 'chewy' 
+        },
+        { 
+          id: '3-3', 
+          label: '와삭 콰사삭!', 
+          subLabel: '바삭하게',
+          icon: 'loader',
+          value: 'crispy' 
+        },
+        { 
+          id: '3-4', 
+          label: '무엇이든 환영', 
+          subLabel: '상관 없음',
+          icon: '/assets/images/funnel/icon_any.svg',
+          value: 'any' 
+        },
       ],
     },
     {
       id: 4,
-      title: '원하는 음식의\n온도는요?',
-      subtitle: '날씨나 기분에 맞춰 골라보세요',
-      backgroundImage: '/assets/images/bg-step-4.jpg',
+      title: '오늘 나를 달래줄 메뉴의 <c>온도</c>는?',
+      layoutType: 'cards-2',
       options: [
-        { id: '4-1', label: '따뜻한 국물/요리', value: 'hot' },
-        { id: '4-2', label: '시원한 요리', value: 'cold' },
-        { id: '4-3', label: '이열치열', value: 'very_hot' },
+        { 
+          id: '4-1', 
+          label: '쨍하게 시원한 요리', 
+          icon: 'snowflake',
+          value: 'cold' 
+        },
+        { 
+          id: '4-2', 
+          label: '따뜻하고 갓 만든 요리', 
+          icon: 'sun',
+          value: 'hot' 
+        },
       ],
     },
     {
       id: 5,
-      title: '못 드시거나 싫어하는\n음식이 있나요?',
-      subtitle: '해당 재료가 들어간 메뉴는 제외할게요',
-      backgroundImage: '/assets/images/bg-step-5.jpg',
+      title: '내 식욕을 급격히\n<u>떨어뜨리는 요소</u>는?',
+      layoutType: 'grid-2x3',
       options: [
-        { id: '5-1', label: '해산물', value: 'no_seafood' },
-        { id: '5-2', label: '고기류', value: 'no_meat' },
-        { id: '5-3', label: '매운 것', value: 'no_spicy' },
-        { id: '5-4', label: '없음', value: 'none' },
+        { 
+          id: '5-1', 
+          label: '기름기는 헤비해..', 
+          subLabel: '튀김, 볶음류',
+          value: 'no_oily' 
+        },
+        { 
+          id: '5-2', 
+          label: '또 국물이야?', 
+          subLabel: '국물, 탕류',
+          value: 'no_soup' 
+        },
+        { 
+          id: '5-3', 
+          label: '속이 더부룩', 
+          subLabel: '면, 빵류',
+          value: 'no_carbs' 
+        },
+        { 
+          id: '5-4', 
+          label: '바다 향은 좀...', 
+          subLabel: '회, 해물류',
+          value: 'no_seafood' 
+        },
+        { 
+          id: '5-5', 
+          label: '풀떼기는 안 돼!', 
+          subLabel: '샐러드류',
+          value: 'no_salad' 
+        },
+        { 
+          id: '5-6', 
+          label: '오늘은 뭐든 괜찮아', 
+          value: 'none' 
+        },
       ],
     },
     {
       id: 6,
-      title: '어떤 분위기에서\n식사하고 싶으신가요?',
-      subtitle: '식사 장소의 분위기도 중요하죠',
-      backgroundImage: '/assets/images/bg-step-6.jpg',
+      title: '오늘의 <u>점심</u> <c>루틴</c>은?',
+      layoutType: 'vertical-3',
       options: [
-        { id: '6-1', label: '조용하고 차분한', value: 'quiet' },
-        { id: '6-2', label: '활기차고 시끌벅적한', value: 'lively' },
-        { id: '6-3', label: '깔끔하고 모던한', value: 'modern' },
-        { id: '6-4', label: '전통적인/노포 감성', value: 'traditional' },
+        { id: '6-1', label: '빠르게 먹고 바로 가기', value: 'fast' },
+        { id: '6-2', label: '밥 먹고 짧은 휴식 챙기기', value: 'normal' },
+        { id: '6-3', label: '여유롭게\n수다와 산책까지 풀코스', value: 'slow' },
       ],
     },
   ],
