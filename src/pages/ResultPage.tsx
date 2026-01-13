@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RefreshCw, ThumbsUp, ThumbsDown, Share2 } from 'lucide-react';
 import type { FoodResult } from '@/data/resultData';
+import { Typography } from '@/components/ui/typography';
 
 // Import assets (Figma API로 받은 시멘틱 이름의 SVG들)
 import bgThumbsUp from '@/assets/images/result/bg_thumbs_up.svg';
@@ -28,14 +29,16 @@ export function ResultPage() {
     []
   );
 
-  // 결과가 없으면 메인으로 리다이렉트
+  // 결과가 없으면 fallback UI
   if (!result) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-orange-10">
-        <p className="text-[26px] text-navy">결과를 불러오는 중...</p>
+      <div className="w-full h-full flex flex-col items-center justify-center bg-orange-10 gap-4">
+        <Typography preset="funnel-title" className="!text-navy" isShadow={false}>
+          결과를 불러오는 중...
+        </Typography>
         <button
           onClick={() => navigate('/')}
-          className="mt-4 px-6 py-3 bg-navy text-white rounded-lg"
+          className="px-6 py-3 bg-navy text-white rounded-lg text-[22px]"
         >
           처음으로
         </button>
@@ -78,113 +81,170 @@ export function ResultPage() {
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-orange-10">
-      {/* 배경 텍스처 (mix-blend-soft-light) */}
+      {/* 배경 텍스처 */}
       <img
         src={mainBgTexture}
         alt=""
         className="absolute inset-0 w-full h-full object-cover mix-blend-soft-light opacity-60 pointer-events-none z-0"
       />
 
-      {/* 배경 장식 패턴 (제거) */}
-      {/* <img
-        src={decorationPattern}
-        alt=""
-        className="absolute left-1/2 top-[164px] -translate-x-1/2 w-[280px] h-auto mix-blend-soft-light pointer-events-none z-0"
-      /> */}
-
-      {/* 메인 콘텐츠 */}
-      <div className="relative z-10 flex flex-col items-center w-full h-full pt-[95px] pb-[22px]">
+      {/* 메인 콘텐츠 - Flex 레이아웃 */}
+      <div className="relative z-10 flex flex-col items-center w-full h-full pt-[95px]">
         {/* 타이틀 */}
-        <h1 className="text-[30px] text-navy text-center leading-normal">
+        <Typography
+          preset="funnel-title"
+          fontSize="30px"
+          className="!text-navy text-center !leading-normal"
+          isShadow={false}
+          sketchy={true}
+        >
           오늘의 추천 메뉴는..!
-        </h1>
+        </Typography>
 
         {/* 결과 카드 */}
         <div
-          className="relative mt-[30px] w-[291px] h-[463px] bg-white rounded-[30px] border-[3px] border-orange-30 overflow-hidden shrink-0"
+          className="relative mt-[30px] w-[291px] h-[463px] bg-white rounded-[30px] border-[3px] border-orange-30 overflow-hidden flex flex-col"
           style={{
             boxShadow: '5px 5px 5px 0px rgba(250, 80, 45, 0.3)',
           }}
         >
-          {/* 카드 내부 그라디언트 배경 */}
+          {/* 카드 내부 그라디언트 배경 - Flex grow */}
           <div
-            className="absolute top-[11.5px] left-[12.5px] w-[265px] h-[372px] rounded-[17px] border-[3px] border-orange-10 overflow-hidden"
+            className="relative m-[13px] rounded-[17px] border-[3px] border-orange-10 overflow-hidden flex-1 flex flex-col items-center z-0"
             style={{
               background: 'linear-gradient(to top, var(--color-orange-40) 0%, var(--color-orange-50) 100%)',
             }}
           >
-            {/* 배경 장식 패턴 (카드 내부) */}
+            {/* 질감 텍스처 */}
             <img
-              src={decorationPattern}
+              src={mainBgTexture}
               alt=""
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-auto mix-blend-soft-light pointer-events-none opacity-80"
+              className="absolute inset-0 w-full h-full object-cover mix-blend-soft-light opacity-40 pointer-events-none"
             />
-            
-            {/* 랜덤 배경 일러스트 (카드 중앙 하단) */}
-            <img
+
+{/* 랜덤 배경 일러스트 - 그라디언트 박스 밖에서 관리 */}
+
+            {/* 텍스트 영역 - 상단 */}
+            <div className="relative z-20 flex flex-col items-center pt-[52px] px-4">
+              {/* 음식 이름 */}
+              <Typography
+                fontSize="55px"
+                lineHeight="1"
+                className="!text-white text-center break-keep"
+                isShadow={true}
+                shadowColor="#C4250E"
+                sketchy={true}
+              >
+                {result.name}
+              </Typography>
+
+              {/* 설명 */}
+              <Typography
+                fontSize="30px"
+                lineHeight="normal"
+                className="!text-orange-10 text-center break-keep whitespace-pre-wrap mt-[18px]"
+                isShadow={false}
+                sketchy={true}
+              >
+                {result.description}
+              </Typography>
+            </div>
+
+            {/* 일러스트 영역 - 하단 (flex-grow로 남은 공간 차지) */}
+            <div className="relative z-10 flex-1 flex items-end justify-center pb-[20px] w-full">
+              {/* 배경 장식 패턴 */}
+              <img
+                src={decorationPattern}
+                alt=""
+                className="absolute bottom-[120px] left-[42%] -translate-x-1/2 w-[90%] h-auto pointer-events-none opacity-80"
+              />
+              
+            </div>
+
+            {/* 랜덤 배경 일러스트 (제거 - 밖으로 이동) */}
+            {/* <img
               src={randomBg}
               alt=""
-              className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[180px] h-auto pointer-events-none z-10"
-            />
+              className="absolute z-50 w-[200px] bottom-[-20px] h-auto pointer-events-none"
+            /> */}
+          </div>
 
-            {/* 음식 이름 */}
-            <p className="absolute top-[64px] left-1/2 -translate-x-1/2 text-[55px] text-white text-center leading-none z-20 w-[200px] break-keep">
-              {result.name}
-            </p>
+          {/* 랜덤 배경 일러스트 - 그라디언트 박스 밖으로 이동하여 잘림 방지 */}
+          <img
+            src={randomBg}
+            alt=""
+            className="absolute z-20 w-[240px] h-auto pointer-events-none left-1/2 -translate-x-1/2"
+            style={{
+              top: '230px',
+              // 또는 bottom 기준으로 배치
+            }}
+          />
 
-            {/* 설명 */}
-            <div className="absolute top-[135px] left-1/2 -translate-x-1/2 text-[30px] text-orange-10 text-center leading-normal z-20 w-[220px] break-keep whitespace-pre-wrap">
-              {result.description}
-            </div>
+          {/* 아이콘 바 - 카드 하단 흰색 영역 */}
+          <div className="flex items-center justify-center gap-[45px] py-[12px]">
+            <button
+              onClick={handleRetry}
+              className="text-orange-30 hover:text-orange-40 transition-colors"
+              aria-label="다시하기"
+            >
+              <RefreshCw size={24} strokeWidth={2} />
+            </button>
+            <button
+              className="text-orange-30 hover:text-orange-40 transition-colors"
+              aria-label="좋아요"
+            >
+              <ThumbsUp size={24} strokeWidth={2} />
+            </button>
+            <button
+              className="text-orange-30 hover:text-orange-40 transition-colors"
+              aria-label="싫어요"
+            >
+              <ThumbsDown size={24} strokeWidth={2} />
+            </button>
+            <button
+              onClick={handleShare}
+              className="text-orange-30 hover:text-orange-40 transition-colors"
+              aria-label="공유하기"
+            >
+              <Share2 size={24} strokeWidth={2} />
+            </button>
           </div>
         </div>
 
-        {/* 아이콘 바 (공유, 좋아요, 싫어요 등) */}
-        <div className="flex items-center justify-center gap-[45px] mt-[24px]">
-          <button
-            onClick={handleRetry}
-            className="text-orange-30 hover:text-orange-40 transition-colors"
-            aria-label="다시하기"
-          >
-            <RefreshCw size={24} strokeWidth={2} />
-          </button>
-          <button
-            className="text-orange-30 hover:text-orange-40 transition-colors"
-            aria-label="좋아요"
-          >
-            <ThumbsUp size={24} strokeWidth={2} />
-          </button>
-          <button
-            className="text-orange-30 hover:text-orange-40 transition-colors"
-            aria-label="싫어요"
-          >
-            <ThumbsDown size={24} strokeWidth={2} />
-          </button>
-          <button
-            onClick={handleShare}
-            className="text-orange-30 hover:text-orange-40 transition-colors"
-            aria-label="공유하기"
-          >
-            <Share2 size={24} strokeWidth={2} />
-          </button>
-        </div>
-
-        {/* 하단 버튼 영역 */}
-        <div className="flex items-center justify-center gap-[10px] mt-auto px-[20px] w-full">
+        {/* 하단 버튼 영역 - mt-auto로 하단 고정 */}
+        <div className="flex items-center justify-center gap-[10px] mt-auto mb-[78px] px-[20px] w-full">
           {/* 다시하기 버튼 */}
           <button
             onClick={handleRetry}
-            className="flex items-center justify-center w-[162px] h-[53px] bg-navy rounded-[8px] text-[26px] text-white tracking-[-0.3px] leading-[1.2] active:scale-95 transition-transform"
+            className="flex items-center justify-center w-[162px] h-[53px] bg-navy rounded-[8px] active:scale-95 transition-transform"
           >
-            다시하기
+            <Typography
+              fontSize="26px"
+              lineHeight="1.2"
+              letterSpacing="-0.3px"
+              className="!text-white"
+              isShadow={false}
+              sketchy={true}
+            >
+              다시하기
+            </Typography>
           </button>
 
           {/* 식당 찾아보기 버튼 */}
           <button
             onClick={handleFindRestaurant}
-            className="flex items-center justify-center w-[162px] h-[53px] bg-orange-50 rounded-[8px] text-[26px] text-white tracking-[-0.3px] leading-[1.2] active:scale-95 transition-transform"
+            className="flex items-center justify-center w-[162px] h-[53px] bg-orange-50 rounded-[8px] active:scale-95 transition-transform"
           >
-            식당 찾아보기
+            <Typography
+              fontSize="26px"
+              lineHeight="1.2"
+              letterSpacing="-0.3px"
+              className="!text-white"
+              isShadow={false}
+              sketchy={true}
+            >
+              식당 찾아보기
+            </Typography>
           </button>
         </div>
       </div>
