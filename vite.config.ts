@@ -23,6 +23,16 @@ export default defineConfig({
       "@": path.resolve(dirname, "./src"),
     },
   },
+  // 로컬 개발용 프록시 설정 추가
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001', // 백엔드 주소
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/api/, ''), // /api/answer -> /answer 로 변경
+      },
+    },
+  },
   test: {
     projects: [
       {

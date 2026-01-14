@@ -12,9 +12,9 @@ import axios, {
 const env = import.meta.env;
 
 export interface RequestServiceArgs {
-  serviceId: string;
-  data?: Record<string, any>;
-  devUrlIsTrue?: boolean;
+    serviceId: string;
+    data?: Record<string, any>;
+    prodUrlIsTrue?: boolean;
 }
 
 // AxiosPromise의 제네릭 T는 응답 데이터의 타입이 됩니다.
@@ -25,19 +25,21 @@ type ServiceRequestResult<T> = AxiosPromise<T>;
 export class CommonService {
   /**
    * 서버 요청 URL을 리턴
-   * @param command, devUrlIsTrue - API 커맨드 (예: 'login', 'users')
+   * @param command, prodUrlIsTrue - API 커맨드 (예: 'login', 'users'), local에서 prodUrl을 사용시 false로 전송
    * @returns 완전한 서버 요청 URL
    */
-  getRequestUrl(command: string, devUrlIsTrue?: boolean): string {
+  getRequestUrl(command: string, prodUrlIsTrue?: boolean): string {
+
     // console.log('command', command);
-    // console.log('devUrlIsTrue', devUrlIsTrue);
     // console.log('Server Mode', env.MODE);
 
-    const serverUrl =
-      env.MODE === 'production' || !devUrlIsTrue // 개발 모드
-        ? env.VITE_API_BASE_URL
-        : 'http://localhost:3001';
-
+    const isProdUrl = prodUrlIsTrue === true;
+    
+    const serverUrl = (env.MODE === 'production' || isProdUrl)
+        ? env.VITE_API_BASE_URL // 배포 주소
+        : 'http://localhost:3001/api' // local 주소
+        ;
+    
     // serverUrl이 null, undefined이거나, 공백 문자열인 경우
     if (!serverUrl || serverUrl.trim() === '') {
       throw new Error(
@@ -85,23 +87,32 @@ export class CommonService {
 
   /**
    * API 서버로 POST 요청
-   * @param reqSvc - { serviceId: API 커맨드, data: 요청 본문 데이터 }
+   * @param reqSvc, prodUrlIsTrue - { serviceId: API 커맨드, data: 요청 본문 데이터 }
+   * @param prodUrlIsTrue - local 환경에서 true를 전달하면 상용 URL, 생략하거나 false면 로컬 URL 사용
    * @returns Axios Promise(성공 시 AxiosResponse<T>, 실패 시 AxiosError 또는 ServiceRejectError)
    */
-  requestService<T = any>(reqSvc: RequestServiceArgs): ServiceRequestResult<T> {
-    if (!reqSvc || !reqSvc.serviceId) {
+  requestService<T = any>(
+    reqSvc: RequestServiceArgs,
+    prodUrlIsTrue: boolean = false
+  ): ServiceRequestResult<T> {
+
+    if(!reqSvc || !reqSvc.serviceId) {
       const errorStub = new AxiosError('서비스 ID가 없습니다.', '-20001');
       return Promise.reject(errorStub);
     }
 
-    const { serviceId: command, data = {}, devUrlIsTrue = true } = reqSvc;
+    const { serviceId: command, data = {} } = reqSvc;
+
+    // 인자가 없거나 false면 false, 오직 true일 때만 true가 됩니다.
+    const finalProdUrl = prodUrlIsTrue === true;
 
     const finalData = {
       ...data,
       timestamp: new Date().toISOString(),
     };
+    console.log('finalData', finalData);
 
-    const url = this.getRequestUrl(command, devUrlIsTrue);
+    const url = this.getRequestUrl(command, finalProdUrl);
 
     try {
       // axios.post 호출은 Promise를 반환
@@ -158,26 +169,25 @@ export class CommonService {
     }
 
     try {
-      // 2. 세션이 없으면(새 탭) 서버에서 새로 생성
+      // 세션이 없으면(새 탭) 서버에서 새로 생성
       const response = await axios.post(
         this.getRequestUrl('session/create'),
         {},
         { withCredentials: true } // CORS 허용을 위해 필수
       );
       console.log('createResponse', response);
-      console.log('createResponse', response.data);
 
       const sessionId = response.data.data.sessionId;
-      console.log('sessionId', sessionId);
 
-      // 3. 💡 sessionStorage에 저장 (탭 닫으면 자동 삭제됨)
+      // sessionStorage에 저장 (탭 닫으면 자동 삭제됨)
       sessionStorage.setItem('anon_session_id', sessionId);
 
-      console.log('새로운 탭 세션 발급:', sessionId);
       return response.data;
     } catch (error) {
       console.error('🚨 익명 세션 생성 실패:', error);
       throw error;
     }
-  };
+
+  }
+
 }
