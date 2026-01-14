@@ -1,209 +1,144 @@
-import type { FunnelStepData, StepId } from '@/types/funnel';
-import { FUNNEL_STEPS } from '@/types/funnel';
+import type { FunnelData } from '../types/funnel';
 
 /**
- * Funnel 스텝 데이터 (순수 데이터, JSX 없음)
- * - iconId 토큰으로 UI 분리
- * - stepNumber는 자동 계산
+ * Funnel Data - Figma 디자인 기반 6단계 질문
+ * 
+ * Q1: 점심 식사 파티원 수는? (3 options, vertical-3)
+ * Q2: 지금 나에게 필요한 건? (5 options, vertical-5)
+ * Q3: 메인 메뉴에서 기대하는 식감은? (4 options, grid-2x2)
+ * Q4: 오늘 나를 달래줄 메뉴의 온도는? (2 options, cards-2)
+ * Q5: 내 식욕을 급격히 떨어뜨리는 요소는? (6 options, grid-2x3)
+ * Q6: 오늘의 점심 루틴은? (3 options, vertical-3)
  */
-const funnelStepsRaw: Omit<FunnelStepData, 'stepNumber'>[] = [
-  {
-    id: 'party-size',
-    question: '점심 식사 파티원 수는?',
-    options: [
-      {
-        id: 'solo',
-        iconId: 'solo',
-        title: '혼자만의 고독한 미식가',
-        subtitle: '(혼자)',
-      },
-      {
-        id: 'duo',
-        iconId: 'duo',
-        title: '딱 한 명의 식사메이트',
-        subtitle: '(둘이)',
-      },
-      {
-        id: 'group3p',
-        iconId: 'group3p',
-        title: '왁자지껄 그룹',
-        subtitle: '(3인 이상)',
-      },
-    ],
-  },
-  {
-    id: 'taste',
-    question: '오늘 당신의 혀가 원하는 특별한 자극은?',
-    options: [
-      {
-        id: 'hearty',
-        iconId: 'hearty',
-        title: '힘 불끈! 든든하게!',
-      },
-      {
-        id: 'light',
-        iconId: 'light',
-        title: '산뜻하게 리프레시!',
-      },
-      {
-        id: 'spicy',
-        iconId: 'spicy',
-        title: '스트레스 해소! 맵고 자극적인 맛!',
-      },
-      {
-        id: 'sweet',
-        iconId: 'sweet',
-        title: '기분전환! 달달함 추가',
-      },
-      {
-        id: 'no_appetite',
-        iconId: 'any',
-        title: '아무거나! 집나간 입맛',
-      },
-    ],
-  },
-  {
-    id: 'texture',
-    question: '메인 메뉴의 가장 기대하는 식감은?',
-    options: [
-      {
-        id: 'soft',
-        iconId: 'soft',
-        title: '목 넘김이 좋은',
-        subtitle: '(국물/소스 자작한)',
-      },
-      {
-        id: 'chewy',
-        iconId: 'chewy',
-        title: '쫀득쫀득한',
-        subtitle: '(떡/고기 같은 쫄깃함)',
-      },
-      {
-        id: 'crispy',
-        iconId: 'crispy',
-        title: '겉바속촉한',
-        subtitle: '(튀김/구이 같은 바삭함)',
-      },
-      {
-        id: 'any',
-        iconId: 'any',
-        title: '무엇이든 환영',
-        subtitle: '(상관 없음)',
-      },
-    ],
-  },
-  {
-    id: 'temperature',
-    question: '오늘 당신의 위장을 달래줄 메뉴의 온도는?',
-    options: [
-      {
-        id: 'cold',
-        iconId: 'cold',
-        title: '쨍하고 시원한 요리',
-      },
-      {
-        id: 'warmPlate',
-        iconId: 'warmPlate',
-        title: '따뜻하고 갓 만든 요리',
-      },
-    ],
-  },
-  {
-    id: 'avoid',
-    question: '당신의 식욕을 급격히 떨어뜨리는 요소는?',
-    options: [
-      {
-        id: 'greasy',
-        iconId: 'greasy',
-        title: '기름기는 헤비해',
-        subtitle: '(튀김, 볶음류)',
-      },
-      {
-        id: 'soupy',
-        iconId: 'soupy',
-        title: '또 국물이야?',
-        subtitle: '(국물, 탕류)',
-      },
-      {
-        id: 'wheat',
-        iconId: 'wheat',
-        title: '속이 더부룩',
-        subtitle: '(면, 빵 류)',
-      },
-      {
-        id: 'seafood',
-        iconId: 'seafood',
-        title: '바다 향은 좀…',
-        subtitle: '(회, 해물류)',
-      },
-      {
-        id: 'salad',
-        iconId: 'salad',
-        title: '풀떼기는 안돼!',
-        subtitle: '(샐러드류)',
-      },
-      {
-        id: 'null',
-        iconId: 'null',
-        title: '오늘은 뭐든 괜찮아',
-      },
-    ],
-  },
-  {
-    id: 'aftermeal',
-    question: '오늘의 점심 루틴은?',
-    options: [
-      {
-        id: 'back_to_work',
-        iconId: 'back_to_work',
-        title: '빠르게 먹고 바로 가기',
-      },
-      {
-        id: 'coffee_break',
-        iconId: 'coffee_break',
-        title: '밥 먹고 짧은 휴식 챙기기',
-      },
-      {
-        id: 'long_chat',
-        iconId: 'long_chat',
-        title: '여유롭게 수다와 산책까지 풀코스',
-      },
-    ],
-  },
-];
-
-/**
- * stepNumber가 자동 계산된 스텝 데이터 (배열)
- */
-export const funnelSteps: (FunnelStepData & { stepNumber: number })[] =
-  funnelStepsRaw.map((step, index) => ({
-    ...step,
-    stepNumber: index + 1,
-  }));
-
-/**
- * stepId로 O(1) 접근 가능한 맵
- * - funnelSteps.find() 대신 사용
- * - 타입 안전하게 접근 가능
- */
-export const funnelStepsById: Record<
-  StepId,
-  FunnelStepData & { stepNumber: number }
-> = Object.fromEntries(funnelSteps.map((step) => [step.id, step])) as Record<
-  StepId,
-  FunnelStepData & { stepNumber: number }
->;
-
-/**
- * 스텝 순서 검증 (FUNNEL_STEPS와 일치하는지)
- */
-if (process.env.NODE_ENV === 'development') {
-  const dataStepIds = funnelSteps.map((s) => s.id);
-  const configStepIds = [...FUNNEL_STEPS];
-  if (JSON.stringify(dataStepIds) !== JSON.stringify(configStepIds)) {
-    console.warn('funnelData와 FUNNEL_STEPS의 순서가 일치하지 않습니다.', {
-      dataStepIds,
-      configStepIds,
-    });
-  }
-}
+export const funnelData: FunnelData = {
+  steps: [
+    {
+      id: 1,
+      title: '점심 식사 <u>파티원 <c>수</c></u>는?',
+      layoutType: 'vertical-3',
+      options: [
+        { id: '1-1', label: '나 홀로 식사', value: 'solo', icon: 'alone' },
+        { id: '1-2', label: '둘이서 오붓하게', value: 'duo', icon: 'two' },
+        { id: '1-3', label: '셋 이상 왁자지껄', value: 'group', icon: 'group' },
+      ],
+    },
+    {
+      id: 2,
+      title: '지금 나에게 <u>필요한 건</u>?',
+      layoutType: 'vertical-5',
+      options: [
+        { id: '2-1', label: '힘 불끈! 든든하게!', value: 'hearty', icon: 'soup' },
+        { id: '2-2', label: '산틋하게 리프레시!', value: 'light', icon: 'leafy-green' },
+        { id: '2-3', label: '스트레스 해소! 맵고 자극적인 맛!', value: 'comfort', icon: 'zap' },
+        { id: '2-4', label: '기분전환! 달달함 추가', value: 'healthy', icon: 'biceps-flexed' },
+        { id: '2-5', label: '아무거나! 집 나간 입맛', value: 'special', icon: 'cake-slice' },
+      ],
+    },
+    {
+      id: 3,
+      title: '메인 메뉴에서 <u>기대하는</u> <c>식감</c>은?',
+      layoutType: 'grid-2x2',
+      options: [
+        { 
+          id: '3-1', 
+          label: '후루룩- 호로록-', 
+          subLabel: '부드럽게',
+          icon: '/assets/images/funnel/icon_soft.svg',
+          value: 'soft' 
+        },
+        { 
+          id: '3-2', 
+          label: '쫄깃 쫠깃', 
+          subLabel: '쫄깃/탄력있게',
+          icon: 'audio-waveform',
+          value: 'chewy' 
+        },
+        { 
+          id: '3-3', 
+          label: '와삭 콰사삭!', 
+          subLabel: '바삭하게',
+          icon: 'loader',
+          value: 'crispy' 
+        },
+        { 
+          id: '3-4', 
+          label: '무엇이든 환영', 
+          subLabel: '상관 없음',
+          icon: '/assets/images/funnel/icon_any.svg',
+          value: 'any' 
+        },
+      ],
+    },
+    {
+      id: 4,
+      title: '오늘 나를 달래줄 메뉴의 <c>온도</c>는?',
+      layoutType: 'cards-2',
+      options: [
+        { 
+          id: '4-1', 
+          label: '쨍하게 시원한 요리', 
+          icon: 'snowflake',
+          value: 'cold' 
+        },
+        { 
+          id: '4-2', 
+          label: '따뜻하고 갓 만든 요리', 
+          icon: 'sun',
+          value: 'hot' 
+        },
+      ],
+    },
+    {
+      id: 5,
+      title: '내 식욕을 급격히\n<u>떨어뜨리는 요소</u>는?',
+      layoutType: 'grid-2x3',
+      options: [
+        { 
+          id: '5-1', 
+          label: '기름기는 헤비해..', 
+          subLabel: '튀김, 볶음류',
+          value: 'no_oily' 
+        },
+        { 
+          id: '5-2', 
+          label: '또 국물이야?', 
+          subLabel: '국물, 탕류',
+          value: 'no_soup' 
+        },
+        { 
+          id: '5-3', 
+          label: '속이 더부룩', 
+          subLabel: '면, 빵류',
+          value: 'no_carbs' 
+        },
+        { 
+          id: '5-4', 
+          label: '바다 향은 좀...', 
+          subLabel: '회, 해물류',
+          value: 'no_seafood' 
+        },
+        { 
+          id: '5-5', 
+          label: '풀떼기는 안 돼!', 
+          subLabel: '샐러드류',
+          value: 'no_salad' 
+        },
+        { 
+          id: '5-6', 
+          label: '오늘은 뭐든 괜찮아', 
+          value: 'none' 
+        },
+      ],
+    },
+    {
+      id: 6,
+      title: '오늘의 <u>점심</u> <c>루틴</c>은?',
+      layoutType: 'vertical-3',
+      options: [
+        { id: '6-1', label: '빠르게 먹고 바로 가기', value: 'fast' },
+        { id: '6-2', label: '밥 먹고 짧은 휴식 챙기기', value: 'normal' },
+        { id: '6-3', label: '여유롭게\n수다와 산책까지 풀코스', value: 'slow' },
+      ],
+    },
+  ],
+};

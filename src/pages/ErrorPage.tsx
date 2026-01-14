@@ -6,7 +6,7 @@ export function ErrorPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-5">
+    <div className="flex flex-col items-center justify-center min-h-screen px-5">
       <Typography
         variant="title-sm"
         isShadow={false}

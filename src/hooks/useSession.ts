@@ -22,7 +22,7 @@ export const useSession = () => {
       const data = await commonService.createAnonymousSession();
       if (data && data.data.sessionId) {
         setSessionId(data.data.sessionId);
-        console.log("세션 생성 완료:", data.data.sessionId);
+        console.log('세션 생성 완료:', data.data.sessionId);
       }
     } catch (err) {
       console.error('세션 생성 중 오류 발생:', err);

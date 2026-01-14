@@ -11,11 +11,8 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
-    stepNumber: {
-      control: 'number',
-    },
-    showBack: {
-      control: 'boolean',
+    className: {
+      control: 'text',
     },
   },
   decorators: [
@@ -45,49 +42,13 @@ const SampleContent = () => (
 
 export const Default: Story = {
   args: {
-    stepNumber: 1,
     children: <SampleContent />,
   },
 };
 
-export const WithStepNumber: Story = {
+export const WithClassName: Story = {
   args: {
-    stepNumber: 3,
-    children: <SampleContent />,
-  },
-};
-
-export const WithoutStepNumber: Story = {
-  args: {
-    children: <SampleContent />,
-  },
-};
-
-export const WithoutBackButton: Story = {
-  args: {
-    stepNumber: 1,
-    showBack: false,
-    children: <SampleContent />,
-  },
-};
-
-export const WithCustomOnBack: Story = {
-  args: {
-    stepNumber: 2,
-    onBack: () => alert('커스텀 뒤로가기 액션'),
-    children: <SampleContent />,
-  },
-};
-
-export const WithCustomHeaderSlots: Story = {
-  args: {
-    headerLeftSlot: <span className="text-orange-50 font-bold">←</span>,
-    headerCenterSlot: (
-      <Typography variant="text-md" className="text-navy">
-        커스텀 타이틀
-      </Typography>
-    ),
-    headerRightSlot: <span className="text-grey-50">✕</span>,
+    className: 'bg-orange-10',
     children: <SampleContent />,
   },
 };

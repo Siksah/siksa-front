@@ -1,85 +1,31 @@
-/**
- * Funnel 관련 공통 타입 정의
- */
+export type StepId = number;
+export type OptionId = string;
 
-export const FUNNEL_STEPS = [
-  'party-size',
-  'taste',
-  'texture',
-  'temperature',
-  'avoid',
-  'aftermeal',
-] as const;
+// 레이아웃 타입: Figma 디자인에서 파악한 5가지 패턴
+export type FunnelLayoutType =
+  | 'vertical-3'   // Q1, Q6: 3개 수직 카드 (140px)
+  | 'vertical-5'   // Q2: 5개 수직 리스트 (80px)
+  | 'grid-2x2'     // Q3: 2x2 이미지/아이콘 그리드 (160x214)
+  | 'cards-2'      // Q4: 2개 대형 카드 (335x195)
+  | 'grid-2x3';    // Q5: 2x3 그리드 (161.5x126.67)
 
-export type StepId = (typeof FUNNEL_STEPS)[number];
-
-/**
- * 아이콘 ID - 데이터와 UI 분리를 위한 토큰
- */
-export type IconId =
-  // party-size
-  | 'solo'
-  | 'duo'
-  | 'group3p'
-  // taste
-  | 'hearty'
-  | 'light'
-  | 'spicy'
-  | 'sweet'
-  | 'no_appetite'
-  // texture
-  | 'soft'
-  | 'chewy'
-  | 'crispy'
-  | 'any'
-  // temperature
-  | 'cold'
-  | 'warmPlate'
-  // avoid
-  | 'greasy'
-  | 'soupy'
-  | 'wheat'
-  | 'seafood'
-  | 'salad'
-  | 'null'
-  // aftermeal
-  | 'back_to_work'
-  | 'coffee_break'
-  | 'long_chat'
-  ;
-
-/**
- * Funnel 옵션 데이터 (순수 데이터, UI 없음)
- */
 export interface FunnelOptionData {
-  id: string;
-  iconId?: IconId;
-  title: string;
-  subtitle?: string;
+  id: OptionId;
+  label: string;
+  subLabel?: string; // 보조 텍스트 (괄호 안 설명 등)
+  icon?: string; // Lucide 아이콘 이름 (예: 'snowflake', 'sun')
+  value?: string | number;
 }
 
-/**
- * Funnel 스텝 데이터 (순수 데이터, UI 없음)
- */
 export interface FunnelStepData {
   id: StepId;
-  question: string;
+  title: string;
+  subtitle?: string;
+  layoutType: FunnelLayoutType;
   options: FunnelOptionData[];
+  backgroundImage?: string;
 }
 
-/**
- * Funnel 렌더링 설정
- */
-export interface FunnelRenderConfig {
-  id: StepId;
-  next?: StepId;
+export interface FunnelData {
+  steps: FunnelStepData[];
 }
-
-export const FUNNEL_RENDER_CONFIG: FunnelRenderConfig[] = [
-  { id: 'party-size', next: 'taste' },
-  { id: 'taste', next: 'texture' },
-  { id: 'texture', next: 'temperature' },
-  { id: 'temperature', next: 'avoid' },
-  { id: 'avoid', next: 'aftermeal' },
-  { id: 'aftermeal' },
-];

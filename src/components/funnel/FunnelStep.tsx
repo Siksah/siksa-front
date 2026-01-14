@@ -1,53 +1,127 @@
-import { Typography } from '@/components/ui/typography';
-import { FunnelLayout } from './FunnelLayout';
-import { FunnelOption } from './FunnelOption';
-import { getIcon } from './iconMap';
-import type { FunnelStepData } from '@/types/funnel';
+import React from 'react';
+import type { FunnelStepData, FunnelOptionData } from '../../types/funnel';
+import { QuestionBadge } from './QuestionBadge';
+import { QuestionTitle } from './QuestionTitle';
+import { FunnelProgress } from './FunnelProgress';
+import {
+  FunnelOptionVertical3,
+  FunnelOptionVertical5,
+  FunnelOptionGrid2x2,
+  FunnelOptionCards2,
+  FunnelOptionGrid2x3,
+} from './layouts';
 
 interface FunnelStepProps {
-  data: FunnelStepData & { stepNumber: number };
-  onSelect: (value: string) => void;
-  selectedValue?: string;
-  onBack?: () => void;
-  loading?: boolean;
+  step: FunnelStepData;
+  currentStepIndex: number;
+  totalSteps: number;
+  selectedOptionId?: string;
+  onSelectOption: (option: FunnelOptionData) => void;
 }
 
-export function FunnelStep({
-  data,
-  onSelect,
-  selectedValue,
-  onBack,
-  loading,
-}: FunnelStepProps) {
+export const FunnelStep: React.FC<FunnelStepProps> = ({
+  step,
+  currentStepIndex,
+  totalSteps,
+  selectedOptionId,
+  onSelectOption,
+}) => {
+  const renderOptions = () => {
+    switch (step.layoutType) {
+      case 'vertical-3':
+        return (
+          <div className="flex flex-col gap-[10px] w-full">
+            {step.options.map((option) => (
+              <FunnelOptionVertical3
+                key={option.id}
+                option={option}
+                isSelected={selectedOptionId === option.id}
+                onSelect={onSelectOption}
+              />
+            ))}
+          </div>
+        );
+
+      case 'vertical-5':
+        return (
+          <div className="flex flex-col gap-[10px] w-full">
+            {step.options.map((option) => (
+              <FunnelOptionVertical5
+                key={option.id}
+                option={option}
+                isSelected={selectedOptionId === option.id}
+                onSelect={onSelectOption}
+              />
+            ))}
+          </div>
+        );
+
+      case 'grid-2x2':
+        return (
+          <div className="grid grid-cols-2 gap-[15px] w-full">
+            {step.options.map((option) => (
+              <FunnelOptionGrid2x2
+                key={option.id}
+                option={option}
+                isSelected={selectedOptionId === option.id}
+                onSelect={onSelectOption}
+              />
+            ))}
+          </div>
+        );
+
+      case 'cards-2':
+        return (
+          <div className="flex flex-col gap-[10px] w-full">
+            {step.options.map((option) => (
+              <FunnelOptionCards2
+                key={option.id}
+                option={option}
+                isSelected={selectedOptionId === option.id}
+                onSelect={onSelectOption}
+              />
+            ))}
+          </div>
+        );
+
+      case 'grid-2x3':
+        return (
+          <div className="grid grid-cols-2 gap-[10px] w-full">
+            {step.options.map((option) => (
+              <FunnelOptionGrid2x3
+                key={option.id}
+                option={option}
+                isSelected={selectedOptionId === option.id}
+                onSelect={onSelectOption}
+              />
+            ))}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
-    <FunnelLayout stepNumber={data.stepNumber} onBack={onBack}>
-      {/* Question */}
-      <div className="flex justify-center mt-6 mb-8">
-        <Typography
-          variant="title-sm"
-          className="text-navy text-center tracking-[-0.3px]"
-          sketchy={true}
-        >
-          {data.question}
-        </Typography>
+    <div className="flex flex-col items-center w-full px-[20px]">
+      {/* Progress Indicator */}
+      <FunnelProgress currentStep={currentStepIndex + 1} totalSteps={totalSteps} />
+
+      {/* Badge */}
+      <div className="mt-[15px]">
+        <QuestionBadge stepIndex={currentStepIndex} totalSteps={totalSteps} />
       </div>
 
-      {/* Options Grid */}
-      <div className="flex flex-col gap-[0.625rem] pb-8 flex-1">
-        {data.options.map((option) => (
-          <FunnelOption
-            key={option.id}
-            value={option.id}
-            title={option.title}
-            subtitle={option.subtitle}
-            icon={getIcon(option.iconId)}
-            selected={selectedValue === option.id}
-            onChange={onSelect}
-            className="flex-1"
-            disabled={loading}
-          />
-        ))}
+      {/* Title */}
+      <div className="mt-[20px]">
+        <QuestionTitle title={step.title} subtitle={step.subtitle} />
       </div>
-    </FunnelLayout>
+
+      {/* Options */}
+      <div className="mt-[40px] w-full">
+        {renderOptions()}
+      </div>
+    </div>
   );
-}
+};

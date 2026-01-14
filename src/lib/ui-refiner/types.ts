@@ -1,4 +1,10 @@
-export type NodeType = 'frame' | 'container' | 'text' | 'image' | 'icon' | 'button';
+export type NodeType =
+  | 'frame'
+  | 'container'
+  | 'text'
+  | 'image'
+  | 'icon'
+  | 'button';
 
 export interface LayoutMetrics {
   x: number;
@@ -17,11 +23,11 @@ export interface LayoutMode {
 }
 
 export interface LayoutNode {
-  id: string;               // figmaId or dom-selector
-  name?: string;            // e.g., "MenuCardTitle"
+  id: string; // figmaId or dom-selector
+  name?: string; // e.g., "MenuCardTitle"
   type: NodeType;
   textContent?: string;
-  role?: string;            // from DOM or inferred
+  role?: string; // from DOM or inferred
   metrics: LayoutMetrics;
   layoutMode: LayoutMode;
   children: LayoutNode[];
@@ -40,7 +46,7 @@ export interface LayoutSuggestion {
   targetComponent: string; // e.g. 'ResultPage', 'MenuCard'
   changeType: 'refactor_layout' | 'wrap_in_container' | 'extract_component';
   targetTailwind?: string; // e.g., "flex flex-col items-center gap-4"
-  notes?: string;          // e.g., "Keep decor images absolute inside relative wrapper"
+  notes?: string; // e.g., "Keep decor images absolute inside relative wrapper"
 }
 
 export interface LayoutDiffItem {
@@ -53,13 +59,13 @@ export interface LayoutDiffItem {
 }
 
 export interface LayoutDiff {
-  targetFile: string;          // "src/pages/ResultPage.tsx"
+  targetFile: string; // "src/pages/ResultPage.tsx"
   designFrameId: string;
-  urlOrStoryId: string;        // story-id or route
+  urlOrStoryId: string; // story-id or route
   items: LayoutDiffItem[];
   summary: {
     errorCount: number;
     warnCount: number;
-    score: number;             // 0..1, 1 = perfect match
+    score: number; // 0..1, 1 = perfect match
   };
 }

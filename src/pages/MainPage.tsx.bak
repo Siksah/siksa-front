@@ -1,0 +1,45 @@
+import { useNavigate } from 'react-router-dom';
+import { useSession } from '../hooks/useSession';
+import { Button } from '@/components/ui/button';
+import { Typography } from '@/components/ui/typography';
+import image_103 from '@/assets/images/image_103.png';
+import nyamnyamjjeopjjeop_375_main_vector from '@/assets/images/냠냠쩝쩝_375_main_vector.png';
+import nyamnyamjjeopjjeop_375_main_vector_221_1636 from '@/assets/images/냠냠쩝쩝_375_main_vector_221-1636.png';
+import nyamnyamjjeopjjeop_375_main_vector_221_1637 from '@/assets/images/냠냠쩝쩝_375_main_vector_221-1637.png';
+import nyamnyamjjeopjjeop_375_main_vector_221_1638 from '@/assets/images/냠냠쩝쩝_375_main_vector_221-1638.png';
+import nyamnyamjjeopjjeop_375_main_group from '@/assets/images/냠냠쩝쩝_375_main_group.png';
+
+export function MainPage() {
+                                        const navigate = useNavigate();
+                                        const { createSession } = useSession();
+  
+                                        const startMenuClick = async () => {
+    // session 생성
+    await createSession();
+
+    // 페이지 이동
+    navigate('/question');
+  };
+  
+  return (
+    <div className="w-full min-h-screen bg-[transparent] relative overflow-hidden">
+      <img src={image_103} alt="image 103" className="w-full min-h-screen absolute top-[-4px] left-[-96px] z-[-1]" onClick={startMenuClick} />
+      <img src={nyamnyamjjeopjjeop_375_main_vector} alt="Vector 11" className="w-[127px] h-[121px] bg-[#fec1ac] absolute top-[551px] left-[271px]" onClick={startMenuClick} />
+      <img src={nyamnyamjjeopjjeop_375_main_vector_221_1636} alt="Vector 10" className="w-[77px] h-[72px] absolute top-[94px] left-[-10px]" onClick={startMenuClick} />
+      <img src={nyamnyamjjeopjjeop_375_main_vector_221_1637} alt="Vector 9" className="w-[64px] h-[66px] bg-[#ffee32] absolute top-[492px] left-[-12px]" onClick={startMenuClick} />
+      <img src={nyamnyamjjeopjjeop_375_main_vector_221_1638} alt="Vector 12" className="w-[36px] h-[38px] bg-[#ffee32] absolute top-[239px] left-[288px]" onClick={startMenuClick} />
+      <div className="flex flex-col items-center gap-6 w-[324px] h-[357px] bg-[transparent] absolute top-[177px] left-[25px]">
+        <img src={nyamnyamjjeopjjeop_375_main_group} alt="Group 8" className="w-[324px] h-[187px] absolute top-[171px] left-0 z-[-1]" onClick={startMenuClick} />
+        <Typography preset="main-title" className="text-[#ffffff]">
+          냠냠쩝쩝
+        </Typography>
+        <Typography preset="main-subtitle" className="text-[#ffffff]">
+          오늘은 무얼 먹어볼까?
+        </Typography>
+      </div>
+      <Button variant="handwriting" size="lg" className="flex justify-center items-center gap-3 pt-1 pr-21 pb-1 pl-21 w-[320px] h-[65px] bg-[#1c202c] absolute top-[650px] left-[28px]" onClick={startMenuClick}>
+        메뉴 정하기
+      </Button>
+    </div>
+  );
+}

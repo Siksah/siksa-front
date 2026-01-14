@@ -1,131 +1,71 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useFunnel, createFunnelSteps } from '@use-funnel/react-router-dom';
-import { funnelStepsById } from '@/data/funnelData';
-import { FunnelStep } from '@/components/funnel/FunnelStep';
-import { CommonService } from '../comm/common.service';
+import { ChevronLeft } from 'lucide-react';
+import { useFunnel } from '../hooks/useFunnel';
+import { funnelData } from '../data/funnelData';
+import { FunnelStep } from '../components/funnel/FunnelStep';
 
-const commonService = new CommonService();
-
-/**
- * 펀널에서 수집할 전체 데이터 타입
- */
-interface FunnelData {
-  'party-size'?: string;
-  taste?: string;
-  texture?: string;
-  temperature?: string;
-  avoid?: string;
-  aftermeal?: string;
-}
-
-/**
- * createFunnelSteps를 사용하여 타입 안전한 스텝 정의
- */
-const steps = createFunnelSteps<FunnelData>()
-  .extends('party-size')
-  .extends('taste', { requiredKeys: 'party-size' })
-  .extends('texture', { requiredKeys: 'taste' })
-  .extends('temperature', { requiredKeys: 'texture' })
-  .extends('avoid', { requiredKeys: 'temperature' })
-  .extends('aftermeal', { requiredKeys: 'avoid' })
-  .build();
-
-export function FunnelPage() {
+export const FunnelPage: React.FC = () => {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const funnel = useFunnel({
-    id: 'siksa-funnel',
-    steps: steps,
-    initial: {
-      step: 'party-size',
-      context: {},
-    },
-  });
+  const {
+    currentStep,
+    currentStepIndex,
+    answers,
+    selectOption,
+    nextStep,
+    prevStep,
+    isLastStep,
+  } = useFunnel(funnelData);
+
+  const handleOptionSelect = (option: any) => {
+    selectOption(option);
+
+    // Auto-advance after a short delay for visual feedback
+    setTimeout(() => {
+      if (isLastStep) {
+        navigate('/loading', {
+          state: { answers: { ...answers, [currentStep.id]: option } },
+        });
+      } else {
+        nextStep();
+      }
+    }, 400);
+  };
+
+  const handleBack = () => {
+    if (currentStepIndex > 0) {
+      prevStep();
+    } else {
+      navigate(-1);
+    }
+  };
 
   return (
-    <funnel.Render
-      party-size={({ history }) => (
-        <FunnelStep
-          data={funnelStepsById['party-size']}
-          onSelect={(val) => history.push('taste', { 'party-size': val })}
-          selectedValue={undefined}
-        />
-      )}
-      taste={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['taste']}
-          onSelect={(val) =>
-            history.push('texture', { ...context, taste: val })
-          }
-          selectedValue={context.taste}
-          onBack={() => history.back()}
-        />
-      )}
-      texture={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['texture']}
-          onSelect={(val) =>
-            history.push('temperature', { ...context, texture: val })
-          }
-          selectedValue={context.texture}
-          onBack={() => history.back()}
-        />
-      )}
-      temperature={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['temperature']}
-          onSelect={(val) =>
-            history.push('avoid', { ...context, temperature: val })
-          }
-          selectedValue={context.temperature}
-          onBack={() => history.back()}
-        />
-      )}
-      avoid={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['avoid']}
-          onSelect={(val) =>
-            history.push('aftermeal', { ...context, avoid: val })
-          }
-          selectedValue={context.avoid}
-          onBack={() => history.back()}
-        />
-      )}
-      aftermeal={({ context, history }) => (
-        <FunnelStep
-          data={funnelStepsById['aftermeal']}
-          loading={isSubmitting}
-          onSelect={async (val) => {
-            if (isSubmitting) return;
-            setIsSubmitting(true);
-            const sessionId = sessionStorage.getItem('anon_session_id'); // sessionStorage 기존 session 가져오기
-            const finalContext = { ...context, aftermeal: val, sessionId: sessionId };
+    <div
+      className="w-full h-full min-h-screen overflow-y-auto pt-[20px] pb-[40px] relative"
+      style={{
+        background:
+          'linear-gradient(179.31deg, rgba(255, 247, 244, 1) 0.28%, rgba(255, 255, 255, 1) 19.9%, rgba(255, 255, 255, 1) 91.2%, rgba(255, 247, 244, 1) 99.81%)',
+      }}
+    >
+      {/* Back Button */}
+      <div className="absolute top-[10px] left-[10px] z-50">
+        <button
+          onClick={handleBack}
+          className="p-2 text-[#1c202c] hover:bg-black/5 rounded-full transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-8 h-8" />
+        </button>
+      </div>
 
-            if (!sessionId) {
-              console.warn('session ID가 없습니다..');
-            }
-
-            try {
-                const res = await commonService.requestService({
-                    serviceId: 'answer',
-                    data: finalContext,
-                });
-                console.log('데이터 저장 성공:', res);
-                alert(JSON.stringify(res.data.data.recommendation, null, 2));
-                
-            } catch (error) {
-                console.error('데이터 저장 중 오류 발생:', error);
-                // history.back();
-                // return; // 저장 실패 시 키워드 검색 진행하지 않음
-            }
-            console.log('Completed Funnel:', finalContext);
-            navigate('/loading', { state: finalContext });
-          }}
-          selectedValue={context.aftermeal}
-          onBack={() => history.back()}
-        />
-      )}
-    />
+      <FunnelStep
+        step={currentStep}
+        currentStepIndex={currentStepIndex}
+        totalSteps={funnelData.steps.length}
+        selectedOptionId={answers[currentStep.id]?.id}
+        onSelectOption={handleOptionSelect}
+      />
+    </div>
   );
-}
+};

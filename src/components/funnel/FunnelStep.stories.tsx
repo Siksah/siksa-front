@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 import { FunnelStep } from './FunnelStep';
-import { funnelStepsById } from '@/data/funnelData';
+import { funnelData } from '@/data/funnelData';
 
 const meta = {
   title: 'Funnel/FunnelStep',
@@ -24,50 +24,65 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const PartySize: Story = {
+// Get steps by ID helper for story
+const getStep = (id: number) => funnelData.steps.find(s => s.id === id)!;
+
+export const Q1_PartySize: Story = {
   args: {
-    data: funnelStepsById['party-size'],
-    onSelect: (value) => console.log('Selected:', value),
+    step: getStep(1),
+    currentStepIndex: 0,
+    totalSteps: 6,
+    onSelectOption: (option) => console.log('Selected:', option),
   },
 };
 
-export const PartySizeWithSelection: Story = {
+export const Q1_PartySize_Selected: Story = {
   args: {
-    data: funnelStepsById['party-size'],
-    selectedValue: 'solo',
-    onSelect: (value) => console.log('Selected:', value),
+    step: getStep(1),
+    currentStepIndex: 0,
+    totalSteps: 6,
+    selectedOptionId: '1-1',
+    onSelectOption: (option) => console.log('Selected:', option),
   },
 };
 
-export const Taste: Story = {
+export const Q2_Need: Story = {
   args: {
-    data: funnelStepsById['taste'],
-    onSelect: (value) => console.log('Selected:', value),
+    step: getStep(2),
+    currentStepIndex: 1,
+    totalSteps: 6,
+    onSelectOption: (option) => console.log('Selected:', option),
   },
 };
 
-export const TasteWithSelection: Story = {
+export const Q3_Texture: Story = {
   args: {
-    data: funnelStepsById['taste'],
-    selectedValue: 'hearty',
-    onSelect: (value) => console.log('Selected:', value),
+    step: getStep(3),
+    currentStepIndex: 2,
+    totalSteps: 6,
+    onSelectOption: (option) => console.log('Selected:', option),
   },
 };
 
-export const Texture: Story = {
+export const Q4_Temperature: Story = {
   args: {
-    data: funnelStepsById['texture'],
-    onSelect: (value) => console.log('Selected:', value),
+    step: getStep(4),
+    currentStepIndex: 3,
+    totalSteps: 6,
+    onSelectOption: (option) => console.log('Selected:', option),
   },
 };
 
-export const Temperature: Story = {
+export const Q5_Dislike: Story = {
   args: {
-    data: funnelStepsById['temperature'],
-    onSelect: (value) => console.log('Selected:', value),
+    step: getStep(5),
+    currentStepIndex: 4,
+    totalSteps: 6,
+    onSelectOption: (option) => console.log('Selected:', option),
   },
 };
 
+<<<<<<< HEAD
 export const avoid: Story = {
   args: {
     data: funnelStepsById['avoid'],
@@ -79,5 +94,13 @@ export const Atmosphere: Story = {
   args: {
     data: funnelStepsById['aftermeal'],
     onSelect: (value) => console.log('Selected:', value),
+=======
+export const Q6_Routine: Story = {
+  args: {
+    step: getStep(6),
+    currentStepIndex: 5,
+    totalSteps: 6,
+    onSelectOption: (option) => console.log('Selected:', option),
+>>>>>>> origin/main
   },
 };
