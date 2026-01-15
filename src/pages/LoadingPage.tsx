@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getRecommendation } from '../utils/recommendation';
+import { useMenuResultFlow } from '@/hooks/useMenuResultFlow';
+import type { FunnelOptionData } from '@/types/funnel';
 import { Typography } from '@/components/ui/typography';
 import mainBg from '@/assets/images/main_bg.png';
 
 export const LoadingPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { fetchRecommendation } = useMenuResultFlow();
   const [progress, setProgress] = useState(0);
+  const [isApiComplete, setIsApiComplete] = useState(false);
+  const resultRef = useRef<any>(null);
 
-  // Randomly select one of the available images
   const LOADING_IMAGES = [
     '된장찌개.svg',
     '라멘.svg',
@@ -22,27 +25,39 @@ export const LoadingPage: React.FC = () => {
     '돈까스.svg',
     '샌드위치.svg',
     '파스타.svg',
-    '치킨.svg'
+    '치킨.svg',
   ];
-  
-  const [randomImage] = useState(() => LOADING_IMAGES[Math.floor(Math.random() * LOADING_IMAGES.length)]);
+
+  const [randomImage] = useState(() =>
+    LOADING_IMAGES[Math.floor(Math.random() * LOADING_IMAGES.length)]
+  );
   const imageUrl = `/assets/images/loading/${randomImage}`;
 
   useEffect(() => {
-    // Check for answers
-    const state = location.state as { answers?: any } | null;
+    const state = location.state as { answers?: Record<number, FunnelOptionData> } | null;
     if (!state?.answers) {
       navigate('/', { replace: true });
       return;
     }
 
-    // Determine result immediately (synchronous)
-    const result = getRecommendation(state.answers);
+    const callApi = async () => {
+      try {
+        const result = await fetchRecommendation(state.answers!);
+        resultRef.current = result;
+        setIsApiComplete(true);
+      } catch (error) {
+        console.error('API 호출 실패:', error);
+        navigate('/error', { replace: true, state: { error: '추천을 가져오는 데 실패했습니다.' } });
+      }
+    };
 
-    // Simulate loading progress
-    const duration = 2500; // 2.5 seconds
+    callApi();
+  }, [location.state, navigate, fetchRecommendation]);
+
+  useEffect(() => {
+    const minDuration = 2000;
     const intervalTime = 50;
-    const steps = duration / intervalTime;
+    const steps = minDuration / intervalTime;
     let currentStep = 0;
 
     const interval = setInterval(() => {
@@ -52,23 +67,26 @@ export const LoadingPage: React.FC = () => {
 
       if (currentStep >= steps) {
         clearInterval(interval);
-        // Navigate to result
-        navigate('/result', { state: { result } });
       }
     }, intervalTime);
 
     return () => clearInterval(interval);
-  }, [navigate, location.state]);
+  }, []);
+
+  useEffect(() => {
+    if (isApiComplete && progress >= 100 && resultRef.current) {
+      navigate('/result', { state: { result: resultRef.current } });
+    }
+  }, [isApiComplete, progress, navigate]);
 
   return (
-    <div 
+    <div
       className="min-h-screen flex flex-col items-center justify-center p-4 relative text-[#171717]"
       style={{
         background:
           'linear-gradient(180deg, rgba(254, 193, 172, 1) 0%, rgba(255, 242, 238, 1) 27%, rgba(255, 242, 238, 1) 76%, rgba(254, 193, 172, 1) 100%)',
       }}
     >
-      {/* Background Texture */}
       <img
         src={mainBg}
         alt=""
@@ -76,11 +94,10 @@ export const LoadingPage: React.FC = () => {
       />
 
       <div className="z-10 flex flex-col items-center gap-8 w-full max-w-md">
-        {/* Random Illustration */}
         <div className="w-64 h-64 flex items-center justify-center">
-          <img 
-            src={imageUrl} 
-            alt="Loading illustration" 
+          <img
+            src={imageUrl}
+            alt="Loading illustration"
             className="w-full h-full object-contain animate-pulse"
           />
         </div>
@@ -89,7 +106,6 @@ export const LoadingPage: React.FC = () => {
           오늘의 메뉴 고르는 중
         </Typography>
 
-        {/* Progress Bar */}
         <div className="w-64 h-2 bg-[#E5E5E5] rounded-full overflow-hidden">
           <div
             className="h-full bg-[#F73418] transition-all duration-75 ease-linear"
