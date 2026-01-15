@@ -46,9 +46,9 @@ export function ResultPage() {
     );
   }
 
-  // 다시하기: Q1으로 이동
+  // 다시하기: 홈으로 이동
   const handleRetry = () => {
-    navigate('/funnel');
+    navigate('/');
   };
 
   // 공유하기
