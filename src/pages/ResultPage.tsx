@@ -48,7 +48,43 @@ export function ResultPage() {
 
   // 다시하기: 홈으로 이동
   const handleRetry = () => {
+
+    // 다시하기 횟수 확인 및 증가
+    const oldRetryCount = sessionStorage.getItem('retry_count');
+    const newRetryCount = String(Number(oldRetryCount) + 1);
+    sessionStorage.setItem('retry_count', newRetryCount);
+
     navigate('/');
+  };
+
+  // 좋아요/싫어요 피드백 처리
+  const handleFeedback = async (type: 'like' | 'dislike') => {
+    try {
+      // 1. 기기 정보 및 세션 정보 취합
+      const sessionId = sessionStorage.getItem('anon_session_id');
+      const retryCount = sessionStorage.getItem('retry_count');
+      const device = sessionStorage.getItem('device');
+      console.log('result', result);
+
+      const payload = {
+        sessionId: sessionId,
+        retryCount: retryCount,
+        device: device,
+        result: result,
+        feedback: type, // 'like' 또는 'dislike'
+        // 퀴즈 데이터가 sessionStorage에 있다면 포함
+      };
+      console.log('피드백 페이로드:', payload);
+
+      // 2. API 전송 (예시)
+      // await axios.post('/api/feedback', payload);
+      
+      console.log(`${type} 피드백 전송 완료:`, payload);
+      alert(type === 'like' ? '좋아요가 반영되었습니다!' : '의견 감사합니다.');
+      
+    } catch (error) {
+      console.error('피드백 전송 실패:', error);
+    }
   };
 
   // 공유하기
@@ -190,12 +226,14 @@ export function ResultPage() {
               <RefreshCw size={24} strokeWidth={2} />
             </button>
             <button
+              onClick={() => handleFeedback('like')}
               className="text-orange-30 hover:text-orange-40 transition-colors"
               aria-label="좋아요"
             >
               <ThumbsUp size={24} strokeWidth={2} />
             </button>
             <button
+              onClick={() => handleFeedback('dislike')}
               className="text-orange-30 hover:text-orange-40 transition-colors"
               aria-label="싫어요"
             >

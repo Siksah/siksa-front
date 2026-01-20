@@ -161,10 +161,9 @@ export class CommonService {
   createAnonymousSession = async () => {
     // sessionStorage에 세션 ID가 있는지 확인
     const savedSessionId = sessionStorage.getItem('anon_session_id');
-    console.log('createAnonymousSession savedSessionId:', savedSessionId);
 
     if (!this.isEmpty(savedSessionId)) {
-      console.log('기존 탭 세션 유지:', savedSessionId);
+      console.log('이미 세션이 존재합니다 : ', savedSessionId);
       return { sessionId: savedSessionId };
     }
 
@@ -175,19 +174,74 @@ export class CommonService {
         {},
         { withCredentials: true } // CORS 허용을 위해 필수
       );
-      console.log('createResponse', response);
+      
+      const sessionId = response.data.data.data.sessionId;
+      const createdAt = response.data.data.data.createdAt;
 
-      const sessionId = response.data.data.sessionId;
-
-      // sessionStorage에 저장 (탭 닫으면 자동 삭제됨)
+      // sessionStorage에 저장
       sessionStorage.setItem('anon_session_id', sessionId);
+      sessionStorage.setItem('anon_session_started_at', createdAt);
 
       return response.data;
     } catch (error) {
-      console.error('🚨 익명 세션 생성 실패:', error);
+      console.error('세션 생성 실패:', error);
       throw error;
     }
 
   }
+
+  /**
+   * 기기 정보 및 환경 정보를 수집하여 반환
+   */
+  getDeviceInfo = () => {
+    const userAgent = navigator.userAgent;
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(userAgent);
+    
+    return {
+      os: this.getOS(),
+      browser: this.getBrowser(userAgent), // 브라우저 감별 로직 추가
+      isMobile: isMobile,
+      screenSize: `${window.screen.width}x${window.screen.height}`,
+      windowSize: `${window.innerWidth}x${window.innerHeight}`, // 실제 가시 영역 추가
+      language: navigator.language,
+      userAgent: userAgent // 분석용 원본 데이터 포함
+    };
+  };
+
+  /**
+   * navigator.platform 대신 userAgent를 분석하여 OS 정보 반환
+   */
+  getOS = () => {
+    // 1. 최신 브라우저 대응 (userAgentData)
+    // @ts-ignore: userAgentData는 최신 표준이라 타입 정의가 없을 수 있음
+    const userAgentData = navigator.userAgentData;
+    if (userAgentData?.platform) {
+      return userAgentData.platform;
+    }
+
+    // 2. userAgent 문자열 기반 정밀 분석
+    const ua = navigator.userAgent;
+    
+    if (/android/i.test(ua)) return "Android";
+    if (/iPad|iPhone|iPod/.test(ua)) return "iOS";
+    if (/Win/i.test(ua)) return "Windows";
+    if (/Mac/i.test(ua)) return "macOS";
+    if (/Linux/i.test(ua)) return "Linux";
+    
+    return "Unknown OS";
+  };
+
+  /**
+   * 브라우저 종류를 판별하는 보조 메서드
+   */
+  private getBrowser = (ua: string) => {
+    if (ua.indexOf("Kakaotalk") !== -1) return "Kakaotalk"; // 인앱 브라우저 체크
+    if (ua.indexOf("SamsungBrowser") !== -1) return "Samsung Browser";
+    if (ua.indexOf("Chrome") !== -1 && ua.indexOf("Edg") === -1) return "Chrome";
+    if (ua.indexOf("Edg") !== -1) return "Edge";
+    if (ua.indexOf("Safari") !== -1 && ua.indexOf("Chrome") === -1) return "Safari";
+    if (ua.indexOf("Firefox") !== -1) return "Firefox";
+    return "Other";
+  };
 
 }

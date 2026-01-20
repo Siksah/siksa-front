@@ -7,12 +7,19 @@ import { Typography } from '@/components/ui/typography';
 import mainBgTexture from '@/assets/images/main_bg.png'; // 텍스처용
 import mainDecorFinal from '@/assets/images/main_decor_final.png'; // 장식용
 import mainHeroFinal from '@/assets/images/main_hero_final.png';
+import { CommonService } from '@/comm/common.service';
 
 export function MainPage() {
   const navigate = useNavigate();
   const { createSession } = useSession();
 
   const startMenuClick = async () => {
+    const commonService = new CommonService();
+
+    const device = commonService.getDeviceInfo();
+    sessionStorage.setItem('device', JSON.stringify(device)); // device 정보 세션 스토리지에 저장
+    sessionStorage.setItem('retry_count', '0'); // 결과 화면에서 다시하기 누를 시 count 확인
+
     await createSession();
     navigate('/funnel');
   };
