@@ -41,7 +41,8 @@ export function useMenuResultFlow() {
 
       try {
         const response = await commonService.requestService<RecommendationResponse>({
-          serviceId: 'recommendation/get',
+          // serviceId: 'recommendation/get',
+          serviceId: 'answer',
           data: { answers },
         });
 

@@ -12,9 +12,12 @@ import decorationPattern from '@/assets/images/result/decoration_pattern.svg';
 
 // 배경 텍스처 (메인 페이지와 동일)
 import mainBgTexture from '@/assets/images/main_bg.png';
+import { CommonService } from '@/comm/common.service';
 
 // 랜덤 배경 일러스트 3종
 const BACKGROUND_IMAGES = [bgThumbsUp, bgConfetti, bgSparkle];
+
+const commonService = new CommonService();
 
 export function ResultPage() {
   const navigate = useNavigate();
@@ -48,7 +51,54 @@ export function ResultPage() {
 
   // 다시하기: 홈으로 이동
   const handleRetry = () => {
+
+    // 다시하기 횟수 확인 및 증가
+    const oldRetryCount = sessionStorage.getItem('retry_count');
+    const newRetryCount = String(Number(oldRetryCount) + 1);
+    sessionStorage.setItem('retry_count', newRetryCount);
+
     navigate('/');
+  };
+
+  // 좋아요/싫어요 피드백 처리
+  const handleFeedback = async (type: 'like' | 'dislike') => {
+    try {
+      // 1. 기기 정보 및 세션 정보 취합
+      const sessionId = sessionStorage.getItem('anon_session_id');
+      const retryCount = sessionStorage.getItem('retry_count');
+      const deviceString = sessionStorage.getItem('device');
+      let deviceObj = null;
+
+      if (deviceString) {
+        try {
+          deviceObj = JSON.parse(deviceString); // 문자열 -> 객체
+        } catch (e) {
+          console.error("기기 정보 파싱 실패", e);
+          deviceObj = deviceString; // 실패 시 문자열 그대로 유지
+        }
+      }
+
+      const payload = {
+        sessionId: sessionId,
+        retryCount: retryCount,
+        device: deviceObj,
+        result: result,
+        feedback: type, // 'like' 또는 'dislike'
+      };
+
+      const response = await commonService.requestService({
+        serviceId: 'feedback',
+        data: payload,
+      });
+      
+      
+      console.log(`${type} 피드백 전송 완료:`, payload);
+      console.log('피드백 응답', response.data);
+      alert(type === 'like' ? '좋아요가 반영되었습니다!' : '의견 감사합니다.');
+      
+    } catch (error) {
+      console.error('피드백 전송 실패:', error);
+    }
   };
 
   // 공유하기
@@ -190,12 +240,14 @@ export function ResultPage() {
               <RefreshCw size={24} strokeWidth={2} />
             </button>
             <button
+              onClick={() => handleFeedback('like')}
               className="text-orange-30 hover:text-orange-40 transition-colors"
               aria-label="좋아요"
             >
               <ThumbsUp size={24} strokeWidth={2} />
             </button>
             <button
+              onClick={() => handleFeedback('dislike')}
               className="text-orange-30 hover:text-orange-40 transition-colors"
               aria-label="싫어요"
             >

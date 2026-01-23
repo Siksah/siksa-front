@@ -7,13 +7,25 @@ import { Typography } from '@/components/ui/typography';
 import mainBgTexture from '@/assets/images/main_bg.png'; // 텍스처용
 import mainDecorFinal from '@/assets/images/main_decor_final.png'; // 장식용
 import mainHeroFinal from '@/assets/images/main_hero_final.png';
+import { CommonService } from '@/comm/common.service';
 
 export function MainPage() {
   const navigate = useNavigate();
   const { createSession } = useSession();
 
+  // '시작하기' 버튼 클릭
   const startMenuClick = async () => {
-    await createSession();
+
+    // 최초 1회만 기기 정보, 다시하기 누른 횟수 저장
+    if(sessionStorage.getItem('retry_count') === null) {
+      console.log('최초 1회 data 저장');
+      const commonService = new CommonService();
+      const device = commonService.getDeviceInfo();
+      sessionStorage.setItem('device', JSON.stringify(device)); // 기기정보 가져오기
+      sessionStorage.setItem('retry_count', '1'); // 다시하기 횟수
+    }
+
+    await createSession(); // session 생성
     navigate('/funnel');
   };
 

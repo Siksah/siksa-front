@@ -8,9 +8,9 @@ export const useSession = () => {
     // 초기값으로 이미 저장된 세션이 있다면 가져옴
     sessionStorage.getItem('anon_session_id')
   );
-  const oldsessionId = sessionStorage.getItem('anon_session_id');
-  console.log('sessionId', sessionId);
-  console.log('oldsessionId', oldsessionId);
+  // const oldsessionId = sessionStorage.getItem('anon_session_id');
+  // console.log('sessionId', sessionId);
+  // console.log('oldsessionId', oldsessionId);
   const createSession = useCallback(async () => {
     try {
       // 이미 세션이 있으면 새로 만들지 않음 (기존 요구사항 유지)
