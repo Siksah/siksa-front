@@ -92,5 +92,5 @@ jobs:
         with:
           service: siksa-frontend # 서비스 이름
           image: ${{ secrets.DOCKERHUB_USERNAME }}/siksa-frontend-app:latest
-          region: asia-northeast3 # 서울 리전
+          region: asia-northeast1 # 도쿄 리전
           flags: '--allow-unauthenticated' # 외부 접속 허용 (매우 중요!)
