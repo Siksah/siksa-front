@@ -113,6 +113,7 @@ export class CommonService {
     console.log('finalData', finalData);
 
     const url = this.getRequestUrl(command, finalProdUrl);
+    console.log('requestService url', url);
 
     try {
       // axios.post 호출은 Promise를 반환
