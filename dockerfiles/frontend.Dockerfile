@@ -42,7 +42,7 @@ COPY --from=builder /app/dist/ /usr/share/nginx/html
 RUN chown -R nginx:nginx /usr/share/nginx/html
 
 # Nginx가 기본 포트 80으로 실행됩니다.
-EXPOSE 80
+EXPOSE 8080
 
 # Nginx 시작 명령어
 CMD ["nginx", "-g", "daemon off;"]

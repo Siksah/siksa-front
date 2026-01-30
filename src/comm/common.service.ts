@@ -35,11 +35,11 @@ export class CommonService {
 
     const isProdUrl = prodUrlIsTrue === true;
     
-    const serverUrl = (env.MODE === 'production' || isProdUrl)
+    let serverUrl = (env.MODE === 'production' || isProdUrl)
         ? env.VITE_API_BASE_URL // 배포 주소
         : 'http://localhost:3001/api' // local 주소
-        ;
-    
+    ;
+
     // serverUrl이 null, undefined이거나, 공백 문자열인 경우
     if (!serverUrl || serverUrl.trim() === '') {
       throw new Error(
@@ -48,6 +48,11 @@ export class CommonService {
           `"${serverUrl}"` +
           ')'
       );
+    }
+
+    // 배포 환경인데 주소에 /api가 없다면 강제로 붙여줌
+    if (env.MODE === 'production' && serverUrl && !serverUrl.includes('/api')) {
+        serverUrl = `${serverUrl.replace(/\/$/, '')}/api`;
     }
 
     const safeBase = serverUrl.replace(/\/$/, '');
@@ -113,6 +118,7 @@ export class CommonService {
     console.log('finalData', finalData);
 
     const url = this.getRequestUrl(command, finalProdUrl);
+    console.log('requestService url', url);
 
     try {
       // axios.post 호출은 Promise를 반환
