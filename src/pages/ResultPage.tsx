@@ -1,39 +1,49 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RefreshCw, ThumbsUp, ThumbsDown, Share2 } from 'lucide-react';
-import type { FoodResult } from '@/data/resultData';
 import { Typography } from '@/components/ui/typography';
+import { useMenuResultFlow, type RecommendationItem } from '@/hooks/useMenuResultFlow';
 
-// Import assets (Figma API로 받은 시멘틱 이름의 SVG들)
 import bgThumbsUp from '@/assets/images/result/bg_thumbs_up.svg';
 import bgConfetti from '@/assets/images/result/bg_confetti.svg';
 import bgSparkle from '@/assets/images/result/bg_sparkle.svg';
 import decorationPattern from '@/assets/images/result/decoration_pattern.svg';
-
-// 배경 텍스처 (메인 페이지와 동일)
 import mainBgTexture from '@/assets/images/main_bg.png';
-import { CommonService } from '@/comm/common.service';
 
-// 랜덤 배경 일러스트 3종
 const BACKGROUND_IMAGES = [bgThumbsUp, bgConfetti, bgSparkle];
 
-const commonService = new CommonService();
+type FeedbackType = 'like' | 'dislike';
+
+interface ResultPageState {
+  recommendations: RecommendationItem[];
+  sessionId: string;
+}
 
 export function ResultPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { sendFeedback } = useMenuResultFlow();
 
-  // LoadingPage에서 전달받은 결과 데이터
-  const result = (location.state as { result?: FoodResult } | null)?.result;
+  const state = location.state as ResultPageState | null;
+  const recommendations = state?.recommendations || [];
+  const sessionId = state?.sessionId || '';
 
-  // 랜덤 배경 선택 (컴포넌트 마운트 시 한 번만)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [feedbackByRank, setFeedbackByRank] = useState<Record<number, FeedbackType | null>>({
+    1: null,
+    2: null,
+    3: null,
+  });
+  const [isSendingFeedback, setIsSendingFeedback] = useState(false);
+
   const randomBg = useMemo(
     () => BACKGROUND_IMAGES[Math.floor(Math.random() * BACKGROUND_IMAGES.length)],
     []
   );
 
-  // 결과가 없으면 fallback UI
-  if (!result) {
+  const current = recommendations[currentIndex];
+
+  if (!current || recommendations.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center bg-orange-10 gap-4">
         <Typography preset="funnel-title" className="!text-navy" isShadow={false}>
@@ -49,65 +59,37 @@ export function ResultPage() {
     );
   }
 
-  // 다시하기: 홈으로 이동
+  const isRetryDisabled = currentIndex >= recommendations.length - 1;
+  const currentRank = current.rank;
+  const hasFeedback = feedbackByRank[currentRank] !== null;
+
   const handleRetry = () => {
-
-    // 다시하기 횟수 확인 및 증가
-    const oldRetryCount = sessionStorage.getItem('retry_count');
-    const newRetryCount = String(Number(oldRetryCount) + 1);
-    sessionStorage.setItem('retry_count', newRetryCount);
-
-    navigate('/');
+    if (isRetryDisabled) return;
+    setCurrentIndex((i) => i + 1);
   };
 
-  // 좋아요/싫어요 피드백 처리
-  const handleFeedback = async (type: 'like' | 'dislike') => {
-    try {
-      // 1. 기기 정보 및 세션 정보 취합
-      const sessionId = sessionStorage.getItem('anon_session_id');
-      const retryCount = sessionStorage.getItem('retry_count');
-      const deviceString = sessionStorage.getItem('device');
-      let deviceObj = null;
+  const handleFeedback = async (feedback: FeedbackType) => {
+    if (hasFeedback || isSendingFeedback) return;
 
-      if (deviceString) {
-        try {
-          deviceObj = JSON.parse(deviceString); // 문자열 -> 객체
-        } catch (e) {
-          console.error("기기 정보 파싱 실패", e);
-          deviceObj = deviceString; // 실패 시 문자열 그대로 유지
-        }
-      }
+    setFeedbackByRank((prev) => ({ ...prev, [currentRank]: feedback }));
+    setIsSendingFeedback(true);
 
-      const payload = {
-        sessionId: sessionId,
-        retryCount: retryCount,
-        device: deviceObj,
-        result: result,
-        feedback: type, // 'like' 또는 'dislike'
-      };
+    await sendFeedback({
+      sessionId,
+      retryCount: currentIndex,
+      result: { rank: currentRank, menu: current.menu },
+      feedback,
+    });
 
-      const response = await commonService.requestService({
-        serviceId: 'feedback',
-        data: payload,
-      });
-      
-      
-      console.log(`${type} 피드백 전송 완료:`, payload);
-      console.log('피드백 응답', response.data);
-      alert(type === 'like' ? '좋아요가 반영되었습니다!' : '의견 감사합니다.');
-      
-    } catch (error) {
-      console.error('피드백 전송 실패:', error);
-    }
+    setIsSendingFeedback(false);
   };
 
-  // 공유하기
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
           title: '냠냠쩝쩝 - 오늘의 메뉴 추천',
-          text: `오늘의 추천: ${result.name}`,
+          text: `오늘의 추천: ${current.menu}`,
           url: window.location.href,
         });
       } catch (err) {
@@ -123,24 +105,24 @@ export function ResultPage() {
     }
   };
 
-  // 식당 찾아보기: 네이버 지도 검색
   const handleFindRestaurant = () => {
-    const url = `https://map.naver.com/p/search/${encodeURIComponent(result.name)}`;
+    const url = `https://map.naver.com/p/search/${encodeURIComponent(current.menu)}`;
     window.open(url, '_blank');
+  };
+
+  const handleGoHome = () => {
+    navigate('/');
   };
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-orange-10">
-      {/* 배경 텍스처 */}
       <img
         src={mainBgTexture}
         alt=""
         className="absolute inset-0 w-full h-full object-cover mix-blend-soft-light opacity-60 pointer-events-none z-0"
       />
 
-      {/* 메인 콘텐츠 - Flex 레이아웃 */}
       <div className="relative z-10 flex flex-col items-center w-full h-full pt-[95px]">
-        {/* 타이틀 */}
         <Typography
           preset="funnel-title"
           fontSize="30px"
@@ -151,32 +133,25 @@ export function ResultPage() {
           오늘의 추천 메뉴는..!
         </Typography>
 
-        {/* 결과 카드 */}
         <div
           className="relative mt-[30px] w-[291px] h-[463px] bg-white rounded-[30px] border-[3px] border-orange-30 overflow-hidden flex flex-col"
           style={{
             boxShadow: '5px 5px 5px 0px rgba(250, 80, 45, 0.3)',
           }}
         >
-          {/* 카드 내부 그라디언트 배경 - Flex grow */}
           <div
             className="relative m-[13px] rounded-[17px] border-[3px] border-orange-10 overflow-hidden flex-1 flex flex-col items-center z-0"
             style={{
               background: 'linear-gradient(to top, var(--color-orange-40) 0%, var(--color-orange-50) 100%)',
             }}
           >
-            {/* 질감 텍스처 */}
             <img
               src={mainBgTexture}
               alt=""
               className="absolute inset-0 w-full h-full object-cover mix-blend-soft-light opacity-40 pointer-events-none"
             />
 
-{/* 랜덤 배경 일러스트 - 그라디언트 박스 밖에서 관리 */}
-
-            {/* 텍스트 영역 - 상단 */}
             <div className="relative z-20 flex flex-col items-center pt-[52px] px-4">
-              {/* 음식 이름 */}
               <Typography
                 fontSize="55px"
                 lineHeight="1"
@@ -185,10 +160,9 @@ export function ResultPage() {
                 shadowColor="#C4250E"
                 sketchy={true}
               >
-                {result.name}
+                {current.menu}
               </Typography>
 
-              {/* 설명 */}
               <Typography
                 fontSize="30px"
                 lineHeight="normal"
@@ -196,59 +170,63 @@ export function ResultPage() {
                 isShadow={false}
                 sketchy={true}
               >
-                {result.description}
+                {current.reason}
               </Typography>
             </div>
 
-            {/* 일러스트 영역 - 하단 (flex-grow로 남은 공간 차지) */}
             <div className="relative z-10 flex-1 flex items-end justify-center pb-[20px] w-full">
-              {/* 배경 장식 패턴 */}
               <img
                 src={decorationPattern}
                 alt=""
                 className="absolute bottom-[120px] left-[42%] -translate-x-1/2 w-[90%] h-auto pointer-events-none opacity-80"
               />
-              
             </div>
-
-            {/* 랜덤 배경 일러스트 (제거 - 밖으로 이동) */}
-            {/* <img
-              src={randomBg}
-              alt=""
-              className="absolute z-50 w-[200px] bottom-[-20px] h-auto pointer-events-none"
-            /> */}
           </div>
 
-          {/* 랜덤 배경 일러스트 - 그라디언트 박스 밖으로 이동하여 잘림 방지 */}
           <img
             src={randomBg}
             alt=""
             className="absolute z-20 w-[240px] h-auto pointer-events-none left-1/2 -translate-x-1/2"
-            style={{
-              top: '230px',
-              // 또는 bottom 기준으로 배치
-            }}
+            style={{ top: '230px' }}
           />
 
-          {/* 아이콘 바 - 카드 하단 흰색 영역 */}
           <div className="flex items-center justify-center gap-[45px] py-[12px]">
             <button
               onClick={handleRetry}
-              className="text-orange-30 hover:text-orange-40 transition-colors"
-              aria-label="다시하기"
+              disabled={isRetryDisabled}
+              className={`transition-colors ${
+                isRetryDisabled
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : 'text-orange-30 hover:text-orange-40'
+              }`}
+              aria-label="다음 추천"
             >
               <RefreshCw size={24} strokeWidth={2} />
             </button>
             <button
               onClick={() => handleFeedback('like')}
-              className="text-orange-30 hover:text-orange-40 transition-colors"
+              disabled={hasFeedback || isSendingFeedback}
+              className={`transition-colors ${
+                feedbackByRank[currentRank] === 'like'
+                  ? 'text-green-500'
+                  : hasFeedback
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : 'text-orange-30 hover:text-orange-40'
+              }`}
               aria-label="좋아요"
             >
               <ThumbsUp size={24} strokeWidth={2} />
             </button>
             <button
               onClick={() => handleFeedback('dislike')}
-              className="text-orange-30 hover:text-orange-40 transition-colors"
+              disabled={hasFeedback || isSendingFeedback}
+              className={`transition-colors ${
+                feedbackByRank[currentRank] === 'dislike'
+                  ? 'text-red-500'
+                  : hasFeedback
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : 'text-orange-30 hover:text-orange-40'
+              }`}
               aria-label="싫어요"
             >
               <ThumbsDown size={24} strokeWidth={2} />
@@ -263,11 +241,9 @@ export function ResultPage() {
           </div>
         </div>
 
-        {/* 하단 버튼 영역 - mt-auto로 하단 고정 */}
         <div className="flex items-center justify-center gap-[10px] mt-auto mb-[78px] px-[20px] w-full">
-          {/* 다시하기 버튼 */}
           <button
-            onClick={handleRetry}
+            onClick={handleGoHome}
             className="flex items-center justify-center w-[162px] h-[53px] bg-navy rounded-[8px] active:scale-95 transition-transform"
           >
             <Typography
@@ -282,7 +258,6 @@ export function ResultPage() {
             </Typography>
           </button>
 
-          {/* 식당 찾아보기 버튼 */}
           <button
             onClick={handleFindRestaurant}
             className="flex items-center justify-center w-[162px] h-[53px] bg-orange-50 rounded-[8px] active:scale-95 transition-transform"

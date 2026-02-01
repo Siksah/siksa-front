@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useMenuResultFlow } from '@/hooks/useMenuResultFlow';
+import { useMenuResultFlow, type RecommendationItem } from '@/hooks/useMenuResultFlow';
 import type { FunnelOptionData } from '@/types/funnel';
 import { Typography } from '@/components/ui/typography';
 import mainBg from '@/assets/images/main_bg.png';
@@ -8,10 +8,10 @@ import mainBg from '@/assets/images/main_bg.png';
 export const LoadingPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { fetchRecommendation } = useMenuResultFlow();
+  const { fetchRecommendations } = useMenuResultFlow();
   const [progress, setProgress] = useState(0);
   const [isApiComplete, setIsApiComplete] = useState(false);
-  const resultRef = useRef<any>(null);
+  const resultRef = useRef<{ recommendations: RecommendationItem[]; sessionId: string } | null>(null);
 
   const LOADING_IMAGES = [
     '된장찌개.svg',
@@ -42,8 +42,9 @@ export const LoadingPage: React.FC = () => {
 
     const callApi = async () => {
       try {
-        const result = await fetchRecommendation(state.answers!);
-        resultRef.current = result;
+        const recommendations = await fetchRecommendations(state.answers!);
+        const sessionId = sessionStorage.getItem('anon_session_id') || crypto.randomUUID?.() || `${Date.now()}`;
+        resultRef.current = { recommendations, sessionId };
         setIsApiComplete(true);
       } catch (error) {
         console.error('API 호출 실패:', error);
@@ -52,7 +53,7 @@ export const LoadingPage: React.FC = () => {
     };
 
     callApi();
-  }, [location.state, navigate, fetchRecommendation]);
+  }, [location.state, navigate, fetchRecommendations]);
 
   useEffect(() => {
     const minDuration = 2000;
@@ -75,7 +76,7 @@ export const LoadingPage: React.FC = () => {
 
   useEffect(() => {
     if (isApiComplete && progress >= 100 && resultRef.current) {
-      navigate('/result', { state: { result: resultRef.current } });
+      navigate('/result', { state: resultRef.current });
     }
   }, [isApiComplete, progress, navigate]);
 

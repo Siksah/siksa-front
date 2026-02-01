@@ -3,15 +3,20 @@ import { useState, useCallback } from 'react';
 import type { StepId } from '@/types/funnel';
 import type { FunnelOptionData } from '@/types/funnel';
 import { CommonService } from '@/comm/common.service';
-import { getRecommendation } from '@/utils/recommendation';
-import type { FoodResult } from '@/data/resultData';
+import { getRecommendations } from '@/utils/recommendation';
 
 export type FunnelResult = Partial<Record<StepId, string>>;
 
-export interface RecommendationResponse {
-  success: boolean;
-  data?: FoodResult;
-  error?: string;
+export interface RecommendationItem {
+  rank: 1 | 2 | 3;
+  menu: string;
+  reason: string;
+}
+
+export interface AnswerApiResponse {
+  message: string;
+  answerId?: string;
+  recommendation: RecommendationItem[];
 }
 
 const commonService = new CommonService();
@@ -29,33 +34,60 @@ export function useMenuResultFlow() {
   const goToFunnel = () => navigate('/funnel');
   const goToLoading = (ctx: FunnelResult) =>
     navigate('/loading', { state: ctx });
-  const goToResult = (result: FoodResult) =>
-    navigate('/result', { state: { result } });
+  const goToResult = (recommendations: RecommendationItem[], sessionId: string) =>
+    navigate('/result', { state: { recommendations, sessionId } });
   const goToError = (errorMessage?: string) =>
     navigate('/error', { state: { error: errorMessage } });
 
-  const fetchRecommendation = useCallback(
-    async (answers: Record<number, FunnelOptionData>): Promise<FoodResult> => {
+  const fetchRecommendations = useCallback(
+    async (answers: Record<number, FunnelOptionData>): Promise<RecommendationItem[]> => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const response = await commonService.requestService<RecommendationResponse>({
-          // serviceId: 'recommendation/get',
+        const sessionId = sessionStorage.getItem('anon_session_id') || '';
+        const response = await commonService.requestService<AnswerApiResponse>({
           serviceId: 'answer',
-          data: { answers },
+          data: { answers, sessionId },
         });
 
-        if (response.data?.success && response.data.data) {
-          return response.data.data;
+        if (response.data?.recommendation && response.data.recommendation.length > 0) {
+          return response.data.recommendation;
         }
 
-        throw new Error(response.data?.error || '추천 결과를 받아오지 못했습니다.');
+        throw new Error('추천 결과를 받아오지 못했습니다.');
       } catch (err) {
         console.warn('API 호출 실패, 로컬 추천으로 폴백:', err);
-        return getRecommendation(answers);
+        return getRecommendations(answers);
       } finally {
         setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const sendFeedback = useCallback(
+    async (params: {
+      sessionId: string;
+      retryCount: number;
+      result: { rank: number; menu: string };
+      feedback: 'like' | 'dislike';
+    }): Promise<boolean> => {
+      try {
+        await commonService.requestService({
+          serviceId: 'feedback',
+          data: {
+            sessionId: params.sessionId,
+            retryCount: String(params.retryCount),
+            result: params.result,
+            feedback: params.feedback,
+            timestamp: new Date().toISOString(),
+          },
+        });
+        return true;
+      } catch (err) {
+        console.error('피드백 전송 실패:', err);
+        return false;
       }
     },
     []
@@ -64,15 +96,16 @@ export function useMenuResultFlow() {
   const submitAnswersAndNavigate = useCallback(
     async (answers: Record<number, FunnelOptionData>) => {
       try {
-        const result = await fetchRecommendation(answers);
-        goToResult(result);
+        const recommendations = await fetchRecommendations(answers);
+        const sessionId = sessionStorage.getItem('anon_session_id') || crypto.randomUUID?.() || `${Date.now()}`;
+        goToResult(recommendations, sessionId);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
         setError(errorMessage);
         goToError(errorMessage);
       }
     },
-    [fetchRecommendation]
+    [fetchRecommendations]
   );
 
   return {
@@ -85,7 +118,8 @@ export function useMenuResultFlow() {
     goToLoading,
     goToResult,
     goToError,
-    fetchRecommendation,
+    fetchRecommendations,
+    sendFeedback,
     submitAnswersAndNavigate,
   };
 }
