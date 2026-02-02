@@ -25,8 +25,26 @@ export function ResultPage() {
   const { sendFeedback } = useMenuResultFlow();
 
   const state = location.state as ResultPageState | null;
-  const recommendations = state?.recommendations || [];
-  const sessionId = state?.sessionId || '';
+  // Mock data for development - always show result page
+  const mockRecommendations: RecommendationItem[] = [
+    {
+      rank: 1,
+      menu: '돈까스',
+      reason: '오늘은 바삭하고\n달달한 돈까스!',
+    },
+    {
+      rank: 2,
+      menu: '쌀국수',
+      reason: '답답한 국물\n쌀국수',
+    },
+    {
+      rank: 3,
+      menu: '떡볶이',
+      reason: '매콤달콤\n떡볶이',
+    },
+  ];
+  const recommendations = state?.recommendations?.length ? state.recommendations : mockRecommendations;
+  const sessionId = state?.sessionId || 'mock-session';
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [feedbackByRank, setFeedbackByRank] = useState<Record<number, FeedbackType | null>>({
@@ -116,6 +134,16 @@ export function ResultPage() {
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-orange-10">
+      {/* Card Sketchy Effect Filter */}
+      <svg className="absolute w-0 h-0" aria-hidden="true">
+        <defs>
+          <filter id="card-sketchy" x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="2" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
+
       <img
         src={mainBgTexture}
         alt=""
@@ -137,6 +165,7 @@ export function ResultPage() {
           className="relative mt-[30px] w-[291px] h-[463px] bg-white rounded-[30px] border-[3px] border-orange-30 overflow-hidden flex flex-col"
           style={{
             boxShadow: '5px 5px 5px 0px rgba(250, 80, 45, 0.3)',
+            filter: 'url(#card-sketchy)',
           }}
         >
           <div

@@ -253,6 +253,9 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
         : '[letter-spacing:var(--typography-letter-spacing)]'
       : null;
 
+    // Nanum AmSeuTeReuDam 폰트일 때 자동으로 bold 효과 적용
+    const isNamuFont = finalFontFamily?.includes('Nanum AmSeuTeReuDam');
+
     const baseClasses = [
       'text-white', // 기본 색상 흰색
       'whitespace-nowrap', // 기본값
@@ -265,6 +268,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       fontWeightClass,
       lineHeightClass,
       letterSpacingClass,
+      isNamuFont && 'font-bold-namu', // Nanum AmSeuTeReuDam 폰트일 때 자동 적용
       className,
     ].filter(Boolean);
 
