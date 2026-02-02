@@ -45,7 +45,7 @@ export const FunnelOptionCards2: React.FC<FunnelOptionCards2Props> = ({
       <Typography
         preset="main-subtitle"
         className={clsx(
-          '!text-[22px] !leading-none text-center',
+          '!text-[20px] !leading-none text-center',
           isSelected ? '!text-[#1c202c]' : '!text-[#4b5767]'
         )}
       >

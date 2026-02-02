@@ -37,7 +37,7 @@ export const FunnelOptionVertical3: React.FC<FunnelOptionVertical3Props> = ({
       <Typography
         preset="main-subtitle"
         className={clsx(
-          '!text-[26px] !leading-[1.2] !whitespace-pre-wrap text-center',
+          '!text-[20px] !leading-[1.2] !whitespace-pre-wrap text-center',
           isSelected ? '!text-[#1c202c]' : '!text-[#4b5767]'
         )}
       >

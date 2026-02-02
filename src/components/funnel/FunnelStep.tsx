@@ -109,12 +109,12 @@ export const FunnelStep: React.FC<FunnelStepProps> = ({
       <FunnelProgress currentStep={currentStepIndex + 1} totalSteps={totalSteps} />
 
       {/* Badge */}
-      <div className="mt-[15px]">
+      <div className="mt-[40px]">
         <QuestionBadge stepIndex={currentStepIndex} totalSteps={totalSteps} />
       </div>
 
       {/* Title */}
-      <div className="mt-[20px]">
+      <div>
         <QuestionTitle title={step.title} subtitle={step.subtitle} />
       </div>
 

@@ -65,7 +65,7 @@ export const FunnelOptionGrid2x2: React.FC<FunnelOptionGrid2x2Props> = ({
       <Typography
         preset="main-subtitle"
         className={clsx(
-          '!text-[18px] !leading-tight text-center',
+          '!text-[20px] !leading-tight text-center',
           isSelected ? '!text-[#1c202c]' : '!text-[#4b5767]'
         )}
       >

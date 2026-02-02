@@ -52,6 +52,7 @@ export function MainPage() {
         <div className="flex flex-col items-center">
           <Typography 
             preset="main-subtitle"
+            fontSize="32px"
             className="!text-white !leading-none"
           >
             오늘은 무얼 먹어볼까?

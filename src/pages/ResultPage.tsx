@@ -153,7 +153,7 @@ export function ResultPage() {
 
             <div className="relative z-20 flex flex-col items-center pt-[52px] px-4">
               <Typography
-                fontSize="55px"
+                fontSize="48px"
                 lineHeight="1"
                 className="!text-white text-center break-keep"
                 isShadow={true}
@@ -164,7 +164,7 @@ export function ResultPage() {
               </Typography>
 
               <Typography
-                fontSize="30px"
+                fontSize="26px"
                 lineHeight="normal"
                 className="!text-orange-10 text-center break-keep whitespace-pre-wrap mt-[18px]"
                 isShadow={false}

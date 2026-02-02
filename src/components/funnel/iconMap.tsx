@@ -55,21 +55,22 @@ export const lucideIconMap: Record<string, LucideIcon> = {
 
 /**
  * Lucide 아이콘 이름으로 아이콘 컴포넌트 가져오기
+ * strokeWidth: 1.5로 통일 (Figma 기준)
  */
-export function getLucideIcon(iconName?: string, className = 'w-8 h-8'): React.ReactNode {
+export function getLucideIcon(iconName?: string, className = 'w-8 h-8', strokeWidth = 1.5): React.ReactNode {
   if (!iconName) return null;
   const IconComponent = lucideIconMap[iconName];
   if (!IconComponent) return null;
-  return <IconComponent className={className} />;
+  return <IconComponent className={className} strokeWidth={strokeWidth} />;
 }
 
 // Legacy icon map (using Lucide icons now instead of SVG imports)
-// Q1 Party Size icons - now use Lucide
+// Q1 Party Size icons - now use Lucide (strokeWidth=1.5)
 export const iconMap: Record<string, React.ReactNode> = {
   // party-size (Lucide 아이콘으로 대체)
-  alone: <User className="w-[20px] h-[20px] text-current" />,
-  two: <Users className="w-[30px] h-[20px] text-current" />,
-  group: <UsersRound className="w-[44px] h-[20px] text-current" />,
+  alone: <User className="w-[20px] h-[20px] text-current" strokeWidth={1.5} />,
+  two: <Users className="w-[30px] h-[20px] text-current" strokeWidth={1.5} />,
+  group: <UsersRound className="w-[44px] h-[20px] text-current" strokeWidth={1.5} />,
 };
 
 /**
