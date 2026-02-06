@@ -14,9 +14,12 @@ export interface RecommendationItem {
 }
 
 export interface AnswerApiResponse {
-  message: string;
-  answerId?: string;
-  recommendation: RecommendationItem[];
+  data: {
+    message: string;
+    answerId: string;
+    recommendation: RecommendationItem[];
+  };
+  statusCode: number;
 }
 
 const commonService = new CommonService();
@@ -51,8 +54,10 @@ export function useMenuResultFlow() {
           data: { answers, sessionId },
         });
 
-        if (response.data?.recommendation && response.data.recommendation.length > 0) {
-          return response.data.recommendation;
+        const actualData = response.data?.data;
+
+        if (actualData?.recommendation && actualData.recommendation.length > 0) {
+          return actualData.recommendation;
         }
 
         throw new Error('추천 결과를 받아오지 못했습니다.');
